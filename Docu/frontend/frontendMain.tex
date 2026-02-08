@@ -1,27 +1,67 @@
 \suadSeite
-\subsection{Einführung in Swift}
+\subsection{Überblick und Architektur}
 
-Swift ist eine moderne, leistungsstarke Programmiersprache, die von Apple Inc. im Jahr 2014 als Nachfolger von Objective-C entwickelt wurde. Sie wurde speziell für die Entwicklung von Anwendungen für iOS, macOS, watchOS und tvOS konzipiert und hat sich schnell als bevorzugte Sprache für die Apple-Plattform etabliert.
+Das Frontend der Anwendung "`EduShelf"' wurde als moderne Single Page Application (SPA) konzipiert und implementiert. Im Gegensatz zu klassischen Webanwendungen, bei denen bei jeder Interaktion eine neue HTML-Seite vom Server geladen wird, lädt eine SPA initial ein einziges HTML-Gerüst. Die Inhalte werden anschließend dynamisch durch Client-Seitiges JavaScript nachgeladen und gerendert. Dies führt zu einer flüssigeren Benutzererfahrung, die der einer nativen Desktop-Anwendung ähnelt.
 
-\subsubsection{Vorteile von Swift}
-
+Die Architektur folgt einem modularen Komponenten-Ansatz, wobei die Quelldateien im Verzeichnis \texttt{src} klar strukturiert sind:
 \begin{itemize}
-  \item \textbf{Sicherheit:} Swift verfügt über ein strenges Typsystem und bietet umfassende Mechanismen zur Fehlervermeidung, wie optionale Typen und Wertprüfungen.
-  \item \textbf{Leistung:} Die Sprache wurde auf Geschwindigkeit optimiert, welche mit C++ vergleichbar ist.
-  \item \textbf{Lesbarkeit:} Swift hat eine klare, ausdrucksstarke Syntax, die leicht zu lesen und zu verstehen ist.
-  \item \textbf{Wartbarkeit:} Durch moderne Sprachkonzepte wie automatische Speicherverwaltung, Typinferenz und funktionale Programmiermuster wird die Codewartung erleichtert.
-  \item \textbf{Interoperabilität:} Swift kann mit Objective-C-Code koexistieren, was eine schrittweise Migration bestehender Projekte ermöglicht.
+    \item \textbf{components}: Beinhaltet die wiederverwendbaren UI-Komponenten (z. B. \texttt{Chat.jsx}, \texttt{Quiz.jsx}).
+    \item \textbf{services}: Enthält die Logik für die Kommunikation mit dem Backend (z. B. \texttt{api.js}).
+    \item \textbf{assets}: Speichert statische Ressourcen wie Bilder und Stylesheets.
 \end{itemize}
 
-\subsubsection{Nachteile von Swift}
+\subsection{Technologie-Stack}
+
+Für die Umsetzung des Frontends wurden folgende Technologien gewählt, um Wartbarkeit, Performance und Skalierbarkeit zu gewährleisten:
 
 \begin{itemize}
-  \item \textbf{Sprachevolution:} Die häufigen Updates der Sprache können zu Kompatibilitätsproblemen zwischen verschiedenen Swift-Versionen führen.
-  \item \textbf{Lernkurve:} Trotz der klaren Syntax kann die Einarbeitung in fortgeschrittene Konzepte wie Protokollorientierte Programmierung anspruchsvoll sein.
-  \item \textbf{Eingeschränktes Ökosystem:} Im Vergleich zu älteren Sprachen ist das Ökosystem von Swift, insbesondere für spezialisierte Bibliotheken, noch in der Entwicklung.
+    \item \textbf{React}: Eine von Facebook entwickelte JavaScript-Bibliothek zur Erstellung von Benutzeroberflächen. Durch das Konzept des "`Virtual DOM"' werden DOM-Manipulationen minimiert, was die Rendering-Performance signifikant erhöht. React ermöglicht zudem eine strikte Trennung von Logik und Darstellung durch Komponenten.
+    \item \textbf{Vite}: Ein modernes Build-Tool, das als Ersatz für Webpack dient. Es nutzt native ES-Module im Browser für extrem kurze Startzeiten des Entwicklungsservers und bietet optimierte Builds für die Produktion.
+    \item \textbf{React Router}: Diese Bibliothek übernimmt das client-seitige Routing. Sie ermöglicht die Navigation zwischen verschiedenen Ansichten (z. B. \texttt{/files}, \texttt{/chat}), ohne dass die Seite neu geladen werden muss.
+    \item \textbf{Axios}: Ein Promise-basierter HTTP-Client, der für die asynchrone Kommunikation mit der REST-API des Backends verwendet wird. Er vereinfacht das Senden von Anfragen und das Abfangen von Antworten (Interceptors).
 \end{itemize}
 
+\subsection{Benutzeroberfläche und UX}
 
+Das Design von EduShelf legt Wert auf Intuitivität und Responsivität. Die Anwendung passt sich dank CSS-Media-Queries dynamisch an verschiedene Bildschirmgrößen an.
 
+Ein zentrales Feature ist die Unterstützung von Themes (Hell/Dunkel). Dies wird technisch über ein \texttt{data-theme}-Attribut am \texttt{document.documentElement} realisiert. Der Zustand wird im \texttt{localStorage} des Browsers persistiert, sodass die Einstellung bei einem erneuten Besuch erhalten bleibt:
 
+\begin{lstlisting}[language=JavaScript, caption={Theme-Initialisierung in App.jsx}]
+useEffect(() => {
+  const currentTheme = localStorage.getItem('theme');
+  if (currentTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}, []);
+\end{lstlisting}
 
+\subsection{Kernkomponenten und Implementierung}
+
+Die Anwendung gliedert sich in mehrere funktionale Hauptbereiche, die als React-Komponenten implementiert sind.
+
+\subsubsection{Authentifizierung und Autorisierung}
+Die Sicherheit der Anwendung wird durch eine Token-basierte Authentifizierung gewährleistet. Die Komponenten \texttt{Login.jsx} und \texttt{Register.jsx} ermöglichen den Zugang. Der aktuelle Benutzerstatus wird zentral in der \texttt{App.jsx} verwaltet. Beim Start der Anwendung wird die Route \texttt{/Users/me} aufgerufen, um eine bestehende Session zu validieren.
+Zusätzlich werden rollenbasierte Zugriffe (RBAC) umgesetzt. Beispielsweise ist das \texttt{AdminPanel} nur für Benutzer erreichbar, die die Rolle "`Admin"' besitzen. Versucht ein nicht-autorisierter Nutzer, auf geschützte Routen zuzugreifen, wird er automatisch weitergeleitet.
+
+\subsubsection{Dateiverwaltung (Files)}
+Die Komponente \texttt{Files.jsx} stellt die Schnittstelle zum Dokumentenmanagement dar. Dateien können per Upload-Dialog zum Backend übertragen werden. Eine Besonderheit ist die Integration des \texttt{DocxViewer}, der eine Vorschau von Word-Dokumenten direkt im Browser ermöglicht, ohne dass diese heruntergeladen werden müssen.
+
+\subsubsection{Lernmodule: Quiz und Flashcards}
+Ein Kernaspekt von EduShelf ist das interaktive Lernen.
+\begin{itemize}
+    \item \textbf{Quiz}: Ermöglicht das Abfragen von Wissen in einem strukturierten Format. Die Logik für die Fragenabfolge und Auswertung ist in \texttt{Quiz.jsx} implementiert.
+    \item \textbf{Flashcards}: Implementiert ein Karteikarten-System. Die Komponente \texttt{Flashcards.jsx} verwaltet den Status der Karten (Vorderseite/Rückseite) und den Lernfortschritt.
+\end{itemize}
+
+\subsubsection{Kommunikation (Chat)}
+Die \texttt{Chat}-Komponente ermöglicht den Austausch von Nachrichten. Das Layout ist zweigeteilt in eine Nachrichtenliste und ein Eingabefeld. Die Nachrichten werden dynamisch gerendert, wobei zwischen eigenen Nachrichten und Empfangenen visuell unterschieden wird.
+
+\subsection{Datenfluss und State Management}
+
+Der Datenfluss in React ist unidirektional (von Eltern- zu Kind-Komponenten). Für den lokalen Zustand der Komponenten (z. B. Formulareingaben, Sichtbarkeit von Modals) wird der \texttt{useState}-Hook verwendet.
+Seiteneffekte, wie das Laden von Daten beim Komponentenstart, werden mit dem \texttt{useEffect}-Hook gesteuert.
+
+Die Kommunikation mit dem Server ist in der Datei \texttt{src/services/api.js} zentralisiert. Dies fördert die Wartbarkeit, da API-Endpunkte und Konfigurationen (wie Basis-URL oder Header) nur an einer Stelle definiert sind. Fehlerbehandlung (z. B. bei Verbindungsabbruch oder 401 Unauthorized Fehlern) kann so konsistent für die gesamte Anwendung umgesetzt werden.
