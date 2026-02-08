@@ -1,13 +1,9 @@
-\documentclass[twoside]{article}
-\usepackage{graphicx} % Required for inserting images
-\usepackage{amsmath}
-\usepackage{fancyhdr}
-\usepackage{listings}
+\documentclass[12pt, a4paper, twoside]{report}
+\input{praeambel.tex}		% NICHT löschen
+\input{definitions.tex}	% Enthält alle Definiotinen wie Schüler und Betreuer
 \usepackage{xcolor}
 \usepackage{tikz}
-\usepackage{amssymb}
 \usepackage{booktabs}
-\usepackage{natbib}
 %\usepackage{svg}
 \newcommand{\includesvg}[2][]{\fbox{MISSING SVG: #2}}
 % Load hyperref LAST to ensure it modifies citation commands properly
@@ -15,8 +11,6 @@
 
 \usepackage{longtable}
 
-\usepackage[backend=biber, style=numeric]{biblatex}
-\usepackage[hidelinks, url=true]{hyperref}
 \addbibresource{literatur.bib}
 
 %\bibliographystyle{apalike}
@@ -84,8 +78,6 @@
 %%     Installation unter Windows: erst MiKTeX und *dann* TeX-Studio installieren, fertig
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input{praeambel.tex}		% NICHT löschen
-\input{definitions.tex}	% Enthält alle Definiotinen wie Schüler und Betreuer
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   unbedingt in TeX-Studio Optionen->TeX-Studio konfigurieren->Erzeugen->Standardbibliographieprogramm "Biber" einstellen  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,6 +119,11 @@
 
 
         
+
+        \section{Backend Implementation}
+        \input{backend/backendMain.tex}
+        \input{backend/zeit.tex}
+
         \section{iOS}
         \input{iOS/iOSMain.tex}
         \input{zeit.tex}
@@ -135,9 +132,7 @@
         \input{frontend/frontendMain.tex}
         \input{frontend/zeit.tex}
 
-        \section{Backend}
-        \input{backend/backendMain.tex}
-        \input{backend/zeit.tex}
+
 
         \pagestyle{alle}
 
