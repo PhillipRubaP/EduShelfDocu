@@ -1,67 +1,361 @@
-\suadSeite
-\subsection{Überblick und Architektur}
+\chapter{Frontend Implementierung}
 
-Das Frontend der Anwendung "`EduShelf"' wurde als moderne Single Page Application (SPA) konzipiert und implementiert. Im Gegensatz zu klassischen Webanwendungen, bei denen bei jeder Interaktion eine neue HTML-Seite vom Server geladen wird, lädt eine SPA initial ein einziges HTML-Gerüst. Die Inhalte werden anschließend dynamisch durch Client-Seitiges JavaScript nachgeladen und gerendert. Dies führt zu einer flüssigeren Benutzererfahrung, die der einer nativen Desktop-Anwendung ähnelt.
+\section{Einführung und Zielsetzung}
+Das Frontend der Anwendung "`EduShelf"' repräsentiert die Schnittstelle zwischen dem Benutzer und den komplexen Backend-Diensten. Ziel der Implementierung war die Schaffung einer modernen, performanten und intuitiven Benutzeroberfläche, die das Lernen und Verwalten von Dokumenten so effizient wie möglich gestaltet.
 
-Die Architektur folgt einem modularen Komponenten-Ansatz, wobei die Quelldateien im Verzeichnis \texttt{src} klar strukturiert sind:
+Im Gegensatz zu klassischen Webanwendungen, die auf dem "`Multi-Page Application"' (MPA) Prinzip basieren und bei jeder Interaktion eine neue HTML-Seite vom Server anfordern, wurde EduShelf als "`Single Page Application"' (SPA) konzipiert. In einer SPA wird lediglich beim ersten Aufruf eine einzige HTML-Datei (\texttt{index.html}) geladen. Alle weiteren Interaktionen finden clientseitig statt, indem JavaScript (in diesem Fall React) den DOM (Document Object Model) dynamisch manipuliert.
+
+Die Vorteile dieses Architekturansatzes sind vielfältig:
 \begin{itemize}
-    \item \textbf{components}: Beinhaltet die wiederverwendbaren UI-Komponenten (z. B. \texttt{Chat.jsx}, \texttt{Quiz.jsx}).
-    \item \textbf{services}: Enthält die Logik für die Kommunikation mit dem Backend (z. B. \texttt{api.js}).
-    \item \textbf{assets}: Speichert statische Ressourcen wie Bilder und Stylesheets.
+    \item \textbf{Performance}: Da nach dem initialen Laden nur noch Rohdaten (im JSON-Format) und keine vollständigen HTML-Seiten mehr übertragen werden müssen, reduziert sich das Datenvolumen signifikant.
+    \item \textbf{Benutzererfahrung (UX)}: Übergänge zwischen verschiedenen Ansichten erfolgen nahezu instantan, ohne das typische "Flackern" eines Seiten-Reloads. Dies vermittelt das Gefühl einer nativen Desktop-Anwendung.
+    \item \textbf{Entkopplung}: Durch die strikte Trennung von Frontend und Backend über eine REST-API können beide Systeme unabhängig voneinander entwickelt, getestet und skaliert werden.
 \end{itemize}
 
-\subsection{Technologie-Stack}
+\section{Technologie-Stack}
+Die Auswahl der Technologien erfolgte unter den Gesichtspunkten der Modernität, Verbreitung (Community-Support) und Wartbarkeit.
 
-Für die Umsetzung des Frontends wurden folgende Technologien gewählt, um Wartbarkeit, Performance und Skalierbarkeit zu gewährleisten:
+\subsection{React (v19)}
+React ist eine von Facebook (Meta) entwickelte JavaScript-Bibliothek zur Erstellung von Benutzeroberflächen. Im Kern basiert React auf Komponenten, die wiederverwendbare Bausteine der UI darstellen.
+Ein Schlüsselelement von React ist das "`Virtual DOM"'. Anstatt bei jeder Änderung direkt das langsame, reale DOM des Browsers zu manipulieren, erstellt React eine virtuelle Kopie im Speicher. Bei Zustandsänderungen vergleicht React den neuen virtuellen Baum mit dem alten (Diffing-Algorithmus) und berechnet die effizienteste Methode, um das reale DOM zu aktualisieren.
 
-\begin{itemize}
-    \item \textbf{React}: Eine von Facebook entwickelte JavaScript-Bibliothek zur Erstellung von Benutzeroberflächen. Durch das Konzept des "`Virtual DOM"' werden DOM-Manipulationen minimiert, was die Rendering-Performance signifikant erhöht. React ermöglicht zudem eine strikte Trennung von Logik und Darstellung durch Komponenten.
-    \item \textbf{Vite}: Ein modernes Build-Tool, das als Ersatz für Webpack dient. Es nutzt native ES-Module im Browser für extrem kurze Startzeiten des Entwicklungsservers und bietet optimierte Builds für die Produktion.
-    \item \textbf{React Router}: Diese Bibliothek übernimmt das client-seitige Routing. Sie ermöglicht die Navigation zwischen verschiedenen Ansichten (z. B. \texttt{/files}, \texttt{/chat}), ohne dass die Seite neu geladen werden muss.
-    \item \textbf{Axios}: Ein Promise-basierter HTTP-Client, der für die asynchrone Kommunikation mit der REST-API des Backends verwendet wird. Er vereinfacht das Senden von Anfragen und das Abfangen von Antworten (Interceptors).
-\end{itemize}
+In EduShelf wird ausschließlich die "`Functional Component"' Syntax in Verbindung mit "`Hooks"' verwendet. Hooks wie \texttt{useState} oder \texttt{useEffect} ermöglichen es, Zustand und Seiteneffekte in funktionalen Komponenten zu nutzen, ohne Klassen schreiben zu müssen. Dies führt zu kompakterem und verständlicherem Code.
 
-\subsection{Benutzeroberfläche und UX}
+\subsection{Vite}
+Vite (französisch für "schnell") ist das Build-Tool der Wahl. Es löst ältere Tools wie Webpack ab, indem es während der Entwicklung native ES-Module im Browser nutzt. Das bedeutet, dass der Browser die Importe selbst auflöst, anstatt dass der gesamte Code vor jedem Start gebündelt werden muss. Dies führt zu extrem schnellen Server-Startzeiten, selbst bei wachsender Projektgröße.
+Für die Produktion nutzt Vite im Hintergrund \texttt{Rollup}, um hochoptimierte, minifizierte Bundles zu erstellen.
 
-Das Design von EduShelf legt Wert auf Intuitivität und Responsivität. Die Anwendung passt sich dank CSS-Media-Queries dynamisch an verschiedene Bildschirmgrößen an.
+\subsection{React Router (v7)}
+Da eine SPA physisch nur aus einer Seite besteht, muss die Navigation simuliert werden. \texttt{React Router} überwacht die URL im Browser und rendert basierend auf definierten Regeln die entsprechenden Komponenten. Dies ermöglicht Deep-Linking (Lesezeichen auf Unterseiten) und die Verwendung der Browser-Historie (Zurück-Button), obwohl die Seite nie neu geladen wird.
 
-Ein zentrales Feature ist die Unterstützung von Themes (Hell/Dunkel). Dies wird technisch über ein \texttt{data-theme}-Attribut am \texttt{document.documentElement} realisiert. Der Zustand wird im \texttt{localStorage} des Browsers persistiert, sodass die Einstellung bei einem erneuten Besuch erhalten bleibt:
+\section{Projektsetup und Konfiguration}
+Das Projekt wurde mit dem Befehl \texttt{npm create vite@latest} initialisiert. Die Konfiguration befindet sich in der Datei \texttt{vite.config.js}.
 
-\begin{lstlisting}[language=JavaScript, caption={Theme-Initialisierung in App.jsx}]
-useEffect(() => {
-  const currentTheme = localStorage.getItem('theme');
-  if (currentTheme === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
-  } else {
-    document.documentElement.removeAttribute('data-theme');
+\begin{lstlisting}[language=JavaScript, caption={Auszug aus der Vite-Konfiguration}]
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: true,
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_TARGET || 'http://localhost:5015',
+        changeOrigin: true
+      }
+    }
   }
-}, []);
+})
 \end{lstlisting}
 
-\subsection{Kernkomponenten und Implementierung}
+Ein kritischer Aspekt dieser Konfiguration ist der \textbf{Proxy}: Um während der Entwicklung Cross-Origin Resource Sharing (CORS) Probleme zu vermeiden, leitet der Vite-Entwicklungsserver alle Anfragen, die mit \texttt{/api} beginnen, an das Backend (Port 5015) weiter. Die Option \texttt{changeOrigin: true} manipuliert dabei den Host-Header der Anfrage so, als käme sie direkt vom Backend-Server selbst.
 
-Die Anwendung gliedert sich in mehrere funktionale Hauptbereiche, die als React-Komponenten implementiert sind.
-
-\subsubsection{Authentifizierung und Autorisierung}
-Die Sicherheit der Anwendung wird durch eine Token-basierte Authentifizierung gewährleistet. Die Komponenten \texttt{Login.jsx} und \texttt{Register.jsx} ermöglichen den Zugang. Der aktuelle Benutzerstatus wird zentral in der \texttt{App.jsx} verwaltet. Beim Start der Anwendung wird die Route \texttt{/Users/me} aufgerufen, um eine bestehende Session zu validieren.
-Zusätzlich werden rollenbasierte Zugriffe (RBAC) umgesetzt. Beispielsweise ist das \texttt{AdminPanel} nur für Benutzer erreichbar, die die Rolle "`Admin"' besitzen. Versucht ein nicht-autorisierter Nutzer, auf geschützte Routen zuzugreifen, wird er automatisch weitergeleitet.
-
-\subsubsection{Dateiverwaltung (Files)}
-Die Komponente \texttt{Files.jsx} stellt die Schnittstelle zum Dokumentenmanagement dar. Dateien können per Upload-Dialog zum Backend übertragen werden. Eine Besonderheit ist die Integration des \texttt{DocxViewer}, der eine Vorschau von Word-Dokumenten direkt im Browser ermöglicht, ohne dass diese heruntergeladen werden müssen.
-
-\subsubsection{Lernmodule: Quiz und Flashcards}
-Ein Kernaspekt von EduShelf ist das interaktive Lernen.
+Die Projektstruktur im Order \texttt{src} folgt einer funktionalen Aufteilung:
 \begin{itemize}
-    \item \textbf{Quiz}: Ermöglicht das Abfragen von Wissen in einem strukturierten Format. Die Logik für die Fragenabfolge und Auswertung ist in \texttt{Quiz.jsx} implementiert.
-    \item \textbf{Flashcards}: Implementiert ein Karteikarten-System. Die Komponente \texttt{Flashcards.jsx} verwaltet den Status der Karten (Vorderseite/Rückseite) und den Lernfortschritt.
+    \item \texttt{components/}: Beinhaltet UI-Komponenten (z.B. \texttt{Chat.jsx}, \texttt{Quiz.jsx}). Jede Komponente hat idealerweise ihre eigene CSS-Datei (z.B. \texttt{Chat.css}) für isoliertes Styling.
+    \item \texttt{services/}: Kapselt die gesamte API-Kommunikation.
+    \item \texttt{assets/}: Für statische Dateien.
 \end{itemize}
 
-\subsubsection{Kommunikation (Chat)}
-Die \texttt{Chat}-Komponente ermöglicht den Austausch von Nachrichten. Das Layout ist zweigeteilt in eine Nachrichtenliste und ein Eingabefeld. Die Nachrichten werden dynamisch gerendert, wobei zwischen eigenen Nachrichten und Empfangenen visuell unterschieden wird.
+\section{Softwarearchitektur und Datenfluss}
+\subsection{Unidirektionaler Datenfluss}
+React erzwingt einen unidirektionalen Datenfluss ("One-Way Binding"). Daten fließen immer von Eltern- zu Kind-Komponenten mittels sogenannter "`Props"'. Um Daten von einem Kind zurück zum Elternteil zu senden (z.B. ein Formular-Submit im \texttt{QuizModal}, der die Liste im \texttt{Quiz} aktualisiert), übergibt die Elternkomponente eine Callback-Funktion an das Kind.
 
-\subsection{Datenfluss und State Management}
+\subsection{Routing-Strategie}
+Das Routing in \texttt{App.jsx} definiert die Skelettstruktur der Anwendung. Es wird zwischen öffentlichen Routen (Login, Register) und privaten, geschützten Routen unterschieden.
 
-Der Datenfluss in React ist unidirektional (von Eltern- zu Kind-Komponenten). Für den lokalen Zustand der Komponenten (z. B. Formulareingaben, Sichtbarkeit von Modals) wird der \texttt{useState}-Hook verwendet.
-Seiteneffekte, wie das Laden von Daten beim Komponentenstart, werden mit dem \texttt{useEffect}-Hook gesteuert.
+\begin{lstlisting}[language=JavaScript, caption={Routing-Struktur in App.jsx}]
+<Routes>
+  {/* Oeffentliche Routen */}
+  <Route path="/login" element={<Login setLoggedInUser={setLoggedInUser} />} />
+  
+  {/* Geschuetzte Routen - erfordern Login */}
+  <Route path="/*" element={
+    loggedInUser ? (
+      <Routes>
+        <Route element={<MainLayout handleLogout={handleLogout} user={loggedInUser} />}>
+          <Route index element={<MainDashboard />} />
+          <Route path="files" element={<Files />} />
+          <Route path="chat" element={<Chat />} />
+          {/* ... weitere Routen ... */}
+        </Route>
+      </Routes>
+    ) : (
+      <Navigate to="/login" />
+    )
+  } />
+</Routes>
+\end{lstlisting}
 
-Die Kommunikation mit dem Server ist in der Datei \texttt{src/services/api.js} zentralisiert. Dies fördert die Wartbarkeit, da API-Endpunkte und Konfigurationen (wie Basis-URL oder Header) nur an einer Stelle definiert sind. Fehlerbehandlung (z. B. bei Verbindungsabbruch oder 401 Unauthorized Fehlern) kann so konsistent für die gesamte Anwendung umgesetzt werden.
+Die Verwendung von verschachtelten Routen (\texttt{<Route element={<MainLayout ...>}>}) erlaubt es, das Grundgerüst (Header, Navigation) einmalig zu definieren. Die Kind-Komponenten werden dann an der Stelle des \texttt{<Outlet />} Platzhalters in \texttt{MainLayout.jsx} gerendert.
+
+\section{Datenschicht und API-Integration}
+Die gesamte Kommunikation mit dem Backend wird über das Modul \texttt{src/services/api.js} abgewickelt. Dieses Muster, oft als "Service Layer Pattern" bezeichnet, hat den Vorteil, dass Komponenten keine Details über URLs oder HTTP-Header kennen müssen.
+
+\subsection{API-Wrapper}
+Das \texttt{api}-Objekt fungiert als Wrapper um die native \texttt{fetch}-API. Es implementiert globale Verhaltensweisen:
+
+\begin{enumerate}
+    \item \textbf{Basis-URL}: Alle Anfragen sind relativ zu einer zentral konfigurierten Basis-URL.
+    \item \textbf{Credentials}: Durch \texttt{credentials: 'include'} sendet der Browser automatisch Cookies (für die HttpOnly Session-Cookies) mit jeder Anfrage mit.
+    \item \textbf{Content-Type Handling}: JSON-Payloads werden automatisch serialisiert und der korrekte Header gesetzt.
+    \item \textbf{Zentrale Fehlerbehandlung}: Antworten mit einem HTTP-Statuscode außerhalb des 200er-Bereichs lösen automatisch eine Exception aus. Dies vereinfacht die Fehlerbehandlung in den Komponenten, da \texttt{try/catch}-Blöcke verwendet werden können.
+\end{enumerate}
+
+\begin{lstlisting}[language=JavaScript, caption={Generische GET-Methode im API-Service}]
+get: async (endpoint, options = {}) => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    credentials: 'include',
+    ...options,
+  });
+  if (!response.ok) {
+    // Fehlerbehandlung: Logging und Werfen eines Errors
+    throw new Error(`API Error: ${response.status}`);
+  }
+  return await response.json();
+},
+\end{lstlisting}
+
+Zusätzlich stellt der Service spezifische Methoden bereit, die die Geschäftslogik abbilden, beispielsweise \texttt{createChatSession}, \texttt{updateQuiz} oder \texttt{uploadDocument}. Letzteres nutzt \texttt{FormData}, um Datei-Uploads (multipart/form-data) zu ermöglichen.
+
+\section{Implementierung der Kernkomponenten}
+
+\subsection{Authentifizierungssystem}
+Das Login-System (\texttt{Login.jsx}) ist der erste Berührungspunkt für den Nutzer. Das Formular sendet E-Mail und Passwort an den Endpunkt \texttt{/Users/login}.
+Bei Erfolg antwortet das Server-Backend mit einem Session-Cookie (HttpOnly) und den Benutzerdaten.
+
+Das Besondere an der Implementierung ist das sofortige Abrufen der Benutzerrollen nach dem Login. Da die Rollen ("Admin", "User") bestimmen, welche Menüpunkte sichtbar sind, führt das Frontend einen sekundären Aufruf an \texttt{/Users/\{id\}/roles} durch.
+Das kombinierte Benutzerobjekt wird anschließend im \texttt{localStorage} gespeichert. Dies dient nicht der Sicherheit (da der localStorage manipuliert werden kann), sondern lediglich der Persistenz des UI-Zustands (z. B. "Ist der Nutzer eingeloggt?"), bis die echte Session beim Neuladen durch \texttt{/Users/me} validiert wird.
+
+\subsection{Dateimanagement (Files.jsx)}
+Die Komponente \texttt{Files.jsx} realisiert ein Dokumentenmanagementsystem. 
+\textbf{Funktionsweise:}
+\begin{itemize}
+    \item Beim Laden der Komponente ruft \texttt{useEffect} die Liste aller Dokumente ab.
+    \item Ein Suchfeld filtert die lokale Liste in Echtzeit (\texttt{filteredFiles.filter(...)}).
+    \item Das Kontextmenü (Drei-Punkte-Menü) wird über den Zustand \texttt{activeMenuId} gesteuert, sodass immer nur ein Menü gleichzeitig offen sein kann.
+\end{itemize}
+
+Der Upload-Prozess wird über ein modales Fenster (\texttt{UploadDialog.jsx}) realisiert. Hier wählt der Nutzer eine Datei aus, welche zusammen mit der User-ID an den Server gesendet wird.
+
+\subsection{Interaktives Lernen: Das Quiz-Modul}
+Das Quiz-System ist eine der komplexesten Komponenten des Frontends. Es besteht aus der Übersichtsliste (\texttt{Quiz.jsx}) und dem Editor/Player (\texttt{QuizModal.jsx}, \texttt{Quiz.jsx} Logik).
+
+\subsubsection{Datenstruktur}
+Ein Quiz besteht aus einem Titel und einer Liste von Fragen. Jede Frage enthält wiederum eine Liste von Antworten, wobei eine oder mehrere als korrekt markiert sind. Diese hierarchische Struktur wird im State als verschachteltes Array objekt abgebildet.
+
+\subsubsection{Ablauf eines Quiz}
+Der Zustand während eines laufenden Quiz wird durch mehrere State-Variablen gesteuert:
+\begin{itemize}
+    \item \texttt{currentQuestionIndex}: Index der aktuell angezeigten Frage.
+    \item \texttt{score}: Anzahl der bisher korrekt beantworteten Fragen.
+    \item \texttt{selectedAnswerId}: Um eine Mehrfachauswahl zu verhindern und visuelles Feedback zu geben.
+    \item \texttt{showScore}: Ein Boolean-Flag, das nach der letzten Frage auf \texttt{true} gesetzt wird, um die Ergebnisanzeige zu rendern.
+\end{itemize}
+
+Das visuelle Feedback (Grün für richtig, Rot für falsch) wird durch CSS-Klassen gesteuert, die dynamisch basierend auf der Korrektheit der Antwort zugewiesen werden.
+
+\subsection{Flashcards (Lernkarten)}
+Die \texttt{Flashcards.jsx} Komponente nutzt CSS3 3D-Transformationen, um einen realistischen Umdreh-Effekt zu erzielen.
+
+\begin{lstlisting}[language=CSS, caption={CSS für den Flip-Effekt}]
+.flashcard-scene {
+  perspective: 1000px; /* Gibt dem 3D-Raum Tiefe */
+}
+.flashcard-container {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.flashcard-scene.flipped .flashcard-container {
+  transform: rotateY(180deg);
+}
+\end{lstlisting}
+
+Der Status, welche Karte gerade umgedreht ist, wird in einem \texttt{Set} (\texttt{flippedCards}) gespeichert. Dies ermöglicht es, mehrere Karten gleichzeitig umzudrehen, im Gegensatz zu einer simplen ID-Variable.
+
+\subsection{Chat und KI-Integration}
+Der Chat (\texttt{Chat.jsx}) bietet eine Schnittstelle zu einem LLM (Large Language Model). 
+Wichtige Implementierungsdetails:
+\begin{itemize}
+    \item \textbf{Streaming vs. Polling}: Die aktuelle Implementierung wartet auf die vollständige Antwort des Servers (Request/Response Pattern). Während des Wartens wird ein "Thinking Indicator" (animierte Punkte) eingeblendet (\texttt{isLoading} State).
+    \item \textbf{Markdown}: Da KI-Modelle oft strukturierten Text (Codeblöcke, Listen) ausgeben, wird \texttt{react-markdown} in Kombination mit \texttt{rehype-highlight} verwendet. Dies konvertiert die Markdown-Antwort sicher in HTML und bietet Syntax-Highlighting für Code.
+    \item \textbf{Multimodaler Input}: Benutzer können Bilder hochladen. Diese werden lokal mittels \texttt{URL.createObjectURL()} sofort in der Vorschau angezeigt, bevor sie als Blob an den Server gesendet werden.
+\end{itemize}
+
+\subsection{Admin Panel und RBAC}
+Das \texttt{AdminPanel.jsx} ist das Kontrollzentrum für Systemadministratoren. Der Zugriff auf diese Route wird auf zwei Ebenen geschützt:
+1. \textbf{Client-Side Routing}: In \texttt{App.jsx} wird geprüft, ob das Benutzerobjekt die Rolle "Admin" enthält. Falls nicht, wird der Nutzer sofort umgeleitet.
+2. \textbf{Server-Side API}: Selbst wenn ein Nutzer die UI umgehen würde, lehnt das Backend Anfragen an admin-spezifische Endpunkte ab.
+
+Das Panel ermöglicht CRUD-Operationen (Create, Read, Update, Delete) für Benutzer. Besonders hervorzuheben ist die verschachtelte Datenansicht: Klickt ein Admin auf einen Benutzer, werden dessen Dateien asynchron nachgeladen (\texttt{fetchUserFiles}) und in einer Detailansicht dargestellt. Dies vermeidet das Laden unnötiger Daten für die Hauptübersichtstabelle.
+
+\section{Benutzeroberfläche und Design (UI/UX)}
+\subsection{Styling-Strategie}
+Das Projekt verwendet natives CSS mit CSS-Variablen (Custom Properties) für das Theming. Dies bietet maximale Flexibilität ohne den Overhead großer Frameworks.
+Globale Styles sind in \texttt{index.css} definiert, während komponentenspezifische Styles (z. B. \texttt{Chat.css}) lokal importiert werden.
+
+\subsection{Dark Mode Implementierung}
+Der Dunkelmodus ist nicht nur eine kosmetische Spielerei, sondern eine zentrale Anforderung. Er wurde über CSS-Variablen realisiert, die je nach Attribut am HTML-Tag ihre Werte ändern.
+
+\begin{lstlisting}[language=CSS, caption={Theme-Switching mittels CSS-Variablen}]
+:root {
+  /* Standard (Dark Mode) */
+  --primary-color: #222831;
+  --text-color: #FFFFFF;
+}
+
+[data-theme='light'] {
+  /* Light Mode Overrides */
+  --primary-color: #FFFFFF;
+  --text-color: #222831;
+}
+
+body {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+\end{lstlisting}
+
+Ein \texttt{useEffect}-Hook in der \texttt{App.jsx} prüft beim Start den \texttt{localStorage}, ob der Nutzer eine Präferenz gespeichert hat, und setzt das Attribut entsprechend. Dies verhindert den "Flash of Incorrect Theme" (FOUC).
+
+\section{Detaillierte Analyse ausgewählter Module}
+Um die technische Tiefe der Implementierung zu verdeutlichen, werden im Folgenden drei Kernmodule detailliert anhand ihres Quellcodes analysiert.
+
+\subsection{Quiz-Editor Logik (QuizModal.jsx)}
+Der Quiz-Editor ermöglicht das Erstellen und Bearbeiten von verschachtelten Datenstrukturen (Quiz -> Fragen -> Antworten). Die Herausforderung hierbei ist das State-Management einer mehrdimensionalen Struktur.
+
+\subsubsection{Zustandsverwaltung}
+Der State \texttt{questions} ist ein Array von Objekten. Jedes Objekt repräsentiert eine Frage und enthält wiederum ein Array von \texttt{answers}.
+
+\begin{lstlisting}[language=JavaScript, caption={Initialer State im QuizModal}]
+const [questions, setQuestions] = useState([
+  { 
+    text: '', 
+    answers: [{ text: '', isCorrect: false }] 
+  }
+]);
+\end{lstlisting}
+
+\subsubsection{Dynamische Formular-Manipulation}
+Beim Ändern eines Antworttextes darf der State nicht direkt mutiert werden. Stattdessen muss eine tiefe Kopie (Deep Copy) oder zumindest eine flache Kopie der betroffenen Ebenen erstellt werden.
+Die Funktion \texttt{handleAnswerChange} demonstriert das Prinzip der Immutability in React:
+
+\begin{lstlisting}[language=JavaScript, caption={Update-Logik für verschachtelte Antworten}]
+const handleAnswerChange = (questionIndex, answerIndex, event) => {
+    // 1. Kopie des Fragen-Arrays
+    const newQuestions = [...questions];
+    // 2. Direkter Zugriff auf die Antwort (Referenz bleibt erhalten, aber Inhalt wird ueberschrieben)
+    // Hinweis: Fuer saubere Immutability muesste auch answers kopiert werden.
+    // In React funktioniert dies jedoch oft, solange das Top-Level-Array neu ist.
+    newQuestions[questionIndex].answers[answerIndex].text = event.target.value;
+    // 3. Setzen des neuen States loest Re-Render aus
+    setQuestions(newQuestions);
+};
+\end{lstlisting}
+
+\subsubsection{Validierung und Speichern}
+Beim Speichern (\texttt{handleSubmit}) werden die Daten an die API gesendet. Hierbei wird unterschieden, ob ein neues Quiz erstellt (\texttt{POST}) oder ein bestehendes bearbeitet (\texttt{PUT}) wird.
+
+\subsection{Flashcards: 3D-Interaktion und State}
+Die Komponente \texttt{Flashcards.jsx} verwendet eine interessante Datenstruktur für den Zustand der umgedrehten Karten. Anstatt für jede Karte einen Boolean im Objekt zu speichern (was eine Änderung des Datenmodells erfordern würde), wird ein \texttt{Set} verwendet, das die IDs der umgedrehten Karten speichert.
+
+\begin{lstlisting}[language=JavaScript, caption={Nutzung eines Sets fuer UI-State}]
+const [flippedCards, setFlippedCards] = useState(new Set());
+
+const flipCard = (id) => {
+    setFlippedCards(prevFlippedCards => {
+        const newFlippedCards = new Set(prevFlippedCards);
+        if (newFlippedCards.has(id)) {
+            newFlippedCards.delete(id); // Karte umdrehen (zurueck)
+        } else {
+            newFlippedCards.add(id); // Karte aufdecken
+        }
+        return newFlippedCards;
+    });
+};
+\end{lstlisting}
+
+Diese Methode ist performant und trennt den UI-Zustand (ist die Karte gedreht?) sauber von den eigentlichen Geschäftsdaten (Frage/Antwort). Beim Rendern wird \texttt{flippedCards.has(card.id)} geprüft, um die CSS-Klasse \texttt{.flipped} bedingt hinzuzufügen.
+
+\subsection{Admin Panel: Kaskadierende Datenabfragen}
+Im \texttt{AdminPanel.jsx} muss beim Klick auf einen Benutzer dessen Dateiliste geladen werden. Dies ist ein klassisches "Master-Detail"-Szenario.
+Um unnötigen Netzwerktraffic zu vermeiden, werden die Dateien nicht initial für alle Benutzer geladen ("Lazy Loading").
+
+\begin{lstlisting}[language=JavaScript, caption={Asynchrones Laden von Detaildaten}]
+const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setError('');
+    setEditUserMode(false);
+    // Erst beim Klick werden die Dateien nachgeladen
+    fetchUserFiles(user.userId);
+};
+
+const fetchUserFiles = async (userId) => {
+    try {
+        setLoading(true); // Ladeindikator an
+        const files = await api.get(`/Users/${userId}/documents`);
+        setUserFiles(files);
+    } catch (err) {
+        setError('Could not load user files.');
+    } finally {
+        setLoading(false); // Ladeindikator aus, egal ob Erfolg oder Fehler
+    }
+};
+\end{lstlisting}
+
+Diese Implementierung sorgt für eine schnelle initiale Ladezeit der Benutzertabelle, da die (potenziell große) Menge an Dateimetadaten erst bei Bedarf ("On-Demand") abgerufen wird.
+
+\section{Deployment und Betrieb}
+Für den produktiven Einsatz wird die Frontend-Anwendung containerisiert. Dies gewährleistet eine konsistente Laufzeitumgebung unabhängig vom Host-System.
+
+\subsection{Docker-Containerisierung}
+Es wird ein "`Multi-Stage Build"' Prozess verwendet, um das finale Image so klein wie möglich zu halten.
+\begin{enumerate}
+    \item \textbf{Build-Stage}: Ein Node.js Image wird verwendet, um die Abhängigkeiten zu installieren und den Build-Prozess (\texttt{npm run build}) auszuführen. Das Ergebnis ist ein Ordner \texttt{dist}, der nur die statischen Dateien (HTML, CSS, JS) enthält.
+    \item \textbf{Production-Stage}: Ein leichtgewichtiger Nginx-Webserver wird als Basis genommen. Die Dateien aus der Build-Stage werden in das Verzeichnis \texttt{/usr/share/nginx/html} kopiert.
+\end{enumerate}
+
+\begin{lstlisting}[language=bash, caption={Dockerfile für das Frontend}]
+# Stage 1: Build
+FROM node:20-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Serve
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+\end{lstlisting}
+
+\subsection{Nginx Konfiguration}
+Da es sich um eine SPA handelt, muss der Webserver so konfiguriert werden, dass er für alle Routen (z.B. \texttt{/files}, \texttt{/chat}) immer die \texttt{index.html} ausliefert ("Fallback"). Andernfalls würde ein direkter Aufruf einer Unterseite zu einem 404-Fehler führen, da diese Dateien physisch nicht existieren.
+
+\section{Herausforderungen und Lösungen}
+Während der Entwicklung traten verschiedene technische Herausforderungen auf, die spezifische Lösungen erforderten.
+
+\subsection{Synchronisation des UI-Status}
+\textbf{Problem}: Wenn ein Nutzer ein Quiz bearbeitet, muss die Liste der Quizzes im Hintergrund aktuell bleiben.
+\textbf{Lösung}: Callback-Funktionen (z.B. \texttt{onQuizSaved}) werden an die Modal-Komponenten übergeben. Nach erfolgreicher API-Antwort ruft das Modal diese Funktion auf, und die Elternkomponente aktualisiert ihren lokalen State, ohne einen erneuten Fetch auszuführen. Optimistic UI Updates wurden in Betracht gezogen, aber zugunsten der Datenkonsistenz verworfen.
+
+\subsection{Performance bei großen Dateilisten}
+\textbf{Problem}: Das Rendern von hunderten Datei-Icons führte zu Verzögerungen.
+\textbf{Lösung}: Durch die Pagination im Backend (noch zu implementieren) und Virtualisierung der Listen im Frontend (Rendering nur der sichtbaren Elemente) lässt sich dies optimieren. Aktuell wurde die Performance durch das Entfernen unnötiger Re-Renders mittels \texttt{React.memo} und \texttt{useCallback} verbessert.
+
+\section{Ausblick und Erweiterungsmöglichkeiten}
+Das aktuelle Frontend bietet eine solide Basis, kann jedoch in Zukunft erweitert werden:
+\begin{itemize}
+    \item \textbf{Automatisierte Tests}: Integration von \texttt{Vitest} für Unit-Tests der Logik und \texttt{Cypress} für End-to-End Tests der Benutzeroberfläche.
+    \item \textbf{PWA (Progressive Web App)}: Durch Hinzufügen eines Service Workers und eines Web App Manifests könnte die Anwendung offline-fähig gemacht und auf Mobilgeräten installiert werden.
+    \item \textbf{Internationalisierung (i18n)}: Nutzung von Bibliotheken wie \texttt{react-i18next}, um die Oberfläche in mehreren Sprachen anzubieten.
+\end{itemize}
+
+\section{Fazit}
+Die Frontend-Implementierung von EduShelf demonstriert die Leistungsfähigkeit moderner Webtechnologien. Durch den Einsatz von React und einer komponentenbasierte Architektur entstand eine wartbare, skalierbare und benutzerfreundliche Anwendung. Die Integration komplexer Features wie Real-Time-Editoren, KI-Chat und interaktive Lernmodule in einer Single Page Application zeigt, dass Webanwendungen nativen Programmen in nichts nachstehen müssen.
