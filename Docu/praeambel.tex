@@ -19,6 +19,7 @@
 \usepackage[T1]{fontenc} 			% europäische Schrifttypen, wichtig für Copy&Paste aus pdf
 \usepackage{textcomp}				% Sonderzeichen wie in l2kurz , S.45
 \usepackage{color}
+\usepackage{graphicx}
 
 \usepackage[austrian]{babel}		% Abteilungen usw. \usepackage{german} beisst sich mit gnuplottex
 \usepackage[style=trad-unsrt, backend=biber]{biblatex}
@@ -122,6 +123,37 @@
 \fancypagestyle{SchuelerD}[alle]{
 	\fancyfoot[C]{\schuelerD}
 }
+
+% Definition für JavaScript
+% JavaScript Definition
+\lstdefinelanguage{JavaScript}{
+	keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with, as, async, await, const, let, export, import, default, from},
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]',
+	morestring=[b]",
+	ndkeywords={class, export, boolean, throw, implements, import, this},
+	keywordstyle=\color{blue}\bfseries,
+	ndkeywordstyle=\color{darkgray}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+}
+
+% CSS Definition
+\lstdefinelanguage{CSS}{
+	keywords={color, background-color, font-size, perspective, transition, transform, transform-style, rotateY, body},
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]',
+	morestring=[b]",
+	keywordstyle=\color{blue},
+	commentstyle=\color{darkgreen},
+	stringstyle=\color{red},
+}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
 
 \renewcommand{\chaptermark}[1]{\markright{\thechapter\ #1}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
