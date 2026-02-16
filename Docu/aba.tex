@@ -1,5 +1,6 @@
+%!TeX root = main.tex
 \section*{Thema}
-TeamTrackr
+EduShelf
 
 \section*{Verlauf}
 \begin{itemize}
@@ -48,49 +49,38 @@ TeamTrackr
     \toprule
     \textbf{Schüler/in} & \textbf{Individuelle Themenstellung} & \textbf{Abteilung} \\
     \midrule
-    Stefan Bayer & Android-Development & IT \\
-    Kurt Broneder & Web-Development & IT \\
-    Suad Demiri & iOS-Development & IT \\
-    Lorenz Geyser & Backend-Development & IT \\
+    Elias Welt & Frontend, Frontend/Backend Schnittstelle, KI Unterstützung & IT \\
+    Phillip Rubak & Backend, KI & IT \\
     \bottomrule
 \end{longtable}
 
 
 
 \section*{Ausgangslage}
-Derzeit existiert keine Applikation, die es ermöglicht, Organisationen, Projekte und deren Teams effizient und benutzerfreundlich zu managen. Darüber hinaus fehlt eine Lösung, die alle essenziellen Tools integriert, um ein solches effizientes und benutzerfreundliches Management zu gewährleisten.
+Derzeit mangelt es an einer zentralisierten Plattform, die es ermöglicht, Bildungsunterlagen effizient zu verwalten und interaktiv mit diesen zu arbeiten. Studierende und Lehrende haben oft Schwierigkeiten, spezifische Informationen in großen Mengen von Dokumenten schnell zu finden. Es fehlt eine integrierte Lösung, die Dokumentenmanagement mit moderner KI-gestützter Analyse verbindet.
 
-\section*{Untersuchungsanliegen der individuellen Themenstellungen}
-Die Anliegen der Themenstellungen umfassen die Entwicklung einer iOS-, Android-, Desktop- und Web-App sowie eines Backends.  
-Die nativen Applikationen sollen folgende Kernfeatures beinhalten:
+Die Anliegen der Themenstellungen umfassen die Entwicklung einer Webplattform sowie eines leistungsfähigen Backends inklusive AI-Server-Anbindung.
+Die Webapplikation soll folgende Kernfeatures beinhalten:
 \begin{itemize}
-    \item Login und Registrierung (Authentifizierung)
-    \item Kalender
-    \item Eine Chat-Möglichkeit inklusive AI-unterstütztem Chatbot
-    \item Erstellung und Verwaltung von Teams
-    \item Budgetverwaltung und Zeitverwaltung von Projekten
+    \item Dokumentenmanagement (Upload, Organisation)
+    \item Interaktiver Chat mit Dokumenten (RAG - Retrieval Augmented Generation)
+    \item Benutzerfreundliches Interface für effizientes Lernen
 \end{itemize}
-Die Webapplikation soll dieselben bzw. ähnlich implementierten Features haben.  
-Das Backend soll alle Anforderungen der jeweiligen Frontends verwalten, Daten in einer Datenbank speichern und Anfragen verarbeiten.
+Das Backend soll die Dokumentenverarbeitung steuern, die KI-Modelle anbinden und die Datenhaltung übernehmen.
 
 \section*{Zielsetzung}
-Unsere App bietet eine nahtlose Lösung für Teamkommunikation und Aufgabenmanagement.  
-Mit leistungsstarken Funktionen unterstützt sie Teams und Organisationen dabei, effizient zusammenzuarbeiten und ihre Projekte erfolgreich zu verfolgen.  
-Durch die Integration von Kommunikation und Projektverfolgung löst unsere App das Problem der Fragmentierung und fördert eine reibungslose Zusammenarbeit.
+EduShelf bietet eine intuitive Plattform zur Verwaltung von Bildungsressourcen.
+Durch die Integration von KI können Nutzer direkt mit ihren Unterlagen kommunizieren, Fragen stellen und Zusammenfassungen erhalten.
+Dies fördert ein tieferes Verständnis der Lerninhalte und spart Zeit bei der Informationssuche.
 
-\section*{Geplantes Ergebnis der individuellen Themenstellungen}
-Das geplante Ergebnis umfasst die fertigen iOS-, Android-, Desktop- und Web-Anwendungen sowie ein Backend.  
-Die nativen Applikationen beinhalten folgende Kernfunktionen:
+Das geplante Ergebnis ist eine voll funktionsfähige Webplattform "EduShelf".
+Die Anwendung ermöglicht:
 \begin{itemize}
-    \item Benutzer-Login und -Registrierung (Authentifizierung)
-    \item Kalender
-    \item Chat-Funktion mit einem KI-gestützten Chatbot
-    \item Erstellung und Verwaltung von Teams und deren Projekten
-    \item Budget- und Zeitmanagement innerhalb der Teams
+    \item Upload und Indizierung von PDF- und Textdokumenten
+    \item KI-basierte Beantwortung von Fragen zu den Inhalten
+    \item Verwaltung der hochgeladenen Dokumente
 \end{itemize}
-Die Webanwendung wird ähnliche oder identische Funktionen haben.  
-Das Backend wird so entwickelt, dass es die Anforderungen der jeweiligen Frontends erfüllt, Daten in einer Datenbank speichert und diese für verschiedene Anfragen der Applikationen verfügbar macht.  
-Des Weiteren gewährleisten die Anwendungen eine benutzerfreundliche Bedienung.
+Das System besteht aus einem Frontend (React), einem Backend (.NET) und einem KI-Server (Python/Ollama), die nahtlos zusammenarbeiten.
 
 \section*{Meilensteine}
 \begin{longtable}{ll}
@@ -105,4 +95,4 @@ Des Weiteren gewährleisten die Anwendungen eine benutzerfreundliche Bedienung.
     \bottomrule
 \end{longtable}
 
-\includepdf[pages=1]{ABA_Rechtliche_Erklärung-1.pdf}
+\includepdf[pages=1]{ABA_Rechtliche_Erklaerung-1.pdf}
