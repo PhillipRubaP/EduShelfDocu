@@ -5,12 +5,12 @@ Die technische Umsetzung des EduShelf-Backends stellt das fundamentale Gerüst d
 In den folgenden Abschnitten wird die Architektur, der Technologie-Stack, das Datenmodell sowie die spezifischen Implementierungsdetails der Kernkomponenten detailliert erläutert.
 
 \section{Systemarchitektur}
-Die Architektur des Systems folgt dem bewährten Muster einer \textit{Layered Architecture} (Schichtenarchitektur), um eine saubere Trennung der Verantwortlichkeiten (\textit{Separation of Concerns}) zu erzielen. Dies erleichtert nicht nur die Testbarkeit mittels Unit- und Integrationstests, sondern ermöglicht auch zukünftige Erweiterungen oder eine potenzielle Migration zu einer Microservices-Architektur, ohne das Gesamtsystem neu schreiben zu müssen.
+Die Architektur des Systems folgt dem bewährten Muster einer \textit{Layered Architecture} (Schichtenarchitektur), um eine saubere Trennung der Verantwortlichkeiten (\textit{Separation of Concerns}) zu erzielen. Dies erleichtert nicht nur die Testbarkeit mittels Unit- und Integrationstests, sondern ermöglicht auch zukünftige Erweiterungen ohne das Gesamtsystem neu schreiben zu müssen.
 
 Die Anwendung gliedert sich in vier Hauptschichten:
 
 \subsection{Presentation Layer (Controllers)}
-Diese oberste Schicht nimmt HTTP-Anfragen (Requests) entgegen und gibt HTTP-Antworten (Responses) zurück. Sie fungiert als Tor zur Außenwelt.
+Diese oberste Schicht nimmt HTTP-Anfragen (Requests) entgegen und gibt HTTP-Antworten (Responses) zurück. Sie dient als Tor zur Außenwelt.
 \begin{itemize}
     \item \textbf{Verantwortlichkeit:} Routing, Deserialisierung von JSON-Body-Daten, Validierung von Eingaben und Formatierung der Ausgaben.
     \item \textbf{Validierung:} Mithilfe der Bibliothek \textit{FluentValidation} werden eingehende Datenmodelle (DTOs) noch vor der Verarbeitung auf Korrektheit geprüft (z.B. \texttt{UserRegisterValidator}, der sicherstellt, dass E-Mail-Adressen gültig sind und Passwörter Mindestanforderungen erfüllen).
@@ -18,7 +18,7 @@ Diese oberste Schicht nimmt HTTP-Anfragen (Requests) entgegen und gibt HTTP-Antw
 \end{itemize}
 
 \subsection{Business Logic Layer (Services)}
-Hier residiert das "Gehirn" der Anwendung. Alle fachlichen Regeln und Prozesse sind in dieser Schicht implementiert.
+Hier residiert das "Gehirn"  der Anwendung. Alle fachlichen Regeln und Prozesse sind in dieser Schicht implementiert.
 \begin{itemize}
     \item \textbf{Service-Klassen:} Jede Domäne hat ihren eigenen Service (z.B. \texttt{AuthService}, \texttt{IndexingService}, \texttt{RAGService}).
     \item \textbf{Orchestrierung:} Services koordinieren den Datenfluss zwischen der Datenbank, externen Diensten (wie MinIO oder Ollama) und der Präsentationsschicht.
@@ -77,7 +77,7 @@ Die \texttt{Program.cs} ist der "Entry Point" der ASP.NET Core Anwendung. Hier w
 	}
 	
 	app.UseHttpsRedirection();
-	app.UseCors("AllowNextJs");
+	app.UseCors("AllowWebApp");
 	app.UseAuthentication();
 	app.UseAuthorization();
 	app.MapControllers();
@@ -114,6 +114,16 @@ Das Datenmodell wurde entworfen, um sowohl relationale Benutzerdaten als auch un
     \item \textbf{ChatSession \& ChatMessage:} Bilden den Verlauf einer Konversation ab. \texttt{ChatSession} gruppiert Nachrichten, während \texttt{ChatMessage} den eigentlichen Inhalt (User-Input oder AI-Response) speichert.
 \end{itemize}
 
+\subsection{Entity Relationship Diagram (ERD)}
+Das folgende Diagramm visualisiert die Beziehungen zwischen den Entitäten. Zentral ist der \texttt{User}, der Dokumente besitzt und Lerninhalte (Flashcards, Quizzes) erstellt.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/database_erd.png}
+    \caption{Entity Relationship Diagram des EduShelf Backends}
+    \label{fig:erd}
+\end{figure}
+(Hinweis: Das detaillierte Mermaid-Diagramm liegt als \texttt{database\_diagram.mermaid} bei und sollte für die finale Version als Bild exportiert werden.)
+
 \section{API Design und Controller}
 Die Kommunikation mit dem Frontend erfolgt über eine RESTful API. Die Controller sind thematisch gruppiert und folgen REST-Konventionen.
 
@@ -122,7 +132,7 @@ Die Kommunikation mit dem Frontend erfolgt über eine RESTful API. Die Controlle
     \item \texttt{DocumentsController}: Verwaltet den Lebenszyklus von Dokumenten. Wichtige Aktionen sind Upload (POST), Download (GET stream), und Sharing (POST \texttt{/share}).
     \item \textbf{Indexing-Trigger}: Nach dem erfolgreichen Upload stößt der \texttt{DocumentsController} sofort einen Hintergrundjob an, der das Indexeren startet.
     \item \texttt{ChatController}: Handhabt Chat-Sitzungen. Ein POST auf \texttt{/message} löst den gesamten RAG-Workflow aus.
-    \item \texttt{AuthController}: Zuständig für Login, Registrierung (mit E-Mail-Bestätigungsflow) und Token-Verwaltung.
+    \item \texttt{UsersController}: Verwaltet Benutzerdaten sowie die Authentifizierung (Login, Registrierung).
 \end{itemize}
 
 \section{Sicherheitskonzepte}
@@ -131,7 +141,7 @@ Sicherheit war ein integraler Bestandteil des Designs ("Security by Design").
 \subsection{Authentifizierung \& Autorisierung}
 Die Authentifizierung erfolgt über Cookies (\texttt{CookieAuthenticationDefaults}).
 \begin{itemize}
-    \item \textbf{Login-Prozess:} Der Nutzer sendet Anmeldedaten an \texttt{/api/auth/login}. Der \texttt{AuthService} überprüft den Passwort-Hash mittels BCrypt. Bei Erfolg wird ein verschlüsseltes HTTP-only Cookie gesetzt, das den Session-Cookie darstellt.
+    \item \textbf{Login-Prozess:} Der Nutzer sendet Anmeldedaten an \texttt{/api/users/login}. Der \texttt{AuthService} überprüft den Passwort-Hash mittels BCrypt. Bei Erfolg wird ein verschlüsseltes HTTP-only Cookie gesetzt, das den Session-Cookie darstellt.
     \item \textbf{Claims-Based Identity:} Das Cookie enthält "Claims" (Aussagen) über den Benutzer, wie z.B. Benutzer-ID, Name und Rollen.
     \item \textbf{Middleware:} Die Standard-ASP.NET Core Authentifizierungs-Middleware entschlüsselt das Cookie bei jedem Request und rekonstruiert das \texttt{User}-Objekt (`HttpContext.User`).
 \end{itemize}
@@ -167,6 +177,16 @@ LLMs haben ein begrenztes Kontextfenster, und die semantische Suche verliert bei
     \item \textbf{Rekombination:} Diese Sätze werden iterativ zu einem Chunk zusammengefügt, bis eine konfigurierte Grenze von ca. 1024 Zeichen erreicht ist. Dies stellt sicher, dass semantische Zusammenhänge (Sätze) nicht willkürlich in der Mitte durchschnitten werden.
     \item \textbf{Token-Limit:} Zusätzlich wird sichergestellt, dass die Chunks eine maximale Token-Anzahl (für das Embedding-Model) nicht überschreiten.
 \end{enumerate}
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Implementierung der Satz-Segmentierung in TextChunker.cs}]
+public static List<string> SplitBySentence(string text)
+{
+    // Nutzung von Regex Lookbehind (?<=...), um das Satzzeichen zu behalten
+    var sentences = Regex.Split(text, @"(?<=[\.!\?])\s+");
+    return new List<string>(sentences);
+}
+\end{lstlisting}
+Das simple Splitten nach Zeichenanzahl würde Sätze zerreißen und den Kontext zerstören. Der hier gezeigte Ansatz garantiert semantische Integrität.
 
 \subsection{3. Embedding und Vektorspeicherung}
 Jeder Text-Chunk wird in einen hochdimensionalen Vektor umgewandelt und effizient gespeichert.
@@ -284,12 +304,49 @@ Das \texttt{Dockerfile} der API nutzt Multi-Stage Builds, um das Image klein zu 
     \item \textbf{Runtime Stage:} Nutzt das schlanke Runtime Image (\texttt{mcr.microsoft.com/dotnet/aspnet:8.0}), welches nur die zum Ausführen nötigen Komponenten enthält. Das kompilierte Artefakt aus Stage 1 wird hierhin kopiert.
 \end{enumerate}
 Dies reduziert die Image-Größe drastisch und verbessert die Sicherheit, da keine Compiler-Tools im Produktions-Container vorhanden sind.
+
+\section{Resilienz und Stabilität}
+In verteilten Systemen, insbesondere bei der Anbindung von KI-Diensten, sind temporäre Ausfälle unvermeidbar. Um die Robustheit der Anwendung zu gewährleisten, wurde die Bibliothek \texttt{Polly} integriert.
+
+\subsection{Retry-Policies \& Circuit Breaker}
+In der \texttt{ServiceCollectionExtensions.cs} werden resiliente HTTP-Clients konfiguriert:
+\begin{enumerate}
+    \item \textbf{Retry Policy:} Bei transienten Fehlern (z.B. Netzwerk-Glitch, 503 Service Unavailable) wird der Request bis zu 3-mal wiederholt, mit einem exponentiellen Backoff ($2^n$ Sekunden).
+    \item \textbf{Circuit Breaker:} Wenn 5 Fehler in Folge auftreten, "öffnet" sich der Stromkreis für 30 Sekunden. Alle weiteren Anfragen werden sofort abgeblockt, um das überlastete Subsystem (z.B. Ollama) zu schonen.
+\end{enumerate}
+\begin{lstlisting}[language={[Sharp]C}, caption={Polly-Konfiguration}]
+var retryPolicy = HttpPolicyExtensions
+    .HandleTransientHttpError()
+    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+var circuitBreakerPolicy = HttpPolicyExtensions
+    .HandleTransientHttpError()
+    .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
+\end{lstlisting}
+
 \section{Herausforderungen und Lösungen}
 Während der Backend-Entwicklung mussten mehrere technische Hürden genommen werden.
 
 \subsection{Blockierende Operationen bei großen Dateien}
-\textbf{Problem:} Das Indexieren eines 500-seitigen PDF-Skripts dauert mehrere Minuten. Ein synchroner HTTP-Request würde hierbei in ein Timeout laufen ("Blocking I/O").
 \textbf{Lösung:} Einführung einer \texttt{BackgroundJobQueue}. Der Upload-Endpoint nimmt die Datei entgegen, speichert sie in MinIO und reiht nur eine "Job-ID" in die Queue ein, bevor er sofort \texttt{202 Accepted} zurückgibt. Ein Hintergrunddienst ("Worker") arbeitet diese Queue asynchron ab.
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Verarbeitungsschleife im BackgroundJobService}]
+protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+{
+    while (!stoppingToken.IsCancellationRequested)
+    {
+        var workItem = await _queue.DequeueAsync(stoppingToken); // Blockiert bis Arbeit da ist
+        try
+        {
+            await workItem(stoppingToken); // Fuehrt den eigentlichen Indexing-Task aus
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred executing background work item.");
+        }
+    }
+}
+\end{lstlisting}
 
 \subsection{LLM Kontext-Fenster-Limits}
 \textbf{Problem:} GPT-4 und andere Modelle haben ein festes Limit an Tokens (z.B. 4096 oder 8192). Ein blindes Einfügen von Dokumenten würde zu Abstürzen führen.

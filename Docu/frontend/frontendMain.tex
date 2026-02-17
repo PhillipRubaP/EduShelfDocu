@@ -1,14 +1,14 @@
 \chapter{Frontend Implementierung}
 
 \section{Einführung und Zielsetzung}
-Das Frontend der Anwendung "`EduShelf"' repräsentiert die Schnittstelle zwischen dem Benutzer und den komplexen Backend-Diensten. Ziel der Implementierung war die Schaffung einer modernen, performanten und intuitiven Benutzeroberfläche, die das Lernen und Verwalten von Dokumenten so effizient wie möglich gestaltet.
+Das Frontend der Anwendung "`EduShelf"' repräsentiert die Schnittstelle zwischen dem Benutzer und den Backend-Diensten. Ziel der Implementierung war die Schaffung einer modernen, performanten und intuitiven Benutzeroberfläche, die das Lernen und Verwalten von Dokumenten so effizient wie möglich gestaltet.
 
 Im Gegensatz zu klassischen Webanwendungen, die auf dem "`Multi-Page Application"' (MPA) Prinzip basieren und bei jeder Interaktion eine neue HTML-Seite vom Server anfordern, wurde EduShelf als "`Single Page Application"' (SPA) konzipiert. In einer SPA wird lediglich beim ersten Aufruf eine einzige HTML-Datei (\texttt{index.html}) geladen. Alle weiteren Interaktionen finden clientseitig statt, indem JavaScript (in diesem Fall React) den DOM (Document Object Model) dynamisch manipuliert.
 
 Die Vorteile dieses Architekturansatzes sind vielfältig:
 \begin{itemize}
     \item \textbf{Performance}: Da nach dem initialen Laden nur noch Rohdaten (im JSON-Format) und keine vollständigen HTML-Seiten mehr übertragen werden müssen, reduziert sich das Datenvolumen signifikant.
-    \item \textbf{Benutzererfahrung (UX)}: Übergänge zwischen verschiedenen Ansichten erfolgen nahezu instantan, ohne das typische "Flackern" eines Seiten-Reloads. Dies vermittelt das Gefühl einer nativen Desktop-Anwendung.
+    \item \textbf{Benutzererfahrung (UX)}: Übergänge zwischen verschiedenen Ansichten erfolgen nahezu latenzfrei, ohne das typische "Flackern" eines Seiten-Reloads. Dies vermittelt das Gefühl einer nativen Desktop-Anwendung.
     \item \textbf{Entkopplung}: Durch die strikte Trennung von Frontend und Backend über eine REST-API können beide Systeme unabhängig voneinander entwickelt, getestet und skaliert werden.
 \end{itemize}
 
@@ -22,11 +22,11 @@ Ein Schlüsselelement von React ist das "`Virtual DOM"'. Anstatt bei jeder Ände
 In EduShelf wird ausschließlich die "`Functional Component"' Syntax in Verbindung mit "`Hooks"' verwendet. Hooks wie \texttt{useState} oder \texttt{useEffect} ermöglichen es, Zustand und Seiteneffekte in funktionalen Komponenten zu nutzen, ohne Klassen schreiben zu müssen. Dies führt zu kompakterem und verständlicherem Code.
 
 \subsection{Vite}
-Vite (französisch für "schnell") ist das Build-Tool der Wahl. Es löst ältere Tools wie Webpack ab, indem es während der Entwicklung native ES-Module im Browser nutzt. Das bedeutet, dass der Browser die Importe selbst auflöst, anstatt dass der gesamte Code vor jedem Start gebündelt werden muss. Dies führt zu extrem schnellen Server-Startzeiten, selbst bei wachsender Projektgröße.
+Vite (französisch für "schnell") ist das Build-Tool der Wahl für "'EduShelf'". Es löst ältere Tools wie Webpack ab, indem es während der Entwicklung native ES-Module im Browser nutzt. Das bedeutet, dass der Browser die Importe selbst auflöst, anstatt dass der gesamte Code vor jedem Start gebündelt werden muss. Dies führt zu extrem schnellen Server-Startzeiten, selbst bei wachsender Projektgröße.
 Für die Produktion nutzt Vite im Hintergrund \texttt{Rollup}, um hochoptimierte, minifizierte Bundles zu erstellen.
 
 \subsection{React Router (v7)}
-Da eine SPA physisch nur aus einer Seite besteht, muss die Navigation simuliert werden. \texttt{React Router} überwacht die URL im Browser und rendert basierend auf definierten Regeln die entsprechenden Komponenten. Dies ermöglicht Deep-Linking (Lesezeichen auf Unterseiten) und die Verwendung der Browser-Historie (Zurück-Button), obwohl die Seite nie neu geladen wird.
+Da eine SPA (= Single Page Application) physisch nur aus einer Seite besteht, muss die Navigation simuliert werden. \texttt{React Router} überwacht die URL im Browser und rendert basierend auf definierten Regeln die entsprechenden Komponenten. Dies ermöglicht Deep-Linking (Lesezeichen auf Unterseiten) und die Verwendung der Browser-Historie (Zurück-Button), obwohl die Seite nie neu geladen wird.
 
 \section{Projektsetup und Konfiguration}
 Das Projekt wurde mit dem Befehl \texttt{npm create vite@latest} initialisiert. Die Konfiguration befindet sich in der Datei \texttt{vite.config.js}.
