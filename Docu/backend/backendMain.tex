@@ -114,6 +114,8 @@ Das Datenmodell wurde entworfen, um sowohl relationale Benutzerdaten als auch un
     \item \textbf{ChatSession \& ChatMessage:} Bilden den Verlauf einer Konversation ab. \texttt{ChatSession} gruppiert Nachrichten, während \texttt{ChatMessage} den eigentlichen Inhalt (User-Input oder AI-Response) speichert.
 \end{itemize}
 
+
+\newpage
 \subsection{Entity Relationship Diagram (ERD)}
 Das folgende Diagramm visualisiert die Beziehungen zwischen den Entitäten. Zentral ist der \texttt{User}, der Dokumente besitzt und Lerninhalte (Flashcards, Quizzes) erstellt.
 \begin{figure}[h]
@@ -122,7 +124,7 @@ Das folgende Diagramm visualisiert die Beziehungen zwischen den Entitäten. Zent
     \caption{Entity Relationship Diagram des EduShelf Backends}
     \label{fig:erd}
 \end{figure}
-(Hinweis: Das detaillierte Mermaid-Diagramm liegt als \texttt{database\_diagram.mermaid} bei und sollte für die finale Version als Bild exportiert werden.)
+
 
 \section{API Design und Controller}
 Die Kommunikation mit dem Frontend erfolgt über eine RESTful API. Die Controller sind thematisch gruppiert und folgen REST-Konventionen.
