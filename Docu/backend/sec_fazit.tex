@@ -1,2 +1,24 @@
 \section{Fazit}
-Das Backend von EduShelf stellt ein robustes, skalierbares Fundament für die Lernplattform dar. Durch die Kombination von bewährten Mustern (Layered Architecture, DI) mit modernsten KI-Technologien (Vektor-Datenbanken, RAG) konnte eine leistungsfähige Lösung für das Dokumentenmanagement und interaktive Lernen geschaffen werden.
+Das Backend von EduShelf stellt ein robustes, modernes und erweiterungsfähiges Fundament für die Lernplattform dar. Die während der Entwicklung getroffenen Architekturentscheidungen haben sich als tauglich erwiesen, um die komplexen Anforderungen einer KI-gestützten Dokumentenverwaltungsplattform zu erfüllen.
+
+\subsection{Erreichte Ziele}
+\begin{itemize}
+    \item \textbf{Vollständige RAG-Pipeline:} Die Kombination aus semantischer Vektorsuche (pgvector + HNSW-Index), Intent-Erkennung und tokenbasierter Kontextlimitierung ermöglicht präzise, dokumentenspezifische KI-Antworten ohne externe API-Abhängigkeiten.
+    \item \textbf{Datenschutz durch lokale KI:} Der Einsatz von Ollama als lokaler LLM-Inferenzserver stellt sicher, dass keine Dokumenteninhalte das eigene System verlassen. Dies ist insbesondere für Bildungseinrichtungen relevant, die mit sensiblen Unterrichtsmaterialien arbeiten.
+    \item \textbf{Robuste Lerninhaltsgenerierung:} Sowohl die Flashcard- als auch die Quiz-Generierung sind durch mehrstufige JSON-Parsing-Strategien widerstandsfähig gegenüber variierenden LLM-Antwortformaten.
+    \item \textbf{Sicherheit:} Der vollständige E-Mail-Verifizierungsflow, BCrypt-Passwort-Hashing, HttpOnly-Cookie-Authentifizierung und deklaratives RBAC schaffen eine mehrschichtige Sicherheitsarchitektur.
+    \item \textbf{Infrastruktur:} Die vollständige Containerisierung mit Docker Compose erlaubt ein reproduzierbares, portables Deployment auf jedem Linux-Server -- ohne manuelles Setup.
+    \item \textbf{Testabdeckung:} 16 Testklassen mit Unit- und Integrationstests für alle kritischen Services, Controller und Validatoren stellen die langfristige Wartbarkeit sicher.
+\end{itemize}
+
+\subsection{Lernerkenntnisse und Herausforderungen}
+Die größte technische Herausforderung war die \textbf{Unvorhersehbarkeit von LLM-Ausgaben}: Trotz präziser System-Prompts und expliziter JSON-Formatvorgaben weichen Sprachmodelle gelegentlich vom erwarteten Schema ab. Die Lösung lag nicht im Erzwingen einer bestimmten Ausgabe, sondern in der Implementierung mehrerer Fallback-Strategien im Parsing-Layer -- eine Erkenntnis, die fundamental für jede produktive LLM-Integration ist.
+
+Ein weiteres Lernfeld war die \textbf{Performance-Optimierung der Ingestion-Pipeline}: Das initiale Ansatz, Dokumente synchron im HTTP-Request-Zyklus zu verarbeiten, führte bei großen PDFs zu Frontend-Timeouts. Die Einführung einer \texttt{BackgroundJobQueue} mit asynchroner Verarbeitung löste dieses Problem elegant, ohne die Architektur grundlegend zu verändern.
+
+\subsection{Mögliche Erweiterungen}
+\begin{itemize}
+    \item \textbf{Streaming-Responses:} Die aktuelle Implementierung wartet auf die vollständige LLM-Antwort. Eine Server-Sent-Events (SSE) oder WebSocket-Anbindung würde die wahrgenommene Latenz deutlich reduzieren.
+    \item \textbf{Multi-Tenant-Unterstützung:} Aktuell ist jeder User vollständig isoliert (keine gemeinsamen Wissensbasen). Eine optionale Kurs- oder Gruppenebene wäre eine natürliche Erweiterung für den Bildungskontext.
+    \item \textbf{Mikroservice-Migration:} Der monolithische Ansatz war für die Initialentwicklung ideal. Bei steigender Last könnten rechenintensive Services (Indexierung, KI-Inferenz) als eigenständige Mikroservices ausgelagert werden.
+\end{itemize}

@@ -1,9 +1,140 @@
 \section{Qualitätssicherung und Tests}
-Die Stabilität des Backends wird durch automatisierte Tests gewährleistet.
+Die Stabilität des Backends wird durch eine umfassende automatisierte Test-Suite auf Basis von \textbf{xUnit} gewährleistet. Das Testprojekt \texttt{EduShelf.Api.Tests} enthält 16 Testklassen, die Geschäftslogik, Controller, Validatoren und Hilfsfunktionen abdecken.
 
-\subsection{Unit Tests (xUnit)}
-Die Geschäftslogik (Services) wird isoliert getestet. Externe Abhängigkeiten wie Datenbank oder File-System werden mittels \texttt{Moq} gemockt.
-Beispiel: Ein Test für den \texttt{FlashcardService} prüft, ob die richtigen DTOs zurückgegeben werden, ohne dass dabei eine echte KI angefragt wird (Mocking des \texttt{IChatCompletionService}).
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Testklasse} & \textbf{Getestete Komponente} \\
+\hline
+\texttt{AuthServiceTests}              & Registrierung, Login, E-Mail-Bestätigung \\
+\texttt{FlashcardServiceTests}         & KI-Flashcard-Generierung, JSON-Fehler \\
+\texttt{QuizServiceTests}             & KI-Quiz-Generierung, Parsing-Robustheit \\
+\texttt{ChatServiceTests}             & RAG-Orchestrierung, Intent-Branching \\
+\texttt{DocumentServiceTests}         & Upload, Löschung, Indexierung \\
+\texttt{IntentDetectionServiceTests}  & JSON-Intent-Parsing \\
+\texttt{TokenServiceTests}            & Token-Limitierung und Truncation \\
+\texttt{ResilienceTests}              & Polly Retry- und Circuit-Breaker-Policies \\
+\texttt{UserRegisterValidatorTests}   & FluentValidation-Regeln \\
+\texttt{JsonHelperTests}              & JSON-Extraktion aus LLM-Antworten \\
+\texttt{DocumentsControllerTests}     & HTTP-Routing und Autorisierung \\
+\texttt{FlashcardsControllerTests}    & HTTP-Routing und Autorisierung \\
+\texttt{UsersControllerTests}         & HTTP-Routing und Autorisierung \\
+\texttt{TagsControllerTests}          & HTTP-Routing und RBAC \\
+\texttt{QuizCreateDtoValidatorTests}  & Eingabevalidierung für Quiz-DTOs \\
+\hline
+\end{tabular}
+\caption{Übersicht der Test-Klassen im Testprojekt}
+\label{tab:testklassen}
+\end{table}
+
+\subsection{Unit Tests (xUnit + Moq)}
+Die Geschäftslogik (Services) wird isoliert getestet. Externe Abhängigkeiten wie Datenbank, LLM oder E-Mail-Dienst werden mittels \texttt{Moq} durch kontrollierte Testdoubles ersetzt. Die Datenbank wird für jeden Testfall durch eine separate In-Memory-Datenbankinstanz (über \texttt{UseInMemoryDatabase} mit \texttt{Guid.NewGuid()}) vollständig isoliert.
+
+\subsubsection{Beispiel: FlashcardService}
+Die drei Kerntests des \texttt{FlashcardService} illustrieren das typische Testmuster:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Erfolgreiche Flashcard-Generierung}]
+[Fact]
+public async Task GenerateFlashcardsAsync_ValidContent_ShouldCreateFlashcards()
+{
+    // Arrange -- Mock-LLM gibt valides JSON zurueck
+    var jsonResponse = "[{\"Question\": \"What is AI?\", \"Answer\": \"Artificial Intelligence\"}," +
+                       " {\"Question\": \"Is it cool?\", \"Answer\": \"Yes\"}]";
+    _mockChatCompletionService
+        .Setup(c => c.GetChatMessageContentsAsync(...))
+        .ReturnsAsync(new List<ChatMessageContent> { new(AuthorRole.Assistant, jsonResponse) });
+
+    // Act
+    var result = await service.GenerateFlashcardsAsync(request, userId);
+
+    // Assert
+    Assert.Equal(2, result.ToList().Count);
+    Assert.Equal(2, context.Flashcards.Count());
+    Assert.Single(context.Tags); // Tag "Test Doc" automatisch erstellt
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Leerer Dokumenteninhalt wirft BadRequestException}]
+[Fact]
+public async Task GenerateFlashcardsAsync_NoContent_ShouldThrowBadRequest()
+{
+    _mockDocumentService.Setup(d => d.GetDocumentContentAsync(1, userId, Roles.Student))
+        .ReturnsAsync(""); // Leerer Inhalt
+    await Assert.ThrowsAsync<BadRequestException>(
+        () => service.GenerateFlashcardsAsync(request, userId));
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Ungültiges JSON vom LLM wirft KernelServiceException}]
+[Fact]
+public async Task GenerateFlashcardsAsync_InvalidJsonFromAI_ShouldThrowKernelServiceException()
+{
+    // Mock-LLM gibt Text statt JSON zurueck
+    var badResponse = new ChatMessageContent(AuthorRole.Assistant, "This is not JSON");
+    _mockChatCompletionService.Setup(...).ReturnsAsync(new List<ChatMessageContent> { badResponse });
+
+    await Assert.ThrowsAsync<KernelServiceException>(
+        () => service.GenerateFlashcardsAsync(request, userId));
+}
+\end{lstlisting}
+
+\subsubsection{Beispiel: AuthService}
+Der \texttt{AuthService} wird ebenfalls umfassend getestet, inklusive des E-Mail-Bestätigungsflows:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Registrierung erstellt Nutzer und sendet E-Mail}]
+[Fact]
+public async Task RegisterUserAsync_ValidData_ShouldCreateUserAndSendEmail()
+{
+    var result = await service.RegisterUserAsync(registerDto);
+
+    Assert.Single(context.Users);
+    Assert.False((await context.Users.FirstAsync()).IsEmailConfirmed);
+    Assert.NotNull((await context.Users.FirstAsync()).EmailConfirmationToken);
+
+    // Verifiziert: E-Mail wurde genau einmal an die richtige Adresse gesendet
+    _mockEmailService.Verify(
+        x => x.SendEmailAsync("new@example.com", It.IsAny<string>(), It.IsAny<string>()),
+        Times.Once);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Abgelaufener Token wirft BadRequestException}]
+[Fact]
+public async Task ConfirmEmailAsync_ExpiredToken_ShouldThrowBadRequest()
+{
+    var user = new User
+    {
+        EmailConfirmationToken = "expired_token",
+        EmailConfirmationTokenExpiresAt = DateTime.UtcNow.AddHours(-1) // in der Vergangenheit
+    };
+    context.Users.Add(user);
+
+    await Assert.ThrowsAsync<BadRequestException>(
+        () => service.ConfirmEmailAsync(confirmDto));
+}
+\end{lstlisting}
+
+\subsection{Validatoren-Tests}
+\texttt{FluentValidation}-Regeln werden mit der Bibliotheksmethode \texttt{TestValidate} isoliert geprüft -- kein HTTP-Stack nötig:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Validator-Tests mit FluentValidation.TestHelper}]
+[Fact]
+public void Should_Have_Error_When_Email_Is_Invalid()
+{
+    var model = new UserRegister { Username = "user", Email = "invalid_email", Password = "pw" };
+    var result = _validator.TestValidate(model);
+    result.ShouldHaveValidationErrorFor(x => x.Email);
+}
+
+[Fact]
+public void Should_Not_Have_Error_When_Model_Is_Valid()
+{
+    var model = new UserRegister { Username = "validUser", Email = "test@example.com",
+                                   Password = "strongPassword123" };
+    _validator.TestValidate(model).ShouldNotHaveAnyValidationErrors();
+}
+\end{lstlisting}
 
 \subsection{Integration Tests}
-Für Controller und die Datenbankinteraktion werden Integrationstests verwendet. Hierbei wird mittels \texttt{WebApplicationFactory} ein echter Test-Server im Speicher hochgefahren, der gegen eine In-Memory-Datenbank oder eine Docker-Test-Instanz läuft. Dies stellt sicher, dass die Middleware-Pipeline, das Routing und das Entity Framework korrekt zusammenspielen.
+Für Controller und die Datenbankinteraktion werden Integrationstests verwendet. Hierbei wird mittels \texttt{WebApplicationFactory} ein echter Test-Server im Speicher hochgefahren, der gegen den vollständigen ASP.NET Core Middleware-Stack (Routing, Authentifizierung, Fehlerbehandlung) und eine separate In-Memory-Datenbankinstanz läuft. Dies stellt sicher, dass das Routing, die Autorisierungsattribute und das Entity Framework korrekt zusammenspielen -- unabhängig voneinander, aber als zusammenhängendes System.
