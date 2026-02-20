@@ -1,23 +1,120 @@
 \section{Sicherheitskonzepte}
-Sicherheit war ein integraler Bestandteil des Designs ("Security by Design").
+Sicherheit war ein integraler Bestandteil des Designs (,,Security by Design``).
 
 \subsection{Authentifizierung \& Autorisierung}
 Die Authentifizierung erfolgt über Cookies (\texttt{CookieAuthenticationDefaults}).
 \begin{itemize}
-    \item \textbf{Login-Prozess:} Der Nutzer sendet Anmeldedaten an \texttt{/api/users/login}. Der \texttt{AuthService} überprüft den Passwort-Hash mittels BCrypt. Bei Erfolg wird ein verschlüsseltes HTTP-only Cookie gesetzt, das den Session-Cookie darstellt.
-    \item \textbf{Claims-Based Identity:} Das Cookie enthält "Claims" (Aussagen) über den Benutzer, wie z.B. Benutzer-ID, Name und Rollen.
-    \item \textbf{Middleware:} Die Standard-ASP.NET Core Authentifizierungs-Middleware entschlüsselt das Cookie bei jedem Request und rekonstruiert das \texttt{User}-Objekt (`HttpContext.User`).
+    \item \textbf{Login-Prozess:} Der Nutzer sendet Anmeldedaten an \texttt{POST /api/users/login}. Der \texttt{AuthService} lädt den Benutzer inklusive seiner Rollen aus der Datenbank und überprüft den Passwort-Hash mittels BCrypt. Zusätzlich wird geprüft, ob die E-Mail-Adresse bereits bestätigt wurde -- nicht-verifizierte Accounts können sich nicht einloggen.
+    \item \textbf{Claims-Based Identity:} Bei erfolgreichem Login werden Claims (kryptographisch signierte Aussagen) über den Benutzer in das Cookie eingebettet: Benutzer-ID (\texttt{ClaimTypes.NameIdentifier}), E-Mail, Benutzername und alle zugewiesenen Rollen (\texttt{ClaimTypes.Role}). Diese Claims stehen serverseitig bei jedem Request über \texttt{HttpContext.User} zur Verfügung.
+    \item \textbf{Session-Lebensdauer:} Das Cookie ist auf 120 Minuten befristet (\texttt{IsPersistent = true, ExpiresUtc = +120 min}).
+    \item \textbf{Middleware:} Die Standard-ASP.NET Core Authentifizierungs-Middleware entschlüsselt das Cookie bei jedem Request und rekonstruiert das \texttt{ClaimsPrincipal}-Objekt.
 \end{itemize}
 
-\subsection{Datenvalidierung}
-Eingehende Daten werden rigoros validiert. Die Bibliothek \textit{FluentValidation} erlaubt die Definition von komplexen Regeln.
+\begin{lstlisting}[language={[Sharp]C}, caption={Claims-Aufbau beim Login in AuthService.cs}]
+var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+    new Claim(ClaimTypes.Email, user.Email),
+    new Claim(ClaimTypes.Name, user.Username)
+};
+foreach (var userRole in user.UserRoles)
+    claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
+
+var claimsIdentity = new ClaimsIdentity(
+    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+var authProperties = new AuthenticationProperties
+{
+    IsPersistent = true,
+    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(120)
+};
+await _httpContextAccessor.HttpContext.SignInAsync(
+    CookieAuthenticationDefaults.AuthenticationScheme,
+    new ClaimsPrincipal(claimsIdentity),
+    authProperties);
+\end{lstlisting}
+
+\subsection{Rollenbasiertes Zugriffssystem (RBAC)}
+EduShelf implementiert ein einfaches, aber effektives Role-Based Access Control System. Rollen (\texttt{Student}, \texttt{Admin}) werden in der Tabelle \texttt{Roles} gespeichert und über die Join-Tabelle \texttt{UserRoles} Nutzern zugewiesen.
+
+Jeder neu registrierte Nutzer erhält automatisch die Rolle \texttt{Student}. Die Rolle wird beim Erstellen des Nutzers aus der Datenbank geladen und dem \texttt{UserRoles}-Set hinzugefügt:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Automatische Rollenzuweisung bei der Registrierung}]
+var studentRole = await _context.Roles
+    .SingleOrDefaultAsync(r => r.Name == Roles.Student);
+user.UserRoles.Add(new UserRole { Role = studentRole });
+\end{lstlisting}
+
+In den Controllern wird die Autorisierung deklarativ über Attribute gesteuert:
+\begin{itemize}
+    \item \texttt{[Authorize]} -- Nur eingeloggte Nutzer (jede Rolle).
+    \item \texttt{[Authorize(Roles = "Admin")]} -- Nur Administratoren (z.B. für Nutzer-Löschung oder Tag-Verwaltung).
+\end{itemize}
+
+\subsection{E-Mail-Verifizierung}
+Um sicherzustellen, dass Nutzer nur mit gültigen E-Mail-Adressen registriert werden können, implementiert EduShelf einen vollständigen E-Mail-Bestätigungsflow.
+
+\subsubsection{Registrierungsvorgang}
+Bei der Registrierung wird zunächst auf doppelte Benutzernamen und E-Mails geprüft. Dann wird ein kryptographisch sicherer Bestätigungstoken generiert:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Token-Generierung und E-Mail-Versand in AuthService.cs}]
+var user = new User
+{
+    Username        = userRegister.Username,
+    Email           = userRegister.Email,
+    PasswordHash    = BCrypt.Net.BCrypt.HashPassword(userRegister.Password),
+    IsEmailConfirmed = false,
+    EmailConfirmationToken =
+        Convert.ToHexString(RandomNumberGenerator.GetBytes(32)),
+    EmailConfirmationTokenExpiresAt = DateTime.UtcNow.AddHours(24)
+};
+// ...
+var confirmationLink =
+    $"{appUrl}/confirm-email?email={Uri.EscapeDataString(user.Email)}" +
+    $"&token={Uri.EscapeDataString(user.EmailConfirmationToken)}";
+await _emailService.SendEmailAsync(user.Email, "Confirm your email", emailBody);
+\end{lstlisting}
+
+Der Token ist ein zufälliger 32-Byte-Wert (hexadezimal kodiert, 64 Zeichen lang), der 24 Stunden gültig ist. Schlägt der E-Mail-Versand fehl, wird der Nutzer-Datensatz sofort wieder aus der Datenbank gelöscht -- d.h. das System ist \textit{atomar}: Es existiert kein unverifizierter Account ohne zugehörige Bestätigungsmail.
+
+\subsubsection{Bestätigungsvorgang}
+Der Nutzer klickt den Link im Frontend, das ihn an \texttt{POST /api/users/confirm-email} weiterleitet. Der \texttt{AuthService} führt dabei vier Prüfungen durch:
+
+\begin{enumerate}
+    \item Nutzer mit dieser E-Mail existiert.
+    \item E-Mail ist noch nicht bestätigt (Idempotenz -- doppelte Klicks sind harmlos).
+    \item Der übermittelte Token stimmt exakt mit dem gespeicherten überein.
+    \item Der Token ist nicht abgelaufen (\texttt{ExpiresAt > DateTime.UtcNow}).
+\end{enumerate}
+
+Bei Erfolg werden \texttt{IsEmailConfirmed = true} gesetzt und Token sowie Ablaufzeit aus der Datenbank gelöscht.
+
+\subsection{Datenvalidierung (FluentValidation)}
+Eingehende Daten werden rigoros validiert. Die Bibliothek \textit{FluentValidation} erlaubt die Definition von komplexen Regeln in dedizierten Validator-Klassen.
+
 Beispiel \texttt{UserRegisterValidator}:
 \begin{itemize}
-    \item Username: Muss 3-20 Zeichen lang sein.
-    \item Email: Muss ein gültiges E-Mail-Format haben.
-    \item Password: Mindestens 6 Zeichen.
+    \item \texttt{Username}: Pflichtfeld, 3--20 Zeichen.
+    \item \texttt{Email}: Pflichtfeld, muss gültiges E-Mail-Format haben.
+    \item \texttt{Password}: Pflichtfeld, mindestens 6 Zeichen.
 \end{itemize}
-Diese Validierung geschieht automatisch vor dem Controller-Aufruf. Ungültige Anfragen werden sofort mit HTTP 400 (Bad Request) abgelehnt.
+Diese Validierung geschieht automatisch vor dem Controller-Aufruf. Ungültige Anfragen werden sofort mit HTTP 400 (Bad Request) und einer strukturierten Fehlerliste abgelehnt.
 
-\subsection{Error Handling}
-Ein globales \texttt{ErrorHandlingMiddleware} fängt alle unbehandelten Ausnahmen ab. Dies verhindert, dass interne Implementierungsdetails (Stack Traces) an den Client durchsickern. Stattdessen werden standardisierte JSON-Fehlermeldungen und passende HTTP-Statuscodes zurückgegeben (z.B. \texttt{NotFoundException} $\rightarrow$ 404, \texttt{UnauthorizedAccessException} $\rightarrow$ 401).
+\subsection{Error Handling Middleware}
+Ein globales \texttt{ErrorHandlingMiddleware} fängt alle unbehandelten Ausnahmen ab. Dies verhindert, dass interne Implementierungsdetails (Stack Traces) an den Client durchsickern. Stattdessen werden standardisierte JSON-Fehlermeldungen und passende HTTP-Statuscodes zurückgegeben:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Exception-Typ} & \textbf{HTTP-Statuscode} \\
+\hline
+\texttt{NotFoundException}          & 404 Not Found \\
+\texttt{BadRequestException}        & 400 Bad Request \\
+\texttt{UnauthorizedAccessException} & 401 Unauthorized \\
+\texttt{ValidationException}        & 400 Bad Request \\
+Sonstige \texttt{Exception}         & 500 Internal Server Error \\
+\hline
+\end{tabular}
+\caption{Mapping von Exceptions auf HTTP-Statuscodes}
+\label{tab:exception_mapping}
+\end{table}
