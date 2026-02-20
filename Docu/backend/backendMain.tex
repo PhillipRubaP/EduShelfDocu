@@ -86,13 +86,55 @@ Die \texttt{Program.cs} ist der "Entry Point" der ASP.NET Core Anwendung. Hier w
 \end{lstlisting}
 
 \subsection{Konfiguration (appsettings.json)}
-Umweltspezifische Variablen werden aus der \texttt{appsettings.json} oder Umgebungsvariablen geladen. Dies folgt dem "12-Factor App" Prinzip.
-Wichtige Sektionen sind:
+Die Anwendungskonfiguration folgt dem \textit{12-Factor App}-Prinzip: Alle umgebungsabh\"angigen Parameter werden aus der Datei \texttt{appsettings.json} geladen und k\"onnen zur Laufzeit durch Umgebungsvariablen \"uberschrieben werden (z.B. in Docker Compose). Das folgende Listing zeigt die vollst\"andige Konfigurationsstruktur (sensible Werte wie Passw\"orter sind aus Sicherheitsgr\"unden ausgeblendet):
+
+\begin{lstlisting}[language={}   , caption={Konfigurationsstruktur der appsettings.json}]
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=<db-host>;Port=5433;Database=EduShelfDb;..."
+  },
+  "AIService": {
+    "Provider": "Ollama",
+    "Endpoint": "http://<ollama-host>:11434",
+    "ChatModel": "qwen3:14b",
+    "EmbeddingModel": "nomic-embed-text",
+    "VisionModel": "moondream:1.8b",
+    "ContextLengthLimit": 4096,
+    "Prompts": {
+      "System": "...",     // Steuert das Grundverhalten des LLMs
+      "Intent": "...",    // Anleitung zur JSON-Intent-Erkennung
+      "Flashcard": "...", // Anleitung zur Flashcard-Generierung
+      "Quiz": "..."       // Anleitung zur Quiz-Generierung
+    }
+  },
+  "Minio": {
+    "Endpoint": "<minio-host>:9000",
+    "AccessKey": "<key>",
+    "SecretKey": "<secret>",
+    "BucketName": "edushelf-documents",
+    "Secure": false
+  },
+  "EmailSettings": {
+    "SmtpHost": "<smtp-server>",
+    "SmtpPort": 587,
+    "SmtpUser": "<user>",
+    "SmtpPass": "<password>",
+    "FromEmail": "<sender>"
+  },
+  "Seeding": {
+    "AdminPassword": "<admin-pw>",
+    "StudentPassword": "<student-pw>"
+  }
+}
+\end{lstlisting}
+
+Die wichtigsten Konfigurationsbl\"ocke im \"Uberblick:
 \begin{itemize}
-    \item \texttt{ConnectionStrings}: Verbindung zur PostgreSQL Datenbank.
-    \item \texttt{AIService}: API-Keys und Modell-Namen für Ollama.
-    \item \texttt{SmtpConfig}: Zugangsdaten für den E-Mail-Versand.
-    \item \texttt{JwtConfig}: (Legacy) Secret Keys für JWTs, falls verwendet.
+    \item \textbf{\texttt{ConnectionStrings}}: Verbindungsstring zur PostgreSQL-Datenbank (Host, Port, Datenbankname, Zugangsdaten).
+    \item \textbf{\texttt{AIService}}: Zentrale KI-Konfiguration. \texttt{ChatModel} gibt das Sprachmodell an (z.B. \texttt{qwen3:14b}), \texttt{EmbeddingModel} das Modell f\"ur die Vektorerzeugung (\texttt{nomic-embed-text}) und \texttt{VisionModel} das Modell f\"ur die Bildanalyse. \texttt{ContextLengthLimit} (Standard: 4096 Token) begrenzt die Kontextfenstergr\"o\ss{}e. Die \texttt{Prompts}-Untersektion enth\"alt die vollst\"andigen System-Prompts f\"ur alle KI-gesteuerten Features als konfigurierbare Strings -- so k\"onnen diese ohne Code\"anderung angepasst werden.
+    \item \textbf{\texttt{Minio}}: Verbindungsdaten zum S3-kompatiblen Object Storage (Endpoint, Zugangsdaten, Bucket-Name).
+    \item \textbf{\texttt{EmailSettings}}: SMTP-Konfiguration f\"ur den Versand von Registrierungs-Best\"atigungsmails.
+    \item \textbf{\texttt{Seeding}}: Passw\"orter f\"ur vordefinierten Admin- und Student-Benutzer, die beim ersten Start automatisch angelegt werden.
 \end{itemize}
 
 \section{Datenmodelle und Datenbankdesign}
@@ -421,6 +463,75 @@ Die Implementierung des RAG-Systems stellt sicher, dass das LLM stets auf den sp
     \item \textbf{Robustheit:} Token-basierte Kontextlimitierung verhindert LLM-Abst\"urze durch \"uberlange Prompts.
     \item \textbf{Erweiterbarkeit:} Das Intent-Branching erlaubt es, neue KI-gest\"utzte Features durch Hinzuf\"ugen weiterer Intent-Typen zu integrieren, ohne die Kernpipeline zu \"andern.
 \end{itemize}
+
+\section{KI-gest\"utzte Lerninhaltsgenerierung}
+\label{sec:aigeneration}
+
+Neben der RAG-basierten Chat-Funktionalit\"at bietet EduShelf zwei weitere KI-Features: die automatische Generierung von \textbf{Lernkarten (Flashcards)} und \textbf{Multiple-Choice-Quizzes}. Beide Features nutzen denselben Ollama-LLM-Stack, folgen aber einem eigenst\"andigen, direkteren Prompt-Workflow, da hier keine Vektorsuche ben\"otigt wird -- der Nutzer liefert den Kontext direkt \"uber Dokumenten-IDs oder RAG-abgerufene Chunks.
+
+\subsection{Generierungspipeline (5 Schritte)}
+
+Beide Services (\texttt{FlashcardService}, \texttt{QuizService}) folgen derselben f\"unfstufigen Pipeline:
+
+\begin{enumerate}
+    \item \textbf{Kontextbeschaffung:} Der Service akzeptiert drei Eingabequellen: einen direkten \texttt{Context}-String (aus der RAG-Pipeline), eine einzelne \texttt{DocumentId} oder eine Liste von \texttt{DocumentIds}. Im letzteren Fall werden die Textinhalte aller Dokumente via \texttt{GetDocumentContentAsync} abgerufen und mit einem Trennzeichen (\texttt{\textbackslash n\textbackslash n\_\_NEXT\_DOCUMENT\_\_\textbackslash n\textbackslash n}) zusammengef\"ugt.
+    \item \textbf{Kontext-Truncation:} Um das Kontextfenster des LLMs nicht zu sprengen, wird der Dokumenteninhalt auf maximal 12.000 Zeichen (Flashcards) bzw. 15.000 Zeichen (Quizze) begrenzt.
+    \item \textbf{Prompt-Vorbereitung:} Der System-Prompt wird aus \texttt{appsettings.json} geladen (\texttt{AIService:Prompts:Flashcard} bzw. \texttt{:Quiz}). Die Variable \texttt{\{Count\}} wird durch die gew\"unschte Anzahl ersetzt.
+    \item \textbf{LLM-Inferenz:} Das Modell wird mit dem vorbereiteten \texttt{ChatHistory}-Objekt aufgerufen.
+    \item \textbf{JSON-Parsing und Persistenz:} Die Antwort wird geparst und in der Datenbank gespeichert.
+\end{enumerate}
+
+\subsection{Flashcard-Generierung (\texttt{FlashcardService})}
+
+Der LLM wird angewiesen, eine JSON-Liste von Objekten mit den Feldern \texttt{Question} und \texttt{Answer} zur\"uckzugeben. Das folgende Snippet zeigt den Prompt-Aufbau und die anschlie\ss{}ende Verarbeitung:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={KI-Aufruf und JSON-Parsing in FlashcardService.cs}]
+// Prompt zusammenbauen und KI aufrufen
+var chatHistory = new ChatHistory();
+chatHistory.AddSystemMessage(
+    promptTemplate.Replace("{Count}", request.Count.ToString()));
+chatHistory.AddUserMessage(
+    $"Text to analyze:\n\n{documentContent}\n\n" +
+    "IMPORTANT: Output strictly valid JSON. Start with [.");
+
+var result = await chatCompletionService
+    .GetChatMessageContentAsync(chatHistory);
+
+// JSON bereinigen und deserialisieren
+var cleanedJson = JsonHelper.ExtractJson(result.Content);
+var flashcards = JsonSerializer.Deserialize<List<GeneratedFlashcardJson>>(
+    cleanedJson,
+    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+\end{lstlisting}
+
+Nach dem Parsing werden die generierten Karten automatisch mit einem Tag versehen, der den Dokumenttitel tr\"agt, und als \texttt{Flashcard}-Entit\"aten in der Datenbank persistiert.
+
+\subsection{Quiz-Generierung (\texttt{QuizService})}
+
+Die Quiz-Generierung ist komplexit\"ur, da das LLM ein verschachteltes JSON-Objekt mit \texttt{Title}, \texttt{Questions} und pro Frage mehrere \texttt{Answers} (jeweils mit \texttt{IsCorrect}-Flag) produzieren muss. Da LLMs trotz strikter Anweisung gelegentlich vom erwarteten Schema abweichen (z.B. alternative Feldnamen wie \texttt{options} statt \texttt{Answers}), implementiert der \texttt{QuizService} eine \textbf{zweistufige Parsing-Strategie}:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Robustes JSON-Parsing in QuizService.cs}]
+var jsonNode = JsonNode.Parse(cleanedJson);
+
+// Stufe 1: Wrapper-Handling (falls LLM { "quiz": {...} } liefert)
+if (jsonNode["quiz"] != null)
+    jsonNode = jsonNode["quiz"];
+
+// Stufe 2a: Standard-Deserialisierung versuchen
+var result = jsonNode.Deserialize<GeneratedQuizJson>(options);
+
+// Stufe 2b: Fallback -- Manuelles Parsing bei alternativen Schemas
+if (result == null || !result.Questions.Any())
+{
+    // Felder wie "text"/"Text", "options"/"answers", "answer" (string)
+    // werden manuell ausgelesen und normalisiert.
+    result = ManuallyParseQuizJson(jsonNode);
+}
+\end{lstlisting}
+
+Die manuelle Fallback-Stufe erkennt dabei sowohl Antwortoptions als einfache Strings (\texttt{["Paris", "London", ...]}) als auch als Objekte (\texttt{[\{"text": ..., "isCorrect": ...\}]}). Dies macht die Quiz-Generierung robust gegenüber variierenden LLM-Antwortformaten.
+
+Nach erfolgreichem Parsing wird das Quiz als \texttt{Quiz}-Entit\"at mit allen \texttt{Question}-- und \texttt{Answer}-Objekten in einer einzigen EF Core-Transaktion gespeichert.
 
 
 \section{Infrastruktur \& Deployment}
