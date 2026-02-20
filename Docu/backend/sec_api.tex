@@ -1,0 +1,48 @@
+\section{API Design und Controller}
+Die Kommunikation mit dem Frontend erfolgt \"uber eine RESTful API. Die acht Controller sind thematisch gruppiert und folgen REST-Konventionen (\texttt{GET}, \texttt{POST}, \texttt{PUT}, \texttt{PATCH}, \texttt{DELETE}). Nahezu alle Endpunkte sind hinter dem \texttt{[Authorize]}-Attribut gesch\"utzt, d.h. sie erfordern eine aktive Cookie-Session. Ausnahmen sind die \"offentlichen Authentifizierungs-Endpunkte (Registrierung, Login, E-Mail-Best\"atigung).
+
+\subsection{Ausgew\"ahlte API-Endpunkte}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{5.5cm}|l|p{4cm}|}
+\hline
+\textbf{Methode} & \textbf{Route} & \textbf{Auth} & \textbf{Beschreibung} \\
+\hline
+\multicolumn{4}{|l|}{\textbf{api/users}} \\
+\hline
+\texttt{POST}   & \texttt{/}              & Anonym & Registrierung \\
+\texttt{POST}   & \texttt{/login}         & Anonym & Login, setzt HttpOnly-Cookie \\
+\texttt{POST}   & \texttt{/logout}        & Auth   & Logout, l\"oscht Session \\
+\texttt{GET}    & \texttt{/me}            & Auth   & Eigenes Profil abrufen \\
+\texttt{DELETE} & \texttt{/\{id\}}        & Admin  & Nutzer l\"oschen \\
+\hline
+\multicolumn{4}{|l|}{\textbf{api/documents}} \\
+\hline
+\texttt{GET}    & \texttt{/}              & Auth   & Eigene Dokumente (paginiert) \\
+\texttt{POST}   & \texttt{/}              & Auth   & Dokument hochladen (startet Indexierungs-Job) \\
+\texttt{DELETE} & \texttt{/\{id\}}        & Auth   & Dokument inkl. MinIO-Datei l\"oschen \\
+\texttt{GET}    & \texttt{/download/\{id\}} & Auth & Datei-Stream herunterladen \\
+\texttt{POST}   & \texttt{/\{id\}/share}  & Auth   & Dokument per E-Mail teilen \\
+\texttt{GET}    & \texttt{/search}        & Auth   & Volltext- und Tag-Suche \\
+\hline
+\multicolumn{4}{|l|}{\textbf{api/chat}} \\
+\hline
+\texttt{POST}   & \texttt{/message}       & Auth   & Nachricht senden, l\"ost RAG-Pipeline aus \\
+\texttt{GET}    & \texttt{/sessions}      & Auth   & Chat-Sitzungen abrufen \\
+\texttt{POST}   & \texttt{/sessions}      & Auth   & Neue Chat-Sitzung erstellen \\
+\hline
+\multicolumn{4}{|l|}{\textbf{api/flashcards \& api/quizzes}} \\
+\hline
+\texttt{POST}   & \texttt{/flashcards/generate} & Auth & Lernkarten per KI generieren \\
+\texttt{POST}   & \texttt{/quizzes/generate}    & Auth & Quiz per KI generieren \\
+\hline
+\multicolumn{4}{|l|}{\textbf{api/tags}} \\
+\hline
+\texttt{GET}    & \texttt{/}              & Auth   & Alle Tags abrufen \\
+\texttt{POST}   & \texttt{/}              & Admin  & Neuen Tag erstellen \\
+\hline
+\end{tabular}
+\caption{Wichtigste API-Endpunkte des EduShelf-Backends}
+\label{tab:api_endpoints}
+\end{table}

@@ -1,0 +1,50 @@
+\section{Infrastruktur \& Deployment}
+Das System ist vollständig containerisiert ("Dockerized"), um eine konsistente Umgebung von der Entwicklung bis zur Produktion zu gewährleisten.
+
+\subsection{Docker-Komposition}
+Die \texttt{docker-compose.yml} definiert das Zusammenspiel der Dienste und deren spezifische Konfiguration für die Produktionsumgebung.
+
+\subsubsection{Datenbank (PostgreSQL mit pgvector)}
+Für die persistente Speicherung und Vektorsuche wird ein spezialisiertes Image verwendet:
+\begin{itemize}
+    \item \textbf{Image:} \texttt{pgvector/pgvector:pg16} - Dies ist essentiell, da das Standard-Postgres-Image die \texttt{vector}-Erweiterung nicht enthält.
+    \item \textbf{Ports:} Das Mapping \texttt{5433:5432} vermeidet Konflikte mit lokalen Postgres-Instanzen auf dem Host.
+    \item \textbf{Healthcheck:} Ein integrierter Healthcheck (\texttt{pg\_isready}) stellt sicher, dass abhängige Container (wie die API) erst starten, wenn die Datenbank vollständig hochgefahren ist.
+    \item \textbf{Persistenz:} Das Volume \texttt{postgres\_data} sichert die relationalen Daten und Vektor-Indizes über Container-Neustarts hinweg.
+\end{itemize}
+
+\subsubsection{KI-Inferenz (Ollama)}
+Der Ollama-Container ist für die lokale Ausführung der LLMs zuständig und benötigt direkten Hardware-Zugriff für performante Inferenz:
+\begin{itemize}
+    \item \textbf{GPU-Passthrough:} Über die \texttt{deploy.resources}-Sektion wird der Nvidia-Treiber durchgereicht:
+    \begin{verbatim}
+reservations:
+  devices:
+    - driver: nvidia
+      count: 1
+      capabilities: [gpu]
+    \end{verbatim}
+    Dies ermöglicht die Nutzung von CUDA-Kernen, was die Antwortzeit (Time-to-First-Token) drastisch reduziert (von Sekunden auf Millisekunden).
+    \item \textbf{Persistenz:} Das Volume \texttt{ollama\_data} speichert die heruntergeladenen Modelle (z.B. Llama 3) im \texttt{/root/.ollama} Verzeichnis, um erneute Downloads bei Container-Updates zu vermeiden.
+    \item \textbf{Keep-Alive:} Die Umgebungsvariable \texttt{OLLAMA\_KEEP\_ALIVE} verhindert, dass das Modell nach kurzer Inaktivität aus dem VRAM entladen wird, was die Latenz bei aufeinanderfolgenden Anfragen minimiert.
+\end{itemize}
+
+\subsubsection{Object Storage (MinIO)}
+MinIO dient als skalierbarer, S3-kompatibler Dateispeicher.
+\begin{itemize}
+    \item \textbf{Ports:}
+    \begin{itemize}
+        \item \texttt{9000}: API-Port für die Kommunikation mit dem Backend (S3-Protokoll).
+        \item \texttt{9001}: Web-Interface (Console) zur manuellen Verwaltung von Buckets und Dateien.
+    \end{itemize}
+    \item \textbf{Command:} Der Startbefehl \texttt{server /data --console-address ":9001"} aktiviert das Web-UI explizit.
+    \item \textbf{Volumes:} \texttt{minio\_data} speichert die physischen Dateien (PDFs, Bilder) persistent.
+\end{itemize}
+
+\subsection{Dockerfile}
+Das \texttt{Dockerfile} der API nutzt Multi-Stage Builds, um das Image klein zu halten:
+\begin{enumerate}
+    \item \textbf{Build Stage:} Nutzt das vollständige SDK Image (\texttt{mcr.microsoft.com/dotnet/sdk:8.0}), um den Code zu kompilieren und Abhängigkeiten (NuGet Pakete) zu laden.
+    \item \textbf{Runtime Stage:} Nutzt das schlanke Runtime Image (\texttt{mcr.microsoft.com/dotnet/aspnet:8.0}), welches nur die zum Ausführen nötigen Komponenten enthält. Das kompilierte Artefakt aus Stage 1 wird hierhin kopiert.
+\end{enumerate}
+Dies reduziert die Image-Größe drastisch und verbessert die Sicherheit, da keine Compiler-Tools im Produktions-Container vorhanden sind.

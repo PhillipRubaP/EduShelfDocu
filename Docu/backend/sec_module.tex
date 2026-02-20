@@ -1,0 +1,27 @@
+\section{Detaillierte Analyse ausgewählter Module}
+Um die technische Tiefe zu verdeutlichen, wird hier exemplarisch die Implementierung sicherheitskritischer und komplexer Logik analysiert.
+
+\subsection{Authentifizierung: Secure Cookies und Hashing}
+Die Sicherheit der Benutzerdaten hat oberste Priorität. Der \texttt{AuthService} implementiert daher bewährte Industriestandards.
+
+\subsubsection{Passwort-Hashing (BCrypt)}
+Passwörter werden niemals im Klartext gespeichert. Stattdessen wird der \texttt{BCrypt}-Algorithmus verwendet, der durch seinen konfigurierbaren "Work Factor" (Kostenfaktor) resistent gegen Brute-Force- und Rainbow-Table-Angriffe ist.
+\begin{lstlisting}[language={[Sharp]C}, caption={Verifizierung im AuthService}]
+// user.PasswordHash kommt aus der DB, passwordDto.Password vom User
+bool isPasswordValid = BCrypt.Net.BCrypt.Verify(passwordDto.Password, user.PasswordHash);
+if (!isPasswordValid)
+{
+    throw new UnauthorizedAccessException("Invalid credentials");
+}
+\end{lstlisting}
+
+\subsubsection{Cookie-Konstruktion}
+Nach erfolgreichem Login wird kein JWT im LocalStorage (Frontend) abgelegt (XSS-Gefahr), sondern ein \textbf{HttpOnly Cookie} gesetzt.
+\begin{itemize}
+    \item \textbf{HttpOnly:} Das Cookie kann nicht per JavaScript ausgelesen werden.
+    \item \textbf{Secure:} Wird nur über HTTPS übertragen.
+    \item \textbf{SameSite=Strict:} Das Cookie wird nur an den eigenen Origin gesendet (Schutz vor CSRF).
+\end{itemize}
+
+\subsection{Ingestion-Pipeline: HNSW Indexierung}
+Wie in Abschnitt 6 beschrieben, nutzt das System einen HNSW-Index. Die technische Herausforderung liegt hier in der Konfiguration der Operatorenklasse für \texttt{pgvector}. Code-seitig wird dies in der \texttt{OnModelCreating}-Methode des \texttt{ApiDbContext} gelöst, um sicherzustellen, dass PostgreSQL den Index korrekt für L2-Distanz-Berechnungen optimiert. Dies ist ein direktes Mapping von C\#-Code auf datenbankspezifische Features ("Code-First Migration").
