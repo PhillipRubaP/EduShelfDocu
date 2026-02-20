@@ -1,0 +1,32 @@
+% Autor: Elias Welt
+\section{Softwarearchitektur und Datenfluss}
+\subsection{Unidirektionaler Datenfluss}
+React erzwingt einen unidirektionalen Datenfluss ("One-Way Binding"). Daten fließen immer von Eltern- zu Kind-Komponenten mittels sogenannter "`Props"'. Um Daten von einem Kind zurück zum Elternteil zu senden (z.B. ein Formular-Submit im \texttt{QuizModal}, der die Liste im \texttt{Quiz} aktualisiert), übergibt die Elternkomponente eine Callback-Funktion an das Kind.
+
+\subsection{Routing-Strategie}
+Das Routing in \texttt{App.jsx} definiert die Skelettstruktur der Anwendung. Es wird zwischen öffentlichen Routen (Login, Register) und privaten, geschützten Routen unterschieden.
+
+\begin{lstlisting}[language=JavaScript, caption={Routing-Struktur in App.jsx}]
+<Routes>
+  {/* Oeffentliche Routen */}
+  <Route path="/login" element={<Login setLoggedInUser={setLoggedInUser} />} />
+  
+  {/* Geschuetzte Routen - erfordern Login */}
+  <Route path="/*" element={
+    loggedInUser ? (
+      <Routes>
+        <Route element={<MainLayout handleLogout={handleLogout} user={loggedInUser} />}>
+          <Route index element={<MainDashboard />} />
+          <Route path="files" element={<Files />} />
+          <Route path="chat" element={<Chat />} />
+          {/* ... weitere Routen ... */}
+        </Route>
+      </Routes>
+    ) : (
+      <Navigate to="/login" />
+    )
+  } />
+</Routes>
+\end{lstlisting}
+
+Die Verwendung von verschachtelten Routen (\texttt{<Route element={<MainLayout ...>}>}) erlaubt es, das Grundgerüst (Header, Navigation) einmalig zu definieren. Die Kind-Komponenten werden dann an der Stelle des \texttt{<Outlet />} Platzhalters in \texttt{MainLayout.jsx} gerendert.

@@ -1,0 +1,62 @@
+% Autor: Elias Welt
+\section{Navigationsstruktur und Layout (MainLayout.jsx)}
+
+Das Grundgerüst der Anwendung wird durch die Komponente \texttt{MainLayout.jsx} definiert. Sie fungiert als persistente Hülle um alle geschützten Seiten und stellt sicher, dass die Navigationsleiste stets sichtbar bleibt, während sich der Inhaltsbereich dynamisch verändert.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/taskbar-dark-mode}
+    \caption{Navigationsleiste von EduShelf mit rollenbasierter Anzeige (Dark-Mode)}
+    \label{fig:taskbar}
+\end{figure}
+
+\subsection{Outlet-Pattern und verschachtelte Routen}
+
+Das Layout nutzt das \texttt{<Outlet />}-Konzept von React Router. Dieses Muster erlaubt es, die Navigationsleiste und den Inhaltsbereich strikt voneinander zu trennen: Das Layout wird einmalig gerendert und bleibt stabil, während React Router die jeweils aktive Kind-Komponente an der \texttt{<Outlet />}-Stelle einfügt. Dadurch werden unnötige Re-Renders der gesamten Navigationsstruktur vermieden.
+
+\begin{lstlisting}[language=JavaScript, caption={Outlet-Pattern in MainLayout.jsx}]
+const MainLayout = ({ handleLogout, user }) => {
+  return (
+    <div className="app-container">
+      <header className="navbar">
+        {/* Navigationsleiste -- wird nie neu gerendert */}
+        <nav className="navbar-nav">
+          <NavLink to="/">Dashboard</NavLink>
+          <NavLink to="/files">Files</NavLink>
+          {/* ... */}
+        </nav>
+      </header>
+      <main className="main-content">
+        <Outlet /> {/* Hier wird die aktive Seite eingefuegt */}
+      </main>
+    </div>
+  );
+};
+\end{lstlisting}
+
+\subsection{Rollenbasierte Navigation (RBAC)}
+
+Die Sichtbarkeit des Menüpunkts \textit{Admin Panel} wird direkt in der Navigationskomponente gesteuert. Ein bedingtes Rendering prüft, ob das übergebene \texttt{user}-Objekt die Rolle \texttt{'Admin'} im Rollen-Array enthält:
+
+\begin{lstlisting}[language=JavaScript, caption={Rollenbasierte Anzeige des Admin-Menüpunkts}]
+{user && user.roles && user.roles.includes('Admin') && (
+  <NavLink to="/admin">Admin Panel</NavLink>
+)}
+\end{lstlisting}
+
+Diese Überprüfung findet ausschließlich auf der Client-Seite statt und dient der Benutzerfreundlichkeit. Die eigentliche Zugriffskontrolle auf admin-spezifische API-Endpunkte erfolgt serverseitig, sodass ein manuelles Manipulieren der URL durch den Nutzer keine sicherheitsrelevanten Auswirkungen hat.
+
+\subsection{Aktiver Zustand mit NavLink}
+
+React Router stellt die Komponente \texttt{NavLink} bereit, welche gegenüber dem einfachen \texttt{Link} den Vorteil bietet, den aktuell aktiven Zustand zu kennen. Über eine Callback-Funktion kann die CSS-Klasse des Elements dynamisch gesetzt werden:
+
+\begin{lstlisting}[language=JavaScript, caption={Dynamische CSS-Klasse bei aktivem Navigationselement}]
+<NavLink
+  to="/files"
+  className={({ isActive }) => (isActive ? 'active' : '')}
+>
+  Files
+</NavLink>
+\end{lstlisting}
+
+Der Parameter \texttt{isActive} wird von React Router automatisch auf \texttt{true} gesetzt, wenn die aktuelle URL mit dem \texttt{to}-Attribut des Links übereinstimmt. Die CSS-Klasse \texttt{active} hebt den entsprechenden Menüpunkt visuell hervor und verbessert die räumliche Orientierung des Nutzers innerhalb der Anwendung.

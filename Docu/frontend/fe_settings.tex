@@ -1,0 +1,67 @@
+% Autor: Elias Welt
+\section{Einstellungen und Benutzerpräferenzen (Settings.jsx)}
+
+Die Einstellungskomponente \texttt{Settings.jsx} ermöglicht dem Nutzer die individuelle Anpassung der Anwendungsdarstellung. Sie demonstriert ein durchgängiges Muster zur persistenten Speicherung von UI-Präferenzen im Browser.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.82\textwidth]{img/settings-dark-mode}
+    \caption{Einstellungsdialog von EduShelf im Dark-Mode}
+    \label{fig:settings}
+\end{figure}
+
+\subsection{Präferenz-Initialisierung beim Laden}
+
+Beim Mounten der Komponente werden alle Benutzereinstellungen aus dem \texttt{localStorage} geladen und als initialer State gesetzt. Dieses Vorgehen stellt sicher, dass die Einstellungen über Seitenreloads und Browsersitzungen hinweg erhalten bleiben:
+
+\begin{lstlisting}[language=JavaScript, caption={Laden gespeicherter Präferenzen beim Komponentenstart}]
+useEffect(() => {
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'light') setLightMode(true);
+
+    const storedAnimations = localStorage.getItem('animationsEnabled');
+    if (storedAnimations !== null)
+        setAnimationsEnabled(storedAnimations === 'true');
+
+    const storedCompact = localStorage.getItem('compactMode');
+    if (storedCompact !== null)
+        setCompactMode(storedCompact === 'true');
+}, []);
+\end{lstlisting}
+
+Der Vergleich \texttt{storedValue !== null} ist dabei bewusst gewählt: Er unterscheidet zwischen einem nicht vorhandenen Eintrag (erster Aufruf -- Standard gilt) und einem explizit auf \texttt{false} gesetzten Eintrag (Nutzer hat ausgeschaltet).
+
+\subsection{Theme-Umschaltung}
+
+Die Umschaltung zwischen Dark- und Light-Mode erfolgt durch direktes Manipulieren des \texttt{data-theme}-Attributs am \texttt{<html>}-Element. Dieses Attribut ist der Ankerpunkt für das CSS-Variablen-Theming:
+
+\begin{lstlisting}[language=JavaScript, caption={Direkte DOM-Manipulation zur Theme-Umschaltung}]
+const handleLightModeToggle = () => {
+    const newLightMode = !lightMode;
+    setLightMode(newLightMode);
+    if (newLightMode) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('theme');
+    }
+};
+\end{lstlisting}
+
+Die Entfernung des Attributs (\texttt{removeAttribute}) statt der Setzung auf einen leeren String ist semantisch korrekt: Ohne das Attribut greift das Standard-CSS (\texttt{:root}) -- der Dark-Mode -- und es existiert kein leerer Attributwert im DOM.
+
+\subsection{Erweiterbare Einstellungsarchitektur}
+
+Die Einstellungskomponente ist in zwei logische Bereiche gegliedert:
+
+\begin{itemize}
+    \item \textbf{Appearance}: Enthält aktuell den Light-Mode-Toggle. Der Compact-Mode ist als \textit{Coming Soon} vorbereitet -- die zugehörige Logik (\texttt{document.body.classList.add('compact-mode')}) ist bereits implementiert, der Toggle aber deaktiviert.
+    \item \textbf{Experience}: Enthält Toggle-Elemente für Animationen und Soundeffekte, die ebenfalls als \textit{Coming Soon} markiert sind. Die State-Verwaltung ist vollständig vorhanden, lediglich die UI-Reaktion auf die Einstellung fehlt noch.
+\end{itemize}
+
+Dieses Vorgehen -- vollständige State-Logik ohne aktive Wirkung -- ermöglicht es, neue Features iterativ zu integrieren, ohne die bestehende Komponentenstruktur zu verändern. Es entspricht dem Prinzip des \textit{Feature Flagging} auf einfacher Ebene.
+
+\subsection{Schließen der Einstellungsseite}
+
+Die Einstellungsseite ist als Modal-Route realisiert. Das Schließen erfolgt nicht durch einen hartkodierten Redirect, sondern durch \texttt{navigate(-1)} -- den Zurück-Schritt in der Browser-Historie. Dadurch gelangt der Nutzer immer zur zuletzt besuchten Seite zurück, unabhängig davon, von wo aus die Einstellungen geöffnet wurden.

@@ -1,0 +1,29 @@
+% Autor: Elias Welt
+\section{Datenschicht und API-Integration}
+Die gesamte Kommunikation mit dem Backend wird über das Modul \texttt{src/services/api.js} abgewickelt. Dieses Muster, oft als "Service Layer Pattern" bezeichnet, hat den Vorteil, dass Komponenten keine Details über URLs oder HTTP-Header kennen müssen.
+
+\subsection{API-Wrapper}
+Das \texttt{api}-Objekt fungiert als Wrapper um die native \texttt{fetch}-API. Es implementiert globale Verhaltensweisen:
+
+\begin{enumerate}
+    \item \textbf{Basis-URL}: Alle Anfragen sind relativ zu einer zentral konfigurierten Basis-URL.
+    \item \textbf{Credentials}: Durch \texttt{credentials: 'include'} sendet der Browser automatisch Cookies (für die HttpOnly Session-Cookies) mit jeder Anfrage mit.
+    \item \textbf{Content-Type Handling}: JSON-Payloads werden automatisch serialisiert und der korrekte Header gesetzt.
+    \item \textbf{Zentrale Fehlerbehandlung}: Antworten mit einem HTTP-Statuscode außerhalb des 200er-Bereichs lösen automatisch eine Exception aus. Dies vereinfacht die Fehlerbehandlung in den Komponenten, da \texttt{try/catch}-Blöcke verwendet werden können.
+\end{enumerate}
+
+\begin{lstlisting}[language=JavaScript, caption={Generische GET-Methode im API-Service}]
+get: async (endpoint, options = {}) => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    credentials: 'include',
+    ...options,
+  });
+  if (!response.ok) {
+    // Fehlerbehandlung: Logging und Werfen eines Errors
+    throw new Error(`API Error: ${response.status}`);
+  }
+  return await response.json();
+},
+\end{lstlisting}
+
+Zusätzlich stellt der Service spezifische Methoden bereit, die die Geschäftslogik abbilden, beispielsweise \texttt{createChatSession}, \texttt{updateQuiz} oder \texttt{uploadDocument}. Letzteres nutzt \texttt{FormData}, um Datei-Uploads (multipart/form-data) zu ermöglichen.

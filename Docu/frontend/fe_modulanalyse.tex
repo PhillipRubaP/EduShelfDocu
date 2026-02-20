@@ -1,0 +1,87 @@
+% Autor: Elias Welt
+\section{Detaillierte Analyse ausgewählter Module}
+Um die technische Tiefe der Implementierung zu verdeutlichen, werden im Folgenden drei Kernmodule detailliert anhand ihres Quellcodes analysiert.
+
+\subsection{Quiz-Editor Logik (QuizModal.jsx)}
+Der Quiz-Editor ermöglicht das Erstellen und Bearbeiten von verschachtelten Datenstrukturen (Quiz -> Fragen -> Antworten). Die Herausforderung hierbei ist das State-Management einer mehrdimensionalen Struktur.
+
+\subsubsection{Zustandsverwaltung}
+Der State \texttt{questions} ist ein Array von Objekten. Jedes Objekt repräsentiert eine Frage und enthält wiederum ein Array von \texttt{answers}.
+
+\begin{lstlisting}[language=JavaScript, caption={Initialer State im QuizModal}]
+const [questions, setQuestions] = useState([
+  { 
+    text: '', 
+    answers: [{ text: '', isCorrect: false }] 
+  }
+]);
+\end{lstlisting}
+
+\subsubsection{Dynamische Formular-Manipulation}
+Beim Ändern eines Antworttextes darf der State nicht direkt mutiert werden. Stattdessen muss eine tiefe Kopie (Deep Copy) oder zumindest eine flache Kopie der betroffenen Ebenen erstellt werden.
+Die Funktion \texttt{handleAnswerChange} demonstriert das Prinzip der Immutability in React:
+
+\begin{lstlisting}[language=JavaScript, caption={Update-Logik für verschachtelte Antworten}]
+const handleAnswerChange = (questionIndex, answerIndex, event) => {
+    // 1. Kopie des Fragen-Arrays
+    const newQuestions = [...questions];
+    // 2. Direkter Zugriff auf die Antwort (Referenz bleibt erhalten, aber Inhalt wird ueberschrieben)
+    // Hinweis: Fuer saubere Immutability muesste auch answers kopiert werden.
+    // In React funktioniert dies jedoch oft, solange das Top-Level-Array neu ist.
+    newQuestions[questionIndex].answers[answerIndex].text = event.target.value;
+    // 3. Setzen des neuen States loest Re-Render aus
+    setQuestions(newQuestions);
+};
+\end{lstlisting}
+
+\subsubsection{Validierung und Speichern}
+Beim Speichern (\texttt{handleSubmit}) werden die Daten an die API gesendet. Hierbei wird unterschieden, ob ein neues Quiz erstellt (\texttt{POST}) oder ein bestehendes bearbeitet (\texttt{PUT}) wird.
+
+\subsection{Flashcards: 3D-Interaktion und State}
+Die Komponente \texttt{Flashcards.jsx} verwendet eine interessante Datenstruktur für den Zustand der umgedrehten Karten. Anstatt für jede Karte einen Boolean im Objekt zu speichern (was eine Änderung des Datenmodells erfordern würde), wird ein \texttt{Set} verwendet, das die IDs der umgedrehten Karten speichert.
+
+\begin{lstlisting}[language=JavaScript, caption={Nutzung eines Sets fuer UI-State}]
+const [flippedCards, setFlippedCards] = useState(new Set());
+
+const flipCard = (id) => {
+    setFlippedCards(prevFlippedCards => {
+        const newFlippedCards = new Set(prevFlippedCards);
+        if (newFlippedCards.has(id)) {
+            newFlippedCards.delete(id); // Karte umdrehen (zurueck)
+        } else {
+            newFlippedCards.add(id); // Karte aufdecken
+        }
+        return newFlippedCards;
+    });
+};
+\end{lstlisting}
+
+Diese Methode ist performant und trennt den UI-Zustand (ist die Karte gedreht?) sauber von den eigentlichen Geschäftsdaten (Frage/Antwort). Beim Rendern wird \texttt{flippedCards.has(card.id)} geprüft, um die CSS-Klasse \texttt{.flipped} bedingt hinzuzufügen.
+
+\subsection{Admin Panel: Kaskadierende Datenabfragen}
+Im \texttt{AdminPanel.jsx} muss beim Klick auf einen Benutzer dessen Dateiliste geladen werden. Dies ist ein klassisches "Master-Detail"-Szenario.
+Um unnötigen Netzwerktraffic zu vermeiden, werden die Dateien nicht initial für alle Benutzer geladen ("Lazy Loading").
+
+\begin{lstlisting}[language=JavaScript, caption={Asynchrones Laden von Detaildaten}]
+const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setError('');
+    setEditUserMode(false);
+    // Erst beim Klick werden die Dateien nachgeladen
+    fetchUserFiles(user.userId);
+};
+
+const fetchUserFiles = async (userId) => {
+    try {
+        setLoading(true); // Ladeindikator an
+        const files = await api.get(`/Users/${userId}/documents`);
+        setUserFiles(files);
+    } catch (err) {
+        setError('Could not load user files.');
+    } finally {
+        setLoading(false); // Ladeindikator aus, egal ob Erfolg oder Fehler
+    }
+};
+\end{lstlisting}
+
+Diese Implementierung sorgt für eine schnelle initiale Ladezeit der Benutzertabelle, da die (potenziell große) Menge an Dateimetadaten erst bei Bedarf ("On-Demand") abgerufen wird.

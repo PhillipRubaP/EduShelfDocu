@@ -1,0 +1,71 @@
+% Autor: Elias Welt
+\section{Implementierung der Kernkomponenten}
+
+\subsection{Authentifizierungssystem}
+Das Login-System (\texttt{Login.jsx}) ist der erste Berührungspunkt für den Nutzer. Das Formular sendet E-Mail und Passwort an den Endpunkt \texttt{/Users/login}.
+Bei Erfolg antwortet das Server-Backend mit einem Session-Cookie (HttpOnly) und den Benutzerdaten.
+
+Das Besondere an der Implementierung ist das sofortige Abrufen der Benutzerrollen nach dem Login. Da die Rollen ("Admin", "User") bestimmen, welche Menüpunkte sichtbar sind, führt das Frontend einen sekundären Aufruf an \texttt{/Users/\{id\}/roles} durch.
+Das kombinierte Benutzerobjekt wird anschließend im \texttt{localStorage} gespeichert. Dies dient nicht der Sicherheit (da der localStorage manipuliert werden kann), sondern lediglich der Persistenz des UI-Zustands (z. B. "Ist der Nutzer eingeloggt?"), bis die echte Session beim Neuladen durch \texttt{/Users/me} validiert wird.
+
+\subsection{Dateimanagement (Files.jsx)}
+Die Komponente \texttt{Files.jsx} realisiert ein Dokumentenmanagementsystem. 
+\textbf{Funktionsweise:}
+\begin{itemize}
+    \item Beim Laden der Komponente ruft \texttt{useEffect} die Liste aller Dokumente ab.
+    \item Ein Suchfeld filtert die lokale Liste in Echtzeit (\texttt{filteredFiles.filter(...)}).
+    \item Das Kontextmenü (Drei-Punkte-Menü) wird über den Zustand \texttt{activeMenuId} gesteuert, sodass immer nur ein Menü gleichzeitig offen sein kann.
+\end{itemize}
+
+Der Upload-Prozess wird über ein modales Fenster (\texttt{UploadDialog.jsx}) realisiert. Hier wählt der Nutzer eine Datei aus, welche zusammen mit der User-ID an den Server gesendet wird.
+
+\subsection{Interaktives Lernen: Das Quiz-Modul}
+Das Quiz-System ist eine der komplexesten Komponenten des Frontends. Es besteht aus der Übersichtsliste (\texttt{Quiz.jsx}) und dem Editor/Player (\texttt{QuizModal.jsx}, \texttt{Quiz.jsx} Logik).
+
+\subsubsection{Datenstruktur}
+Ein Quiz besteht aus einem Titel und einer Liste von Fragen. Jede Frage enthält wiederum eine Liste von Antworten, wobei eine oder mehrere als korrekt markiert sind. Diese hierarchische Struktur wird im State als verschachteltes Array objekt abgebildet.
+
+\subsubsection{Ablauf eines Quiz}
+Der Zustand während eines laufenden Quiz wird durch mehrere State-Variablen gesteuert:
+\begin{itemize}
+    \item \texttt{currentQuestionIndex}: Index der aktuell angezeigten Frage.
+    \item \texttt{score}: Anzahl der bisher korrekt beantworteten Fragen.
+    \item \texttt{selectedAnswerId}: Um eine Mehrfachauswahl zu verhindern und visuelles Feedback zu geben.
+    \item \texttt{showScore}: Ein Boolean-Flag, das nach der letzten Frage auf \texttt{true} gesetzt wird, um die Ergebnisanzeige zu rendern.
+\end{itemize}
+
+Das visuelle Feedback (Grün für richtig, Rot für falsch) wird durch CSS-Klassen gesteuert, die dynamisch basierend auf der Korrektheit der Antwort zugewiesen werden.
+
+\subsection{Flashcards (Lernkarten)}
+Die \texttt{Flashcards.jsx} Komponente nutzt CSS3 3D-Transformationen, um einen realistischen Umdreh-Effekt zu erzielen.
+
+\begin{lstlisting}[language=CSS, caption={CSS für den Flip-Effekt}]
+.flashcard-scene {
+  perspective: 1000px; /* Gibt dem 3D-Raum Tiefe */
+}
+.flashcard-container {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.flashcard-scene.flipped .flashcard-container {
+  transform: rotateY(180deg);
+}
+\end{lstlisting}
+
+Der Status, welche Karte gerade umgedreht ist, wird in einem \texttt{Set} (\texttt{flippedCards}) gespeichert. Dies ermöglicht es, mehrere Karten gleichzeitig umzudrehen, im Gegensatz zu einer simplen ID-Variable.
+
+\subsection{Chat und KI-Integration}
+Der Chat (\texttt{Chat.jsx}) bietet eine Schnittstelle zu einem LLM (Large Language Model). 
+Wichtige Implementierungsdetails:
+\begin{itemize}
+    \item \textbf{Streaming vs. Polling}: Die aktuelle Implementierung wartet auf die vollständige Antwort des Servers (Request/Response Pattern). Während des Wartens wird ein "Thinking Indicator" (animierte Punkte) eingeblendet (\texttt{isLoading} State).
+    \item \textbf{Markdown}: Da KI-Modelle oft strukturierten Text (Codeblöcke, Listen) ausgeben, wird \texttt{react-markdown} in Kombination mit \texttt{rehype-highlight} verwendet. Dies konvertiert die Markdown-Antwort sicher in HTML und bietet Syntax-Highlighting für Code.
+    \item \textbf{Multimodaler Input}: Benutzer können Bilder hochladen. Diese werden lokal mittels \texttt{URL.createObjectURL()} sofort in der Vorschau angezeigt, bevor sie als Blob an den Server gesendet werden.
+\end{itemize}
+
+\subsection{Admin Panel und RBAC}
+Das \texttt{AdminPanel.jsx} ist das Kontrollzentrum für Systemadministratoren. Der Zugriff auf diese Route wird auf zwei Ebenen geschützt:
+1. \textbf{Client-Side Routing}: In \texttt{App.jsx} wird geprüft, ob das Benutzerobjekt die Rolle "Admin" enthält. Falls nicht, wird der Nutzer sofort umgeleitet.
+2. \textbf{Server-Side API}: Selbst wenn ein Nutzer die UI umgehen würde, lehnt das Backend Anfragen an admin-spezifische Endpunkte ab.
+
+Das Panel ermöglicht CRUD-Operationen (Create, Read, Update, Delete) für Benutzer. Besonders hervorzuheben ist die verschachtelte Datenansicht: Klickt ein Admin auf einen Benutzer, werden dessen Dateien asynchron nachgeladen (\texttt{fetchUserFiles}) und in einer Detailansicht dargestellt. Dies vermeidet das Laden unnötiger Daten für die Hauptübersichtstabelle.
