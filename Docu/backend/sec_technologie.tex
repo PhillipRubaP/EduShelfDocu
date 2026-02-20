@@ -1,0 +1,11 @@
+\section{Technologie-Stack}
+Das Backend setzt auf einen modernen, vollständig Open-Source-basierten Stack, der speziell für performante, cloud-native und KI-gestützte Anwendungen optimiert wurde.
+
+\begin{itemize}
+	\item \textbf{ASP.NET Core 8:} Das zugrundeliegende Framework bietet native Unterstützung für asynchrone Programmierung (\texttt{async/await}), was für I/O-lastige Operationen (Datenbank, Netzwerk) essenziell ist. Es ist plattformunabhängig und läuft in Linux-Containern.
+	\item \textbf{PostgreSQL + pgvector:} PostgreSQL wurde aufgrund seiner Robustheit und Erweiterbarkeit gewählt. Die entscheidende Komponente für die RAG-Funktionalität ist die Erweiterung \texttt{pgvector}. Sie ermöglicht das Speichern von hochdimensionalen Vektoren (Embeddings) direkt in der Datenbank und führt Ähnlichkeitssuchen (Nearest Neighbor Search) mittels Kosinus-Distanz oder Euklidischer Distanz performant durch.
+	\item \textbf{Ollama:} Ein lokaler Server zur Ausführung von Large Language Models (LLMs) wie Llama 3 oder Phi-3. Durch die lokale Ausführung bleiben sensible Dokumentendaten auf dem Server und werden nicht an Drittanbieter-APIs (wie OpenAI) gesendet, was den Datenschutz massiv verbessert.
+	\item \textbf{MinIO:} Ein S3-kompatibler Object Storage. Hochgeladene Dateien werden nicht als BLOB in der relationalen Datenbank gespeichert (was diese aufblähen würde), sondern effizient im Dateisystem über MinIO verwaltet.
+    \item \textbf{Microsoft Semantic Kernel:} Ein SDK, das als Abstraktionsschicht für KI-Dienste dient. Es vereinfacht die Integration verschiedener KI-Modelle und bietet Mechanismen für Prompt-Templating, Memory-Management (Vektorspeicher-Abstraktion) und Function Calling.
+    \item \textbf{PdfPig \& Docnet.Core:} Spezialisierte Bibliotheken zur Extraktion von Text aus PDF-Dateien. Docnet.Core ist ein Wrapper um die native `pdfium`-Bibliothek und bietet extrem hohe Performance beim Rendern, während PdfPig reines C\# ist und gut für Text-Extraktion geeignet ist.
+\end{itemize}

@@ -1,0 +1,83 @@
+\section{Projekt-Setup und Konfiguration}
+Analog zum Frontend erfolgt der Einstieg in die Anwendung über eine definierte Startup-Logik, die in der \texttt{Program.cs} und den Konfigurationsdateien verankert ist.
+
+\subsection{Programm-Initialisierung (Program.cs)}
+Die \texttt{Program.cs} ist der "Entry Point" der ASP.NET Core Anwendung. Hier wird der "Generic Host" gebaut, der Dependency Injection Container befüllt und die HTTP-Request-Pipeline (Middleware) konfiguriert.
+\begin{lstlisting}[language={[Sharp]C}, caption={Auszug aus der Middleware-Konfiguration}]
+	var builder = WebApplication.CreateBuilder(args);
+	
+	// 1. Service Registrierung (DI)
+	builder.Services.AddApplicationServices(builder.Configuration);
+	builder.Services.AddControllers();
+	builder.Services.AddEndpointsApiExplorer();
+	builder.Services.AddSwaggerGen();
+	
+	var app = builder.Build();
+	
+	// 2. HTTP Request Pipeline
+	if (app.Environment.IsDevelopment())
+	{
+		app.UseSwagger();
+		app.UseSwaggerUI();
+	}
+	
+	app.UseHttpsRedirection();
+	app.UseCors("AllowWebApp");
+	app.UseAuthentication();
+	app.UseAuthorization();
+	app.MapControllers();
+	
+	app.Run();
+\end{lstlisting}
+
+\subsection{Konfiguration (appsettings.json)}
+Die Anwendungskonfiguration folgt dem \textit{12-Factor App}-Prinzip: Alle umgebungsabhängigen Parameter werden aus der Datei \texttt{appsettings.json} geladen und können zur Laufzeit durch Umgebungsvariablen überschrieben werden (z.B. in Docker Compose). Das folgende Listing zeigt die vollständige Konfigurationsstruktur (sensible Werte wie Passwörter sind aus Sicherheitsgründen ausgeblendet):
+
+\begin{lstlisting}[language={}   , caption={Konfigurationsstruktur der appsettings.json}]
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=<db-host>;Port=5433;Database=EduShelfDb;..."
+  },
+  "AIService": {
+    "Provider": "Ollama",
+    "Endpoint": "http://<ollama-host>:11434",
+    "ChatModel": "qwen3:14b",
+    "EmbeddingModel": "nomic-embed-text",
+    "VisionModel": "moondream:1.8b",
+    "ContextLengthLimit": 4096,
+    "Prompts": {
+      "System": "...",     // Steuert das Grundverhalten des LLMs
+      "Intent": "...",    // Anleitung zur JSON-Intent-Erkennung
+      "Flashcard": "...", // Anleitung zur Flashcard-Generierung
+      "Quiz": "..."       // Anleitung zur Quiz-Generierung
+    }
+  },
+  "Minio": {
+    "Endpoint": "<minio-host>:9000",
+    "AccessKey": "<key>",
+    "SecretKey": "<secret>",
+    "BucketName": "edushelf-documents",
+    "Secure": false
+  },
+  "EmailSettings": {
+    "SmtpHost": "<smtp-server>",
+    "SmtpPort": 587,
+    "SmtpUser": "<user>",
+    "SmtpPass": "<password>",
+    "FromEmail": "<sender>"
+  },
+  "Seeding": {
+    "AdminPassword": "<admin-pw>",
+    "StudentPassword": "<student-pw>"
+  }
+}
+\end{lstlisting}
+
+Die wichtigsten Konfigurationsblöcke im Überblick:
+\begin{itemize}
+    \item \textbf{\texttt{ConnectionStrings}}: Verbindungsstring zur PostgreSQL-Datenbank (Host, Port, Datenbankname, Zugangsdaten).
+    \item \textbf{\texttt{AIService}}: Zentrale KI-Konfiguration. \texttt{ChatModel} gibt das Sprachmodell an (z.B. \texttt{qwen3:14b}), \texttt{EmbeddingModel} das Modell für die Vektorerzeugung (\texttt{nomic-embed-text}) und \texttt{VisionModel} das Modell für die Bildanalyse. \texttt{ContextLengthLimit} (Standard: 4096 Token) begrenzt die Kontextfenstergröße. Die \texttt{Prompts}-Untersektion enthält die vollständigen System-Prompts für alle KI-gesteuerten Features als konfigurierbare Strings -- so können diese ohne Codeänderung angepasst werden.
+    \item \textbf{\texttt{Minio}}: Verbindungsdaten zum S3-kompatiblen Object Storage (Endpoint, Zugangsdaten, Bucket-Name).
+    \item \textbf{\texttt{EmailSettings}}: SMTP-Konfiguration für den Versand von Registrierungs-Bestätigungsmails.
+    \item \textbf{\texttt{Seeding}}: Passwörter für vordefinierten Admin- und Student-Benutzer, die beim ersten Start automatisch angelegt werden.
+\end{itemize}

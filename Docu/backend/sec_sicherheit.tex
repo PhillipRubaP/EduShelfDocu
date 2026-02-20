@@ -1,0 +1,23 @@
+\section{Sicherheitskonzepte}
+Sicherheit war ein integraler Bestandteil des Designs ("Security by Design").
+
+\subsection{Authentifizierung \& Autorisierung}
+Die Authentifizierung erfolgt über Cookies (\texttt{CookieAuthenticationDefaults}).
+\begin{itemize}
+    \item \textbf{Login-Prozess:} Der Nutzer sendet Anmeldedaten an \texttt{/api/users/login}. Der \texttt{AuthService} überprüft den Passwort-Hash mittels BCrypt. Bei Erfolg wird ein verschlüsseltes HTTP-only Cookie gesetzt, das den Session-Cookie darstellt.
+    \item \textbf{Claims-Based Identity:} Das Cookie enthält "Claims" (Aussagen) über den Benutzer, wie z.B. Benutzer-ID, Name und Rollen.
+    \item \textbf{Middleware:} Die Standard-ASP.NET Core Authentifizierungs-Middleware entschlüsselt das Cookie bei jedem Request und rekonstruiert das \texttt{User}-Objekt (`HttpContext.User`).
+\end{itemize}
+
+\subsection{Datenvalidierung}
+Eingehende Daten werden rigoros validiert. Die Bibliothek \textit{FluentValidation} erlaubt die Definition von komplexen Regeln.
+Beispiel \texttt{UserRegisterValidator}:
+\begin{itemize}
+    \item Username: Muss 3-20 Zeichen lang sein.
+    \item Email: Muss ein gültiges E-Mail-Format haben.
+    \item Password: Mindestens 6 Zeichen.
+\end{itemize}
+Diese Validierung geschieht automatisch vor dem Controller-Aufruf. Ungültige Anfragen werden sofort mit HTTP 400 (Bad Request) abgelehnt.
+
+\subsection{Error Handling}
+Ein globales \texttt{ErrorHandlingMiddleware} fängt alle unbehandelten Ausnahmen ab. Dies verhindert, dass interne Implementierungsdetails (Stack Traces) an den Client durchsickern. Stattdessen werden standardisierte JSON-Fehlermeldungen und passende HTTP-Statuscodes zurückgegeben (z.B. \texttt{NotFoundException} $\rightarrow$ 404, \texttt{UnauthorizedAccessException} $\rightarrow$ 401).

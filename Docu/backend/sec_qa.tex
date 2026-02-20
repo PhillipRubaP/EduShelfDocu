@@ -1,0 +1,9 @@
+\section{Qualitätssicherung und Tests}
+Die Stabilität des Backends wird durch automatisierte Tests gewährleistet.
+
+\subsection{Unit Tests (xUnit)}
+Die Geschäftslogik (Services) wird isoliert getestet. Externe Abhängigkeiten wie Datenbank oder File-System werden mittels \texttt{Moq} gemockt.
+Beispiel: Ein Test für den \texttt{FlashcardService} prüft, ob die richtigen DTOs zurückgegeben werden, ohne dass dabei eine echte KI angefragt wird (Mocking des \texttt{IChatCompletionService}).
+
+\subsection{Integration Tests}
+Für Controller und die Datenbankinteraktion werden Integrationstests verwendet. Hierbei wird mittels \texttt{WebApplicationFactory} ein echter Test-Server im Speicher hochgefahren, der gegen eine In-Memory-Datenbank oder eine Docker-Test-Instanz läuft. Dies stellt sicher, dass die Middleware-Pipeline, das Routing und das Entity Framework korrekt zusammenspielen.
