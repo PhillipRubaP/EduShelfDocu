@@ -1,0 +1,13 @@
+flowchart TD
+    A["Benutzer sendet Nachricht - POST /api/chat/message"] --> B["ChatService Orchestrator"]
+    B --> C["IntentDetectionService - LLM klassifiziert Intent"]
+    C --> D["RetrievalService - Relevante DocumentChunks abrufen"]
+    D --> E{{"Intent.Type?"}}
+    E -->|"flashcards"| F["FlashcardService - Lernkarten generieren"]
+    E -->|"quiz"| G["QuizService - Multiple-Choice-Quiz generieren"]
+    E -->|"question / summarize"| H["PromptGenerationService - Prompt aufbauen"]
+    H --> I["Ollama LLM - Antwort generieren"]
+    F --> J["Datenbank - Ergebnis persistieren"]
+    G --> J
+    I --> J
+    J --> K["HTTP 200 Response an Client"]

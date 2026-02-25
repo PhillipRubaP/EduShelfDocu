@@ -1,0 +1,18 @@
+flowchart TD
+    A["Datei-Upload(PDF / DOCX)"] --> B["FileParsingService"]
+
+    B --> C{Dateityp?}
+
+    C -->|PDF - Text| D["PdfPig Text extrahieren"]
+    C -->|PDF - Bilder| E["Vision Model via Ollama Bildbeschreibung generieren"]
+    C -->|DOCX| F["Open XML SDK Text extrahieren"]
+
+    D --> G["Roher Text"]
+    E --> G
+    F --> G
+
+    G --> H["TextChunker Satz-Segmentierung max. 1024 Zeichen pro Chunk"]
+
+    H --> I["Embedding Model nomic-embed-text 768-dimensionaler Vektor"]
+
+    I --> J["PostgreSQL + pgvector DocumentChunk speichern HNSW-Index aktualisieren"]

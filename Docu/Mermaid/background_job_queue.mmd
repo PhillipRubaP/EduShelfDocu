@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor Client
+    participant API as DocumentsController
+    participant MinIO as MinIO
+    participant DB as PostgreSQL
+    participant Queue as BackgroundJobQueue
+    participant Worker as BackgroundJobService
+
+    Client->>API: POST /api/documents (Datei)
+    API->>MinIO: Datei speichern
+    MinIO-->>API: Speicher-Pfad
+    API->>DB: Document-Metadaten anlegen
+    API->>Queue: Indexing-Job einreihen
+    API-->>Client: 202 Accepted (sofort)
+
+    Note over Worker: Asynchron im Hintergrund
+    Queue-->>Worker: Job aus Queue dequeuen
+    Worker->>MinIO: Datei laden
+    MinIO-->>Worker: Datei-Bytes
+    Worker->>Worker: Text extrahieren und chunken
+    Worker->>DB: DocumentChunks und Embeddings speichern
+    Worker->>DB: Document.IsIndexed = true

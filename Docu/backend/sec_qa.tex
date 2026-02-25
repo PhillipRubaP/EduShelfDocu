@@ -28,6 +28,13 @@ Die Stabilität des Backends wird durch eine umfassende automatisierte Test-Suit
 \label{tab:testklassen}
 \end{table}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/test_coverage.png}
+    \caption{Anzahl der Unit-Tests pro Testklasse (gesamt: 62 Tests)}
+    \label{fig:test_coverage}
+\end{figure}
+
 \subsection{Unit Tests (xUnit + Moq)}
 Die Geschäftslogik (Services) wird isoliert getestet. Externe Abhängigkeiten wie Datenbank, LLM oder E-Mail-Dienst werden mittels \texttt{Moq} durch kontrollierte Testdoubles ersetzt. Die Datenbank wird für jeden Testfall durch eine separate In-Memory-Datenbankinstanz (über \texttt{UseInMemoryDatabase} mit \texttt{Guid.NewGuid()}) vollständig isoliert.
 
