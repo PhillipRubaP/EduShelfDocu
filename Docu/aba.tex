@@ -4,14 +4,13 @@ EduShelf
 
 \section*{Verlauf}
 \begin{itemize}
-    \item 13.06.2024: Das Thema 'TeamTrackr' wurde durch Franz Geischläger angelegt.
-    \item 13.06.2024: Sie wurden zum Thema hinzugefügt.
-    \item 13.06.2024: Sie wurden zum Thema hinzugefügt.
-    \item 13.06.2024: Sie wurden zum Thema hinzugefügt.
-    \item 16.09.2024: Thema wurde eingereicht.
-    \item 16.09.2024: Thema wurde von Franz Geischläger akzeptiert.
-    \item 16.09.2024: Thema wurde von Wilfried Trollmann akzeptiert.
-    \item 23.09.2024: Thema wurde von Wolfgang Bodei akzeptiert.
+    \item 21.05.2025: Das Thema 'xWorks KI' wurde durch Gerald Stoll angelegt.
+    \item 09.09.2025: Sie wurden zu Thema hinzugefügt
+    \item 09.09.2025: Sie wurden zu Thema hinzugefügt
+    \item 15.09.2025: Thema wurde eingereicht
+    \item 15.09.2025: Thema wurde von Gerald Stoll akzeptiert
+    \item 15.09.2025: Thema wurde von Wilfried Trollmann akzeptiert
+    \item 29.09.2025: Thema wurde von Wolfgang Bodei akzeptiert
 \end{itemize}
 
 \section*{Schulische Informationen}
@@ -19,7 +18,7 @@ EduShelf
     \item \textbf{Schulart:} Technische, gewerbliche und kunstgewerbliche Schulen
     \item \textbf{Klasse:} 5AHITS
     \item \textbf{Abteilung:} IT
-    \item \textbf{Schuljahr der abschließenden Prüfung:} 2024/25
+    \item \textbf{Schuljahr der abschließenden Prüfung:} 2025/26
 \end{itemize}
 
 \section*{Betreuung}
@@ -27,20 +26,20 @@ EduShelf
     \toprule
     \textbf{Rolle} & \textbf{Name} \\
     \midrule
-    Hauptverantwortlicher Betreuer & Franz Geischläger (Akzeptiert) \\
     Direktion & Wolfgang Bodei (Akzeptiert) \\
     Abteilungsvorstand & Wilfried Trollmann (Akzeptiert) \\
+    Hauptverantwortlicher Betreuer & Gerald Stoll (Akzeptiert) \\
     \bottomrule
 \end{longtable}
 \newpage
 \section*{Kooperationspartner / Auftraggeber}
 \begin{itemize}
-    \item \textbf{Name:} Tailored Apps
-    \item \textbf{Adresse:} Heiligenstädterstraße 31/1, 1190 Wien
-    \item \textbf{URL:} \texttt{www.tailored-apps.com}
-    \item \textbf{E-Mail:} \texttt{office@tailored-apps.com}
-    \item \textbf{Ansprechpartner:} Martin Zehetner
-    \item \textbf{Telefon:} +43 18902845
+    \item \textbf{Name:} X-WORKS software GmbH
+    \item \textbf{Adresse:} Mankerstraße 24, 3380 Pöchlarn
+    \item \textbf{URL:} \texttt{https://x-works.at/}
+    \item \textbf{E-Mail:} \texttt{info@x-works.at}
+    \item \textbf{Ansprechpartner:} Georg Ungerböck
+    \item \textbf{Telefon:} +43 2757 24131
     \item \textbf{Typ:} Sonstige
 \end{itemize}
 
@@ -50,49 +49,58 @@ EduShelf
     \textbf{Schüler/in} & \textbf{Individuelle Themenstellung} & \textbf{Abteilung} \\
     \midrule
     Elias Welt & Frontend, Frontend/Backend Schnittstelle, KI Unterstützung & IT \\
-    Phillip Rubak & Backend, KI & IT \\
+    Phillip Rubak & Backend, Datenbank, KI, RAG & IT \\
     \bottomrule
 \end{longtable}
 
 
 
 \section*{Ausgangslage}
-Derzeit mangelt es an einer zentralisierten Plattform, die es ermöglicht, Bildungsunterlagen effizient zu verwalten und interaktiv mit diesen zu arbeiten. Studierende und Lehrende haben oft Schwierigkeiten, spezifische Informationen in großen Mengen von Dokumenten schnell zu finden. Es fehlt eine integrierte Lösung, die Dokumentenmanagement mit moderner KI-gestützter Analyse verbindet.
+Lernmaterialen entwickeln sich oft sehr schnell zu einer riesigen und unübersichtlichen Dokumentenansammlung. 
+Dies führt dazu, dass es für die Schüler oft sehr schwierig ist daraus die wichtigsten Inhalte zu extrahieren, was in dem sonst schon sehr stressigen Schulalltag zusätzlich nochmal sehr viel Zeit kostet.
 
-Die Anliegen der Themenstellungen umfassen die Entwicklung einer Webplattform sowie eines leistungsfähigen Backends inklusive AI-Server-Anbindung.
-Die Webapplikation soll folgende Kernfeatures beinhalten:
-\begin{itemize}
-    \item Dokumentenmanagement (Upload, Organisation)
-    \item Interaktiver Chat mit Dokumenten (RAG - Retrieval Augmented Generation)
-    \item Benutzerfreundliches Interface für effizientes Lernen
-\end{itemize}
-Das Backend soll die Dokumentenverarbeitung steuern, die KI-Modelle anbinden und die Datenhaltung übernehmen.
+\section*{Untersuchungsanliegen}
+Die Digitalisierung des Bildungswesens hat zu einer starken Zunahme digitaler Lernmaterialien geführt. 
+Diese liegen häufig verteilt auf verschiedenen Plattformen, was eine strukturierte Verwaltung und gezielte Nutzung erschwert. 
+Gleichzeitig fehlen Lösungen, die nicht nur der Organisation dienen, sondern Lernende aktiv beim Verstehen und Verarbeiten von Inhalten unterstützen.
+
+Die Untersuchung orientiert sich an drei Leitfragen: 
+Wie lässt sich eine plattformunabhängige Lösung gestalten, die den Bedürfnissen von Schüler:innen, Lehrkräften und Studierenden gerecht wird? 
+In welchem Umfang können KI-Funktionen die Arbeit mit Lernmaterialien verbessern? 
+Welche Anforderungen an Datenschutz, Sicherheit und Barrierefreiheit sind für tatsächlichen schulischen Einsatz entscheidend?
+
+Diese Arbeit fokussiert sich auf eine Website mit den Kernmodulen Benutzerverwaltung, 
+Dateiverwaltung, Kategorisierung, Suche und ausgewählten KI-Funktionen. 
+Erweiterungen wie eine mobile App oder Gamification werden als mögliche Zusatzfeatures betrachtet.
 
 \section*{Zielsetzung}
-EduShelf bietet eine intuitive Plattform zur Verwaltung von Bildungsressourcen.
-Durch die Integration von KI können Nutzer direkt mit ihren Unterlagen kommunizieren, Fragen stellen und Zusammenfassungen erhalten.
-Dies fördert ein tieferes Verständnis der Lerninhalte und spart Zeit bei der Informationssuche.
+Entwicklung einer webbasierten Plattform zur Verwaltung, Kategorisierung und Nutzung von schulischen Lernmaterialien (PDF, Markdown, Textdateien). 
+Nutzer sollen Materialien hochladen, mit Tags versehen, durchsuchen und mit einer KI interagieren können, um Inhalte besser zu verstehen oder zusammenfassen zu lassen.
 
-Das geplante Ergebnis ist eine voll funktionsfähige Webplattform "EduShelf".
-Die Anwendung ermöglicht:
-\begin{itemize}
-    \item Upload und Indizierung von PDF- und Textdokumenten
-    \item KI-basierte Beantwortung von Fragen zu den Inhalten
-    \item Verwaltung der hochgeladenen Dokumente
-\end{itemize}
-Das System besteht aus einem Frontend (React), einem Backend (.NET) und einem KI-Server (Python/Ollama), die nahtlos zusammenarbeiten.
+\section*{Geplantes Ergebnis}
+Im Rahmen der Diplomarbeit entsteht eine webbasierte Plattform zur zentralen Verwaltung und Nutzung schulischer Lernmaterialien. 
+NutzerInnen können Dateien wie PDF, Markdown oder Text hochladen, mit Tags versehen, durchsuchen und organisieren. 
+Ein responsive Frontend sorgt für einfache Bedienung auf Desktop sowie mobilen Endgeräten.
+
+Als Herausstellungsmerkmal gegenüber bereits vorhandenen Verwaltungsmöglichkeiten werden KI-gestützte Funktionen integriert 
+(automatische Zusammenfassungen, Quiz- und Lernkartengenerierung sowie vereinfachte Erklärungen). 
+Ermöglicht wird auch die direkte Interaktion mit Dokumenten via AI-Chatbot.
+
+Das geplante Ergebnis umfasst eine funktionsfähige Plattform mit Benutzerverwaltung, 
+Datei-Upload, Suche, Tagging und ausgewählten KI-Funktionen sowie eine Dokumentation aller unserer Schritte. 
+Ziel ist ein Tool, welches für Effizienz und Zeitersparnis steht.
 
 \section*{Meilensteine}
 \begin{longtable}{ll}
     \toprule
     \textbf{Meilenstein} & \textbf{Datum} \\
     \midrule
-    Fertigstellung Grundkonzept & 20.06.2024 \\
-    Fertigstellung Backend & 22.11.2024 \\
-    Fertigstellung Frontend & 20.12.2024 \\
-    Fertigstellung Applikationen & 24.01.2025 \\
-    Fertigstellung Dokumentation & 14.03.2025 \\
+    Start Diplomarbeit & 10.04.2025 \\
+    Prototyp fertig & 01.01.2026 \\
+    Tests beenden & 01.02.2026 \\
+    Dokumentation & 15.03.2026 \\
+    Abgabe fertige Diplomarbeit & 27.03.2026 \\
     \bottomrule
 \end{longtable}
 
-\includepdf[pages=1]{ABA_Rechtliche_Erklaerung-1.pdf}
+\includepdf[pages=1]{ABA_Rechtliche_Erklaerung_EduShelf.pdf}
