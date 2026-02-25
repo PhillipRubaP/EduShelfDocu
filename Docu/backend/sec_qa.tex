@@ -145,3 +145,12 @@ public void Should_Not_Have_Error_When_Model_Is_Valid()
 
 \subsection{Integration Tests}
 Für Controller und die Datenbankinteraktion werden Integrationstests verwendet. Hierbei wird mittels \texttt{WebApplicationFactory} ein echter Test-Server im Speicher hochgefahren, der gegen den vollständigen ASP.NET Core Middleware-Stack (Routing, Authentifizierung, Fehlerbehandlung) und eine separate In-Memory-Datenbankinstanz läuft. Dies stellt sicher, dass das Routing, die Autorisierungsattribute und das Entity Framework korrekt zusammenspielen -- unabhängig voneinander, aber als zusammenhängendes System.
+
+\subsection{Testabdeckung und Teststrategie}
+Eine automatisierte Messung der Code-Abdeckung ergibt eine \textbf{Zeilenabdeckung von 5\,\%} und eine \textbf{Branch-Abdeckung von 20{,}1\,\%}. Diese Werte sind bewusst nicht das primäre Optimierungsziel der Teststrategie und bedürfen einer Einordnung.
+
+Der Großteil des Backends besteht aus Komponenten, die strukturell schwer automatisiert zu instrumentieren sind: Infrastruktur-Code (Docker-Konfiguration, Datenbankmigrationen, \texttt{Program.cs}-Bootstrapping), I/O-gebundene Operationen (Dateisystem-Zugriffe, HTTP-Aufrufe an externe Dienste) sowie die Integration mit dem lokalen LLM via Ollama. Diese Bereiche sind im klassischen Sinne nicht unit-testbar, ohne den gesamten Infrastruktur-Stack hochzufahren -- was außerhalb des Umfangs eines Hochschulprojekts liegt.
+
+Der Fokus der Tests lag daher gezielt auf den \textbf{kritischen Geschäftslogik-Pfaden}: Registrierungs- und Authentifizierungsflows, KI-Generierung mit Fehlerbehandlung (ungültiges JSON, leere Dokumente), Intent-Erkennung, Token-Limitierung sowie das Routing und die Autorisierungs\-logik der Controller. Diese Bereiche repräsentieren die fehlersensibelsten Stellen der Anwendung, in denen ein Fehler direkte Auswirkungen auf Sicherheit oder Datenintegrität hätte -- und sind daher vollständig abgedeckt.
+
+Die gemessene Abdeckungsquote spiegelt somit die Architektur der Anwendung wider, nicht eine mangelnde Testdisziplin: Eine höhere Gesamtabdeckung wäre nur durch aufwändige Infrastruktur-Mocks oder End-to-End-Tests erreichbar, die den Rahmen dieses Projekts übersteigen würden.
