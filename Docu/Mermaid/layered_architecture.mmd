@@ -1,0 +1,29 @@
+graph TD
+    subgraph PL["Presentation Layer - Controllers"]
+        C1["ChatController"]
+        C2["DocumentsController"]
+        C3["UsersController"]
+        C4["FlashcardsController / QuizController"]
+    end
+
+    subgraph BL["Business Logic Layer - Services"]
+        S1["ChatService / RAGService"]
+        S2["IndexingService / FileParsingService"]
+        S3["AuthService / UserService"]
+        S4["FlashcardService / QuizService"]
+    end
+
+    subgraph DAL["Data Access Layer - EF Core"]
+        D1["ApiDbContext"]
+        D2["PostgreSQL + pgvector"]
+    end
+
+    subgraph IL["Infrastructure Layer"]
+        I1["MinioService"]
+        I2["OllamaClient"]
+        I3["SmtpEmailService"]
+    end
+
+    PL -->|"Delegation der Geschaeftslogik"| BL
+    BL -->|"Datenbankzugriff via LINQ"| DAL
+    BL -->|"Externe Dienste"| IL

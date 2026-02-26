@@ -3,6 +3,13 @@ Die Architektur des Systems folgt dem bewährten Muster einer \textit{Layered Ar
 
 Die Anwendung gliedert sich in vier Hauptschichten:
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/layered_architecture.png}
+    \caption{Schichtenarchitektur des EduShelf Backends}
+    \label{fig:layered_architecture}
+\end{figure}
+
 \subsection{Presentation Layer (Controllers)}
 Diese oberste Schicht nimmt HTTP-Anfragen (Requests) entgegen und gibt HTTP-Antworten (Responses) zurück. Sie dient als Tor zur Außenwelt.
 \begin{itemize}

@@ -8,7 +8,7 @@ Das Backend von EduShelf stellt ein robustes, modernes und erweiterungsfähiges 
     \item \textbf{Robuste Lerninhaltsgenerierung:} Sowohl die Flashcard- als auch die Quiz-Generierung sind durch mehrstufige JSON-Parsing-Strategien widerstandsfähig gegenüber variierenden LLM-Antwortformaten.
     \item \textbf{Sicherheit:} Der vollständige E-Mail-Verifizierungsflow, BCrypt-Passwort-Hashing, HttpOnly-Cookie-Authentifizierung und deklaratives RBAC schaffen eine mehrschichtige Sicherheitsarchitektur.
     \item \textbf{Infrastruktur:} Die vollständige Containerisierung mit Docker Compose erlaubt ein reproduzierbares, portables Deployment auf jedem Linux-Server -- ohne manuelles Setup.
-    \item \textbf{Testabdeckung:} 16 Testklassen mit Unit- und Integrationstests für alle kritischen Services, Controller und Validatoren stellen die langfristige Wartbarkeit sicher.
+    \item \textbf{Teststrategie:} 16 Testklassen mit 62 Unit- und Integrationstests decken alle sicherheits- und geschäftskritischen Pfade ab. Der bewusste Fokus auf Geschäftslogik statt auf globale Zeilenabdeckung -- bedingt durch den hohen Anteil an infrastrukturnahem und LLM-abhängigem Code -- gewährleistet eine gezielte und wartungseffiziente Qualitätssicherung.
 \end{itemize}
 
 \subsection{Lernerkenntnisse und Herausforderungen}

@@ -1,6 +1,13 @@
 \section{Ingestion-Pipeline (Datenverarbeitung)}
 Damit Dokumente durchsuchbar werden, müssen sie eine komplexe Verarbeitungspipeline durchlaufen. Dieser Prozess wird vom \texttt{IndexingService} gesteuert und ist rechenintensiv.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/ingestion_pipeline.png}
+    \caption{Ablaufdiagramm der Ingestion-Pipeline in EduShelf}
+    \label{fig:ingestion_pipeline}
+\end{figure}
+
 \subsection{1. Textextraktion (OCR \& Parsing)}
 Der \texttt{FileParsingService} analysiert den Dateityp und wählt die passende Strategie:
 \begin{itemize}

@@ -1,0 +1,14 @@
+graph LR
+    FE["Frontend edushelf-web React"]
+
+    subgraph DC["Docker Compose - EduShelf Stack"]
+        API["EduShelf API ASP.NET Core 8 Port 8080"]
+        DB["PostgreSQL 16 + pgvector Port 5433"]
+        MINIO["MinIO Object Storage Port 9000 und 9001"]
+        OLLAMA["Ollama LLM Inferenz GPU Passthrough Port 11434"]
+    end
+
+    FE -->|"HTTP REST Cookie Auth"| API
+    API -->|"SQL + pgvector EF Core"| DB
+    API -->|"S3-Protokoll Dateispeicher"| MINIO
+    API -->|"HTTP Chat und Embeddings"| OLLAMA

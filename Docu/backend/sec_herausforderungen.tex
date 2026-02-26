@@ -4,6 +4,13 @@ Während der Backend-Entwicklung mussten mehrere technische Hürden genommen wer
 \subsection{Blockierende Operationen bei großen Dateien}
 \textbf{Lösung:} Einführung einer \texttt{BackgroundJobQueue}. Der Upload-Endpoint nimmt die Datei entgegen, speichert sie in MinIO und reiht nur eine "Job-ID" in die Queue ein, bevor er sofort \texttt{202 Accepted} zurückgibt. Ein Hintergrunddienst ("Worker") arbeitet diese Queue asynchron ab.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/background_job_queue.png}
+    \caption{Sequenzdiagramm des asynchronen Dokument-Upload-Flows}
+    \label{fig:background_job_queue}
+\end{figure}
+
 \begin{lstlisting}[language={[Sharp]C}, caption={Verarbeitungsschleife im BackgroundJobService}]
 protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 {

@@ -110,6 +110,13 @@ chatHistory.AddUserMessage(finalUserMessage.ToString());
 
 Ein zentrales Element ist die \textbf{Token-Limitierung} durch den \texttt{ITokenService}. Um das Kontextfenster des LLMs (konfigurierbar, Standard: 4096 Token) nicht zu \"uberschreiten, werden die Chunks vor der \"Ubergabe tokenisiert und pr\"azise abgeschnitten (\textit{Smart Truncation}). Dies verhindert API-Fehler und stellt sicher, dass die semantisch n\"achsten Chunks priorisiert werden.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/intent_branching.png}
+    \caption{Intent-basiertes Branching im ChatService}
+    \label{fig:intent_branching}
+\end{figure}
+
 \subsection{Schritt 4: Orchestrierung und Intent-basiertes Branching (\texttt{ChatService})}
 \label{subsec:chatservice}
 
