@@ -40,12 +40,12 @@ Das Ergebnis ist eine messbar kürzere Wartezeit im Vergleich zu sequenziellen A
 
 \subsection{Schnellaktionen und Statistik-Widget}
 
-Das Dashboard gliedert sich in drei funktionale Bereiche:
+Gegliedert ist das Dashboard in drei Bereiche:
 
 \begin{enumerate}
-    \item \textbf{Recently Added}: Zeigt die drei zuletzt hochgeladenen Dokumente mit Dateiname, Typ und zugewiesenen Tags an. Ein Klick öffnet die Inline-Vorschau über \texttt{FileViewer}.
-    \item \textbf{Study Stats}: Zeigt aggregierte Zählwerte für Dokumente, Quizzes und Lernkarten. Diese Statistiken werden bei jeder Aktion (Upload, Erstellen, Löschen) durch erneuten Aufruf von \texttt{fetchData()} aktualisiert.
-    \item \textbf{Quick Actions}: Drei Schaltflächen ermöglichen das unmittelbare Erstellen eines Uploads, eines Quiz oder einer Lernkarte, ohne dass dafür die entsprechende Unterseite aufgerufen werden muss. Die zugehörigen Modaldialoge werden direkt im Dashboard-Kontext gerendert.
+    \item \textbf{Recently Added}: Zeigt die drei zuletzt hochgeladenen Dokumente mit Name, Typ und zugewiesenen Tags an. Ein Klick öffnet die Datei-Vorschau über \texttt{FileViewer}.
+    \item \textbf{Study Stats}: Zeigt die Anzahl von Dokumenten, Quizzes und Lernkarten. Diese Statistiken werden bei jeder Aktion (Upload, Erstellen, Löschen) durch erneuten Aufruf von \texttt{fetchData()} aktualisiert.
+    \item \textbf{Quick Actions}: Die drei Schnellaktionen-Schaltflächen ermöglichen das unmittelbare Erstellen eines Uploads, eines Quiz oder einer Lernkarte, ohne dass dafür die entsprechende Unterseite aufgerufen werden muss. Die zugehörigen Modals werden direkt gerendert und angezeigt.
 \end{enumerate}
 
 Dieses Konzept minimiert die Anzahl der notwendigen Navigationsschritte für häufig ausgeführte Aktionen und entspricht der Zielsetzung einer effizienten Lernoberfläche.
