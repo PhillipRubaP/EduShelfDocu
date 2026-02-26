@@ -1,24 +1,23 @@
 % Autor: Elias Welt
 \section{Authentifizierungsflow: Registrierung und E-Mail-Bestätigung}
 
-Der Authentifizierungsprozess von EduShelf umfasst drei aufeinander aufbauende Schritte: die Registrierung eines neuen Benutzerkontos, die Verifikation der E-Mail-Adresse sowie den eigentlichen Login. Diese Abfolge stellt sicher, dass nur Nutzer mit einer verifizierten Identität Zugang zur Plattform erhalten.
+Der Authentifizierungsprozess von EduShelf umfasst drei aufeinander aufbauende Schritte: die Erstellung eines neuen Benutzerkontos, die Verifikation der E-Mail-Adresse sowie den eigentlichen Login. Dieser Ablauf stellt sicher, dass nur Nutzer mit einer verifizierten Identität Zugang zur Plattform erhalten.
 
-\newpage
 \subsection{Registrierung (Register.jsx)}
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.82\textwidth]{img/register-dark-mode}
-    \caption{Registrierungsformular von EduShelf im Dark-Mode}
+    \caption{Registrierung von EduShelf im Dark-Mode}
     \label{fig:register}
 \end{figure}
 
-Die Komponente \texttt{Register.jsx} realisiert ein zweistufiges Validierungskonzept. Zunächst wird die Benutzereingabe vollständig clientseitig geprüft, bevor eine Anfrage an den Server gesendet wird. Dies reduziert unnötige Netzwerkanfragen und gibt dem Nutzer sofortiges Feedback.
+Die Komponente \texttt{Register.jsx} realisiert ein zweistufiges Validierungskonzept. Zunächst wird die Benutzereingabe vollständig clientseitig geprüft, bevor anschließend eine Anfrage an den Server gesendet wird. Dies reduziert unnötige Netzwerkanfragen und gibt dem Nutzer sofortiges Feedback.
 
 \subsubsection{Clientseitige Validierung}
 
-Die Validierungsfunktion überprüft alle Felder nach klar definierten Regeln:
+Bei diesem Teil der Validierung werden alle Felder nach klar definierten Regeln überprüft:
 
-\begin{lstlisting}[language=JavaScript, caption={Clientseitige Eingabevalidierung im Registrierungsformular}]
+\begin{lstlisting}[language=JavaScript, caption={Clientseitige Validierung der Eingaben}]
 const validate = () => {
   const newErrors = {};
   if (!username || username.length < 3 || username.length > 20) {
@@ -35,7 +34,7 @@ const validate = () => {
 };
 \end{lstlisting}
 
-Diese Methode setzt auf reguläre Ausdrücke zur E-Mail-Validierung und explizite Längenprüfungen für Benutzername und Passwort. Nur wenn \texttt{validate()} ein leeres Fehlerobjekt zurückgibt (d.\,h. \texttt{Object.keys(validationErrors).length === 0}), wird die Backend-Anfrage ausgelöst.
+Diese Methode setzt auf Regex zur E-Mail-Validierung und Längenprüfungen für Benutzername und Passwort. Nur wenn \texttt{validate()} ein leeres Fehlerobjekt zurückgibt, wird die Backend-Anfrage ausgelöst.
 
 \subsubsection{Serverseitige Fehlerverarbeitung}
 
@@ -53,21 +52,23 @@ if (error.response?.data?.errors) {
 }
 \end{lstlisting}
 
-Diese Normalisierung des Schlüssels (erster Buchstabe zu Kleinbuchstaben) ist notwendig, da das Backend C\#-Konventionen mit großem Anfangsbuchstaben verwendet (\texttt{Username}), während React-State-Schlüssel der JavaScript-Konvention (camelCase) folgen.
+Diese Normalisierung des Schlüssels (erster Buchstabe zu Kleinbuchstaben) ist notwendig, da das Backend C\#-Konventionen mit großem Anfangsbuchstaben verwendet (\texttt{Username}), während das Frontend der JavaScript-Konvention\newline (camelCase) folgt.
+\newpage
 
 \subsection{Login-Prozess (Login.jsx)}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.82\textwidth]{img/login-dark-mode}
+    \includegraphics[width=0.75\textwidth]{img/login-dark-mode}
     \caption{Login-Ansicht von EduShelf im Dark-Mode}
     \label{fig:login}
 \end{figure}
 
-Der Login-Prozess ist bewusst zweigliedrig gestaltet: Nach dem erfolgreichen POST-Request an \texttt{/Users/login} wird unmittelbar ein zweiter Aufruf an \texttt{/Users/\{id\}/roles} durchgeführt. Die Rollenzuweisung ist für die Steuerung der Navigation essenziell -- nur Nutzer mit der Rolle \textit{Admin} sehen den Menüpunkt zum Administrationsbereich.
+Der Login-Prozess ist bewusst in 2 Abfragen gegliedert: Zuerst wird ein POST-Request an \texttt{/Users/login} gesendet und sollte dieser erfolgreich sein, wird unmittelbar ein zweiter Aufruf an \texttt{/Users/\{id\}/roles} durchgeführt. Die Rollenzuweisung ist für die Navigation auf der Seite essenziell -- nur Nutzer mit der Rolle \textit{Admin} sehen den Menüpunkt \texttt{Adminpanel}.
 
-Das zusammengesetzte Benutzerobjekt (Nutzerdaten + Rollen) wird im \texttt{localStorage} abgelegt, um den Anmeldestatus über Browser-Refreshes hinweg zu erhalten. Diese Persistierung gilt ausschließlich der UI-Zustandsverwaltung; die tatsächliche Sitzungsauthentifizierung erfolgt serverseitig über ein HttpOnly-Cookie.
+Das Benutzerobjekt (Daten + Rolle) wird im \texttt{localStorage} abgelegt, um den Anmeldestatus über Browser-Refreshes hinweg zu erhalten und zu vermeiden, dass nach dem Neuladen ein weiterer Login notwendig ist. Diese Persitenzmaßnahme dient ausschließlich der UI-Zustandsverwaltung; die tatsächliche Sitzungsauthentifizierung erfolgt serverseitig über ein HttpOnly-Cookie.
 
 \subsection{E-Mail-Bestätigung}
 
 Nach der Registrierung erhält der Nutzer eine Bestätigungs-E-Mail. Der enthaltene Link führt zur Komponente \texttt{VerifyEmail.jsx}, welche den Token aus der URL extrahiert und an den Backend-Endpunkt zur Verifikation übermittelt. Da das Backend den Link selbst generiert, enthält das Frontend lediglich die Anzeigelogik für die Erfolgs- bzw. Fehlermeldung -- eine klare Umsetzung des Single-Responsibility-Prinzips.
+\newpage
