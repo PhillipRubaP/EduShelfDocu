@@ -24,9 +24,9 @@ export default defineConfig({
 
 Ein kritischer Aspekt dieser Konfiguration ist der \textbf{Proxy}: Um während der Entwicklung Cross-Origin Resource Sharing (CORS) Probleme zu vermeiden, leitet der Vite-Entwicklungsserver alle Anfragen, die mit \texttt{/api} beginnen, an das Backend (Port 5015) weiter. Die Option \texttt{changeOrigin: true} manipuliert dabei den Host-Header der Anfrage so, als käme sie direkt vom Backend-Server selbst.
 
-Die Projektstruktur im Order \texttt{src} folgt einer funktionalen Aufteilung:
+Die Projektstruktur im Ordner \texttt{src} folgt einer funktionalen Aufteilung:
 \begin{itemize}
-    \item \texttt{components/}: Beinhaltet UI-Komponenten (z.B. \texttt{Chat.jsx}, \texttt{Quiz.jsx}). Jede Komponente hat idealerweise ihre eigene CSS-Datei (z.B. \texttt{Chat.css}) für isoliertes Styling.
-    \item \texttt{services/}: Kapselt die gesamte API-Kommunikation.
-    \item \texttt{assets/}: Für statische Dateien.
+    \item \texttt{components/}: Beinhaltet UI-Komponenten (z.B. \texttt{Chat.jsx}, \texttt{Quiz.jsx}). Jede Komponente hat idealerweise ihre eigene CSS-Datei (z.B. \texttt{Chat.css}) für Styling
+    \item \texttt{services/}: Inkludiert die gesamte API-Kommunikation
+    \item \texttt{assets/}: Für statische Dateien
 \end{itemize}
