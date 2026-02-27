@@ -43,7 +43,7 @@ Nach dem Parsing werden die generierten Karten automatisch mit einem Tag versehe
 \newpage
 \subsection{Quiz-Generierung (\texttt{QuizService})}
 
-Die Quiz-Generierung ist komplexit\"ur, da das LLM ein verschachteltes JSON-Objekt mit \texttt{Title}, \texttt{Questions} und pro Frage mehrere \texttt{Answers} (jeweils mit \texttt{IsCorrect}-Flag) produzieren muss. Da LLMs trotz strikter Anweisung gelegentlich vom erwarteten Schema abweichen (z.B. alternative Feldnamen wie \texttt{options} statt \texttt{Answers}), implementiert der \texttt{QuizService} eine \textbf{zweistufige Parsing-Strategie}:
+Die Quiz-Generierung ist komplex, da das LLM ein verschachteltes JSON-Objekt mit \texttt{Title}, \texttt{Questions} und pro Frage mehrere \texttt{Answers} (jeweils mit \texttt{IsCorrect}-Flag) produzieren muss. Da LLMs trotz strikter Anweisung gelegentlich vom erwarteten Schema abweichen (z.B. alternative Feldnamen wie \texttt{options} statt \texttt{Answers}), implementiert der \texttt{QuizService} eine \textbf{zweistufige Parsing-Strategie}:
 
 \begin{lstlisting}[language={[Sharp]C}, caption={Robustes JSON-Parsing in QuizService.cs}]
 var jsonNode = JsonNode.Parse(cleanedJson);
