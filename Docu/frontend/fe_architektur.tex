@@ -1,10 +1,10 @@
 % Autor: Elias Welt
 \section{Softwarearchitektur und Datenfluss}
 \subsection{Unidirektionaler Datenfluss}
-React erzwingt einen unidirektionalen Datenfluss ("One-Way Binding"). Daten fließen immer von Eltern- zu Kind-Komponenten mittels sogenannter "`Props"'. Um Daten von einem Kind zurück zum Elternteil zu senden (z.B. ein Formular-Submit im \texttt{QuizModal}, der die Liste im \texttt{Quiz} aktualisiert), übergibt die Elternkomponente eine Callback-Funktion an das Kind.
+React erzwingt einen unidirektionalen Datenfluss ("`One-Way Binding"'). Daten fließen immer von Parent- zu Child-Komponenten mittels sogenannter "`Props"'. Um Daten von einem Child zurück zum Parent zu senden (z.B. ein Formular-Submit im \texttt{QuizModal}, der die Liste im \texttt{Quiz} aktualisiert), übergibt die Parentkomponente eine Callback-Function an das Child.
 
 \subsection{Routing-Strategie}
-Das Routing in \texttt{App.jsx} definiert die Skelettstruktur der Anwendung. Es wird zwischen öffentlichen Routen (Login, Register) und privaten, geschützten Routen unterschieden.
+Das Routing in \texttt{App.jsx} definiert die Struktur der Anwendung. Es wird zwischen öffentlichen Routen (Login, Register) und privaten, geschützten Routen unterschieden.
 
 \begin{lstlisting}[language=JavaScript, caption={Routing-Struktur in App.jsx}]
 <Routes>
@@ -29,4 +29,4 @@ Das Routing in \texttt{App.jsx} definiert die Skelettstruktur der Anwendung. Es 
 </Routes>
 \end{lstlisting}
 
-Die Verwendung von verschachtelten Routen (\texttt{<Route element={<MainLayout ...>}>}) erlaubt es, das Grundgerüst (Header, Navigation) einmalig zu definieren. Die Kind-Komponenten werden dann an der Stelle des \texttt{<Outlet />} Platzhalters in \texttt{MainLayout.jsx} gerendert.
+Die Verwendung von verschachtelten Routen (\texttt{<Route element={<MainLayout ...>}>}) erlaubt es, das Grundgerüst (Header, Navigation) einmalig zu definieren. Die Child-Komponenten werden dann an der Stelle des \texttt{<Outlet />} Platzhalters in \texttt{MainLayout.jsx} gerendert.
