@@ -31,7 +31,7 @@ reservations:
       count: 1
       capabilities: [gpu]
     \end{verbatim}
-    Dies ermöglicht die Nutzung von CUDA-Kernen, was die Antwortzeit (Time-to-First-Token) drastisch reduziert (von Sekunden auf Millisekunden).
+    Dies ermöglicht die Nutzung von CUDA-Kernen, was die Antwortzeit drastisch reduziert.
     \item \textbf{Persistenz:} Das Volume \texttt{ollama\_data} speichert die heruntergeladenen Modelle (z.B. Llama 3) im \texttt{/root/.ollama} Verzeichnis, um erneute Downloads bei Container-Updates zu vermeiden.
     \item \textbf{Keep-Alive:} Die Umgebungsvariable \texttt{OLLAMA\_KEEP\_ALIVE} verhindert, dass das Modell nach kurzer Inaktivität aus dem VRAM entladen wird, was die Latenz bei aufeinanderfolgenden Anfragen minimiert.
 \end{itemize}
@@ -52,6 +52,6 @@ MinIO dient als skalierbarer, S3-kompatibler Dateispeicher.
 Das \texttt{Dockerfile} der API nutzt Multi-Stage Builds, um das Image klein zu halten:
 \begin{enumerate}
     \item \textbf{Build Stage:} Nutzt das vollständige SDK Image (\texttt{mcr.microsoft.com/dotnet/sdk:8.0}), um den Code zu kompilieren und Abhängigkeiten (NuGet Pakete) zu laden.
-    \item \textbf{Runtime Stage:} Nutzt das schlanke Runtime Image (\texttt{mcr.microsoft.com/dotnet/aspnet:8.0}), welches nur die zum Ausführen nötigen Komponenten enthält. Das kompilierte Artefakt aus Stage 1 wird hierhin kopiert.
+    \item \textbf{Runtime Stage:} Nutzt das Runtime Image (\texttt{mcr.microsoft.com/dotnet/aspnet:8.0}), welches nur die zum Ausführen nötigen Komponenten enthält. Das kompilierte Artefakt aus Stage 1 wird hierhin kopiert.
 \end{enumerate}
-Dies reduziert die Image-Größe drastisch und verbessert die Sicherheit, da keine Compiler-Tools im Produktions-Container vorhanden sind.
+Dies reduziert die Image-Größe drastisch und verbessert die Sicherheit, weil keine Compiler-Tools im Produktions-Container vorhanden sind.

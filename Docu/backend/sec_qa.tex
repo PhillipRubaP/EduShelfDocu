@@ -1,5 +1,5 @@
 \section{Qualitätssicherung und Tests}
-Die Stabilität des Backends wird durch eine umfassende automatisierte Test-Suite auf Basis von \textbf{xUnit} gewährleistet. Das Testprojekt \texttt{EduShelf.Api.Tests} enthält 16 Testklassen, die Geschäftslogik, Controller, Validatoren und Hilfsfunktionen abdecken.
+Die Stabilität des Backends wird durch automatisierte Tests auf Basis von \textbf{xUnit} gewährleistet. Das Testprojekt \texttt{EduShelf.Api.Tests} enthält 16 Testklassen, die Geschäftslogik, Controller, Validatoren und Hilfsfunktionen abdecken.
 
 \begin{table}[H]
 \centering
@@ -38,8 +38,9 @@ Die Stabilität des Backends wird durch eine umfassende automatisierte Test-Suit
 \subsection{Unit Tests (xUnit + Moq)}
 Die Geschäftslogik (Services) wird isoliert getestet. Externe Abhängigkeiten wie Datenbank, LLM oder E-Mail-Dienst werden mittels \texttt{Moq} durch kontrollierte Testdoubles ersetzt. Die Datenbank wird für jeden Testfall durch eine separate In-Memory-Datenbankinstanz (über \texttt{UseInMemoryDatabase} mit \texttt{Guid.NewGuid()}) vollständig isoliert.
 
+\newpage
 \subsubsection{Beispiel: FlashcardService}
-Die drei Kerntests des \texttt{FlashcardService} illustrieren das typische Testmuster:
+Die drei Kerntests des \texttt{FlashcardService} zeigen das typische Testmuster:
 
 \begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Erfolgreiche Flashcard-Generierung}]
 [Fact]
@@ -86,6 +87,7 @@ public async Task GenerateFlashcardsAsync_InvalidJsonFromAI_ShouldThrowKernelSer
 }
 \end{lstlisting}
 
+\newpage
 \subsubsection{Beispiel: AuthService}
 Der \texttt{AuthService} wird ebenfalls umfassend getestet, inklusive des E-Mail-Bestätigungsflows:
 
@@ -122,8 +124,9 @@ public async Task ConfirmEmailAsync_ExpiredToken_ShouldThrowBadRequest()
 }
 \end{lstlisting}
 
+\newpage
 \subsection{Validatoren-Tests}
-\texttt{FluentValidation}-Regeln werden mit der Bibliotheksmethode \texttt{TestValidate} isoliert geprüft -- kein HTTP-Stack nötig:
+\texttt{FluentValidation}-Regeln werden mit der Bibliotheksmethode \texttt{TestValidate} isoliert geprüft:
 
 \begin{lstlisting}[language={[Sharp]C}, caption={Validator-Tests mit FluentValidation.TestHelper}]
 [Fact]
@@ -144,13 +147,4 @@ public void Should_Not_Have_Error_When_Model_Is_Valid()
 \end{lstlisting}
 
 \subsection{Integration Tests}
-Für Controller und die Datenbankinteraktion werden Integrationstests verwendet. Hierbei wird mittels \texttt{WebApplicationFactory} ein echter Test-Server im Speicher hochgefahren, der gegen den vollständigen ASP.NET Core Middleware-Stack (Routing, Authentifizierung, Fehlerbehandlung) und eine separate In-Memory-Datenbankinstanz läuft. Dies stellt sicher, dass das Routing, die Autorisierungsattribute und das Entity Framework korrekt zusammenspielen -- unabhängig voneinander, aber als zusammenhängendes System.
-
-\subsection{Testabdeckung und Teststrategie}
-Eine automatisierte Messung der Code-Abdeckung ergibt eine \textbf{Zeilenabdeckung von 5\,\%} und eine \textbf{Branch-Abdeckung von 20{,}1\,\%}. Diese Werte sind bewusst nicht das primäre Optimierungsziel der Teststrategie und bedürfen einer Einordnung.
-
-Der Großteil des Backends besteht aus Komponenten, die strukturell schwer automatisiert zu instrumentieren sind: Infrastruktur-Code (Docker-Konfiguration, Datenbankmigrationen, \texttt{Program.cs}-Bootstrapping), I/O-gebundene Operationen (Dateisystem-Zugriffe, HTTP-Aufrufe an externe Dienste) sowie die Integration mit dem lokalen LLM via Ollama. Diese Bereiche sind im klassischen Sinne nicht unit-testbar, ohne den gesamten Infrastruktur-Stack hochzufahren -- was außerhalb des Umfangs eines Hochschulprojekts liegt.
-
-Der Fokus der Tests lag daher gezielt auf den \textbf{kritischen Geschäftslogik-Pfaden}: Registrierungs- und Authentifizierungsflows, KI-Generierung mit Fehlerbehandlung (ungültiges JSON, leere Dokumente), Intent-Erkennung, Token-Limitierung sowie das Routing und die Autorisierungs\-logik der Controller. Diese Bereiche repräsentieren die fehlersensibelsten Stellen der Anwendung, in denen ein Fehler direkte Auswirkungen auf Sicherheit oder Datenintegrität hätte -- und sind daher vollständig abgedeckt.
-
-Die gemessene Abdeckungsquote spiegelt somit die Architektur der Anwendung wider, nicht eine mangelnde Testdisziplin: Eine höhere Gesamtabdeckung wäre nur durch aufwändige Infrastruktur-Mocks oder End-to-End-Tests erreichbar, die den Rahmen dieses Projekts übersteigen würden.
+Für Controller und die Datenbankinteraktion werden Integrationstests verwendet. Hierbei wird mittels \texttt{WebApplicationFactory} ein echter Test-Server im Speicher hochgefahren, der gegen den vollständigen ASP.NET Core Middleware-Stack (Routing, Authentifizierung, Fehlerbehandlung) und eine separate In-Memory-Datenbankinstanz läuft. Dies stellt sicher, dass das Routing, die Autorisierungsattribute und das Entity Framework korrekt zusammenspielen, unabhängig voneinander, aber als zusammenhängendes System.
