@@ -34,8 +34,8 @@ protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 
 \subsection{LLM Kontext-Fenster-Limits}
 \textbf{Problem:} Qwen3 und andere Modelle haben ein festes Limit an Tokens (z.B. 4096 oder 8192). Ein blindes Einfügen von Dokumenten würde zu Abstürzen führen.
-\textbf{Lösung:} Implementierung des \texttt{TokenService} mit \textit{Tiktoken}. Bevor ein Prompt generiert wird, werden die Tokens der abgerufenen Chunks gezählt. Ist das Limit erreicht, werden die am wenigsten relevanten Chunks verworfen (``Smart Truncation'').
+\textbf{Lösung:} Implementierung des \texttt{TokenService} mit \textit{Tiktoken}. Bevor ein Prompt generiert wird, werden die Tokens der abgerufenen Chunks gezählt. Ist das Limit erreicht, werden die am wenigsten relevanten Chunks verworfen ("`Smart Truncation"').
 
 \subsection{Datenkonsistenz bei Löschoperationen}
-\textbf{Problem:} Wenn ein User gelöscht wird, dürfen dessen Dokumente und Vektoren nicht als "Datenmüll" in der Datenbank verbleiben.
+\textbf{Problem:} Wenn ein User gelöscht wird, dürfen dessen Dokumente und Vektoren nicht als "`Datenmüll"' in der Datenbank verbleiben.
 \textbf{Lösung:} Nutzung von \texttt{OnDelete(DeleteBehavior.Cascade)} in EF Core. Da auch die Vektoren (\texttt{DocumentChunk}) über Foreign Keys hart an das \texttt{Document} und dieses an den \texttt{User} gekoppelt ist, löscht ein einziger SQL-Befehl (\texttt{DELETE FROM Users WHERE Id=...}) den gesamten assoziierten Datenbaum.

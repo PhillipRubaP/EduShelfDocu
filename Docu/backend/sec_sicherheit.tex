@@ -52,33 +52,7 @@ In den Controllern wird die Autorisierung deklarativ über Attribute gesteuert:
 \end{itemize}
 
 \subsection{E-Mail-Verifizierung}
-Um sicherzustellen, dass Nutzer nur mit gültigen E-Mail-Adressen registriert werden können, implementiert EduShelf einen vollständigen E-Mail-Bestätigungsflow.
-
-\subsubsection{Registrierungsvorgang}
-Bei der Registrierung wird zunächst auf doppelte Benutzernamen und E-Mails geprüft. Dann wird ein kryptographisch sicherer Bestätigungstoken generiert:
-
-\begin{lstlisting}[language={[Sharp]C}, caption={Token-Generierung und E-Mail-Versand in AuthService.cs}]
-var user = new User
-{
-    Username        = userRegister.Username,
-    Email           = userRegister.Email,
-    PasswordHash    = BCrypt.Net.BCrypt.HashPassword(userRegister.Password),
-    IsEmailConfirmed = false,
-    EmailConfirmationToken =
-        Convert.ToHexString(RandomNumberGenerator.GetBytes(32)),
-    EmailConfirmationTokenExpiresAt = DateTime.UtcNow.AddHours(24)
-};
-// ...
-var confirmationLink =
-    $"{appUrl}/confirm-email?email={Uri.EscapeDataString(user.Email)}" +
-    $"&token={Uri.EscapeDataString(user.EmailConfirmationToken)}";
-await _emailService.SendEmailAsync(user.Email, "Confirm your email", emailBody);
-\end{lstlisting}
-
-Der Token ist ein zufälliger 32-Byte-Wert (hexadezimal kodiert, 64 Zeichen lang), der 24 Stunden gültig ist. Schlägt der E-Mail-Versand fehl, wird der Nutzer-Datensatz sofort wieder aus der Datenbank gelöscht -- d.h. das System ist \textit{atomar}: Es existiert kein unverifizierter Account ohne zugehörige Bestätigungsmail.
-
-\subsubsection{Bestätigungsvorgang}
-Der Nutzer klickt den Link im Frontend, das ihn an \texttt{POST /api/users/confirm-email} weiterleitet. Der \texttt{AuthService} führt dabei vier Prüfungen durch:
+Bei der Registrierung wird ein kryptographisch sicherer Bestätigungstoken (32 Byte, hexadezimal kodiert, 24 Stunden gültig) generiert und per E-Mail an den Nutzer gesendet. Schlägt der E-Mail-Versand fehl, wird der Nutzer-Datensatz sofort wieder gelöscht -- das System verhält sich somit \textit{atomar}. Bei Klick auf den Bestätigungslink führt der \texttt{AuthService} vier Prüfungen durch:
 
 \begin{enumerate}
     \item Nutzer mit dieser E-Mail existiert.
@@ -87,21 +61,10 @@ Der Nutzer klickt den Link im Frontend, das ihn an \texttt{POST /api/users/confi
     \item Der Token ist nicht abgelaufen (\texttt{ExpiresAt > DateTime.UtcNow}).
 \end{enumerate}
 
-Bei Erfolg werden \texttt{IsEmailConfirmed = true} gesetzt und Token sowie Ablaufzeit aus der Datenbank gelöscht.
-
-\subsection{Datenvalidierung (FluentValidation)}
-Eingehende Daten werden strikt validiert. Die Bibliothek \textit{FluentValidation} erlaubt die Definition von komplexen Regeln in dedizierten Validator-Klassen.
-
-Beispiel \texttt{UserRegisterValidator}:
-\begin{itemize}
-    \item \texttt{Username}: Pflichtfeld, 3--20 Zeichen.
-    \item \texttt{Email}: Pflichtfeld, muss gültiges E-Mail-Format haben.
-    \item \texttt{Password}: Pflichtfeld, mindestens 6 Zeichen.
-\end{itemize}
-Diese Validierung geschieht automatisch vor dem Controller-Aufruf. Ungültige Anfragen werden sofort mit HTTP 400 (Bad Request) und einer strukturierten Fehlerliste abgelehnt.
+Bei Erfolg werden \texttt{IsEmailConfirmed = true} gesetzt und Token sowie Ablaufzeit aus der Datenbank gelöscht. Zusätzlich werden alle eingehenden Daten mittels \textit{FluentValidation} automatisch vor dem Controller-Aufruf validiert -- ungültige Anfragen werden sofort mit HTTP 400 und einer strukturierten Fehlerliste abgelehnt.
 
 \subsection{Error Handling Middleware}
-Ein globales \texttt{ErrorHandlingMiddleware} fängt alle unbehandelten Ausnahmen ab. Dies verhindert, dass interne Implementierungsdetails (Stack Traces) an den Client durchsickern. Stattdessen werden standardisierte JSON-Fehlermeldungen und passende HTTP-Statuscodes zurückgegeben:
+Eine globale \texttt{ErrorHandlingMiddleware} fängt alle unbehandelten Ausnahmen ab. Dies verhindert, dass interne Implementierungsdetails (Stack Traces) an den Client durchsickern. Stattdessen werden standardisierte JSON-Fehlermeldungen und passende HTTP-Statuscodes zurückgegeben:
 
 \begin{table}[H]
 \centering
