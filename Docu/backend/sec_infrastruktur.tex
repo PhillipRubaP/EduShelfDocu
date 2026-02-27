@@ -1,5 +1,5 @@
 \section{Infrastruktur \& Deployment}
-Das System ist vollständig containerisiert ("Dockerized"), um eine konsistente Umgebung von der Entwicklung bis zur Produktion zu gewährleisten.
+Das System ist vollständig containerisiert um eine konsistente Umgebung von der Entwicklung bis zur Produktion zu gewährleisten.
 
 \begin{figure}[H]
     \centering
@@ -21,7 +21,7 @@ Für die persistente Speicherung und Vektorsuche wird ein spezialisiertes Image 
 \end{itemize}
 
 \subsubsection{KI-Inferenz (Ollama)}
-Der Ollama-Container ist für die lokale Ausführung der LLMs zuständig und benötigt direkten Hardware-Zugriff für performante Inferenz:
+Der Ollama-Container ist für die lokale Ausführung der LLMs zuständig und benötigt direkten Hardware-Zugriff:
 \begin{itemize}
     \item \textbf{GPU-Passthrough:} Über die \texttt{deploy.resources}-Sektion wird der Nvidia-Treiber durchgereicht:
     \begin{verbatim}
