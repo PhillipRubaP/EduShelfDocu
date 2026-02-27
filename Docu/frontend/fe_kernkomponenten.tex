@@ -1,75 +1,36 @@
 % Autor: Elias Welt
 \section{Implementierung der Kernkomponenten}
 
-\subsection{Authentifizierungssystem}
-Das Login-System (\texttt{Login.jsx}) ist der erste Berührungspunkt für den Nutzer. Das Formular sendet E-Mail und Passwort an den Endpunkt \texttt{/Users/login}.
-Bei Erfolg antwortet das Server-Backend mit einem Session-Cookie (HttpOnly) und den Benutzerdaten.
+Dieses Kapitel gibt einen Überblick über die zentralen Komponenten von EduShelf. Jede Komponente ist als eigenständige \texttt{.jsx}-Datei realisiert und über React Router als eigene Route erreichbar. Die detaillierte Betrachtung der Tabs -- Dateiverwaltung, Quiz, Lernkarten, Chat, Admin und Profil -- erfolgt in den nachfolgenden Abschnitten.
 
-Das Besondere an der Implementierung ist das sofortige Abrufen der Benutzerrollen nach dem Login. Da die Rollen ("Admin", "User") bestimmen, welche Menüpunkte sichtbar sind, führt das Frontend einen sekundären Aufruf an \texttt{/Users/\{id\}/roles} durch.
-Zur Gewährleistung der Persistenz wird das kombinierte Benutzerobjekt (Daten und Rolle) im \texttt{localStorage} hinterlegt. Diese Maßnahme dient ausschließlich der clientseitigen User Experience, um den Anmeldestatus über Seiten-Reloads hinweg konsistent darzustellen. Da der \texttt{localStorage} manipulierbar ist, wird er explizit nicht als Sicherheitsanker betrachtet. Die eigentliche Validierung der Sitzung erfolgt bei jeder Initialisierung durch einen Abgleich mit dem Endpunkt \texttt{/Users/me} gegen den im Browser hinterlegten \textit{HttpOnly}-Cookie..
 
-\subsection{Dateimanagement (Files.jsx)}
-Die Komponente \texttt{Files.jsx} realisiert ein Dokumentenmanagementsystem. 
-\textbf{Funktionsweise:}
-\begin{itemize}
-    \item Beim Laden der Komponente ruft \texttt{useEffect} die Liste aller Dokumente ab
-    \item Ein Suchfeld filtert die lokale Liste in Echtzeit (\texttt{filteredFiles.filter(...)})
-    \item Das Kontextmenü wird über den Zustand \texttt{activeMenuId} gesteuert, sodass immer nur ein Menü gleichzeitig offen sein kann
-\end{itemize}
 
-Der Upload-Prozess wird über ein Modal (\texttt{UploadDialog.jsx}) realisiert. Hier wählt der Nutzer eine Datei aus, welche zusammen mit der User-ID an den Server gesendet wird.
+\subsection{Komponentenübersicht}
 
-\subsection{Quiz-Modul}
-Das Quiz-Modul bündelt alle Funktionen für interaktives Lernen via Abfragen. Die Komponente \texttt{Quiz.jsx} vereint dabei sowohl die Übersicht aller vorhandenen Quizzes als auch die gesamte Durchführungslogik: Sie verwaltet den aktuellen Fragezustand, wertet Antworten aus und zeigt am Ende das Ergebnis an. Die Erstellung und Bearbeitung von Quizzes ist hingegen in die separate Komponente \texttt{QuizModal.jsx} ausgelagert, die als Modal für Create- und Update-Operationen dient.
+Die folgende Tabelle gibt einen Überblick über alle Hauptkomponenten und ihre Zuständigkeit:
+\newline
 
-\subsubsection{Datenstruktur}
-Ein Quiz besteht aus einem Titel und einer Liste von Fragen. Jede Frage enthält wiederum eine Liste von Antworten, wobei eine oder mehrere als korrekt markiert sind. Diese hierarchische Struktur wird im State als verschachteltes Array objekt abgebildet.
-
-\subsubsection{Ablauf eines Quiz}
-Der Zustand während eines laufenden Quizzes wird durch mehrere State-Variablen gesteuert:
-\begin{itemize}
-    \item \texttt{currentQuestionIndex}: Index der aktuell angezeigten Frage
-    \item \texttt{score}: Anzahl der bisher korrekt beantworteten Fragen
-    \item \texttt{selectedAnswerId}: Um eine Mehrfachauswahl zu verhindern und visuelles Feedback zu geben
-    \item \texttt{showScore}: Ein Boolean-Flag, das nach der letzten Frage auf \texttt{true} gesetzt wird, um die Ergebnisanzeige zu rendern
-\end{itemize}
-
-Das visuelle Feedback (Grün für richtig, Rot für falsch) wird durch CSS-Klassen gesteuert, die dynamisch basierend auf der Korrektheit der Antwort zugewiesen werden.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Komponente} & \textbf{Zuständigkeit} \\
+\hline
+\texttt{Login.jsx} & Anmeldung, Session-Initialisierung \\
+\texttt{Register.jsx} & Account-Erstellung, clientseitige Validierung \\
+\texttt{MainDashboard.jsx} & Startseite, Statistiken, Schnellaktionen \\
+\texttt{Files.jsx} & Dateiübersicht, Upload, Suche, Teilen \\
+\texttt{Quiz.jsx} & Quiz-Übersicht und Durchführung \\
+\texttt{QuizModal.jsx} & Quiz-Editor (Erstellen / Bearbeiten) \\
+\texttt{Flashcards.jsx} & Lernkarten mit 3D-Flip-Effekt \\
+\texttt{Chat.jsx} & KI-Chat mit Markdown Support und Bildupload \\
+\texttt{AdminPanel.jsx} & Benutzerverwaltung (nur Admin) \\
+\texttt{Profile.jsx} & Profilübersicht des eingeloggten Nutzers \\
+\texttt{Settings.jsx} & Dark/Light-Mode und UI-Präferenzen \\
+\hline
+\end{tabular}
+\caption{Übersicht der Kernkomponenten von EduShelf}
+\label{tab:komponenten}
+\end{table}
 \newpage
 
-\subsection{Flashcards (Lernkarten)}
-Die \texttt{Flashcards.jsx} Komponente nutzt CSS 3D-Transformationen, um einen realistischen Dreh-Effekt zu erzielen.
-
-\begin{lstlisting}[language=CSS, caption={CSS für den Flip-Effekt}]
-.flashcard-scene {
-  perspective: 1000px; /* Gibt dem 3D-Raum Tiefe */
-}
-.flashcard-container {
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-.flashcard-scene.flipped .flashcard-container {
-  transform: rotateY(180deg);
-}
-\end{lstlisting}
-
-Der Status, welche Karte gerade umgedreht ist, wird in einem \texttt{Set} (\texttt{flippedCards}) gespeichert. Dies ermöglicht es, mehrere Karten gleichzeitig umzudrehen, im Gegensatz zu einer simplen ID-Variable.
-
-\subsection{Chat und KI-Integration}
-Der Chat (\texttt{Chat.jsx}) bietet eine Schnittstelle zu einem LLM (Large Language Model). 
-Wichtige Implementierungsdetails:
-\begin{itemize}
-    \item \textbf{Polling}: Die aktuelle Implementierung wartet auf die vollständige Antwort des Servers (Request/Response Pattern). Während des Wartens wird ein "Thinking Indicator" (animierte Punkte) eingeblendet (\texttt{isLoading} State).
-    \item \textbf{Markdown}: Da KI-Modelle oft strukturierten Text (Codeblöcke, Listen) ausgeben, wird \texttt{react-markdown} in Kombination mit \texttt{rehype-highlight} verwendet. Dies konvertiert die Markdown-Antwort sicher in HTML und bietet Syntax-Highlighting für Code.
-    \item \textbf{Bilder als Input}: Benutzer können Bilder hochladen. Diese werden lokal mittels \texttt{URL.createObjectURL()} sofort in der Vorschau angezeigt, bevor sie als Blob an den Server gesendet werden.
-\end{itemize}
-\newpage
-
-\subsection{Admin Panel und RBAC}
-Das \texttt{AdminPanel.jsx} ist das Kontrollzentrum für Systemadministratoren. Der Zugriff auf diese Route wird auf zwei Ebenen geschützt:
-\begin{itemize}
-	\item \textbf{1. Client-Side Routing}: In \texttt{App.jsx} wird geprüft, ob das Benutzerobjekt die Rolle "Admin" enthält. Falls nicht, wird der Nutzer sofort umgeleitet.
-	\item \textbf{2. Server-Side API}: Selbst wenn ein Nutzer die UI umgehen würde, lehnt das Backend Anfragen an admin-spezifische Endpunkte ab.
-\end{itemize}
-
-Das Panel ermöglicht CRUD-Operationen (Create, Read, Update, Delete) für Benutzer. Besonders hervorzuheben ist die verschachtelte Datenansicht: Klickt ein Admin auf einen Benutzer, werden dessen Dateien asynchron nachgeladen (\texttt{fetchUserFiles}) und in einer Detailansicht dargestellt. Dies vermeidet das Laden unnötiger Daten für die Hauptübersichtstabelle.

@@ -1,10 +1,10 @@
 % Autor: Elias Welt
 \section{Softwarearchitektur und Datenfluss}
 \subsection{Unidirektionaler Datenfluss}
-React erzwingt einen unidirektionalen Datenfluss ("`One-Way Binding"'). Daten fließen immer von Parent- zu Child-Komponenten mittels sogenannter "`Props"'. Um Daten von einem Child zurück zum Parent zu senden (z.B. ein Formular-Submit im \texttt{QuizModal}, der die Liste im \texttt{Quiz} aktualisiert), übergibt die Parentkomponente eine Callback-Function an das Child.
+React erzwingt einen unidirektionalen Datenfluss ("`One-Way Binding"'). Daten fließen immer von Parent- zu Child-Komponenten mittels sogenannter "`Props"'. Um Daten von einem Child zurück zum Parent zu senden, übergibt die Parentkomponente eine Callback-Function an das Child.
 
 \subsection{Routing-Strategie}
-Das Routing in \texttt{App.jsx} definiert die Struktur der Anwendung. Es wird zwischen öffentlichen Routen (Login, Register) und privaten, geschützten Routen unterschieden.
+Das Routing in \texttt{App.jsx} definiert die Struktur der Anwendung. Es wird zwischen offenen Routen (Login, Register) und geschützten Routen unterschieden.
 
 \begin{lstlisting}[language=JavaScript, caption={Routing-Struktur in App.jsx}]
 <Routes>

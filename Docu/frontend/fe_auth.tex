@@ -6,12 +6,13 @@ Der Authentifizierungsprozess von EduShelf umfasst drei aufeinander aufbauende S
 \subsection{Registrierung (Register.jsx)}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.82\textwidth]{img/register-dark-mode}
+    \includegraphics[width=0.6\textwidth]{img/register-dark-mode}
     \caption{Registrierung von EduShelf im Dark-Mode}
     \label{fig:register}
 \end{figure}
 
 Die Komponente \texttt{Register.jsx} realisiert ein zweistufiges Validierungskonzept. Zunächst wird die Benutzereingabe vollständig clientseitig geprüft, bevor anschließend eine Anfrage an den Server gesendet wird. Dies reduziert unnötige Netzwerkanfragen und gibt dem Nutzer sofortiges Feedback.
+\newpage
 
 \subsubsection{Clientseitige Validierung}
 
@@ -52,23 +53,20 @@ if (error.response?.data?.errors) {
 }
 \end{lstlisting}
 
-Diese Normalisierung des Schlüssels (erster Buchstabe zu Kleinbuchstaben) ist notwendig, da das Backend C\#-Konventionen mit großem Anfangsbuchstaben verwendet (\texttt{Username}), während das Frontend der JavaScript-Konvention\newline (camelCase) folgt.
-\newpage
-
 \subsection{Login-Prozess (Login.jsx)}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\textwidth]{img/login-dark-mode}
+    \includegraphics[width=0.6\textwidth]{img/login-dark-mode}
     \caption{Login-Ansicht von EduShelf im Dark-Mode}
     \label{fig:login}
 \end{figure}
 
-Der Login-Prozess ist bewusst in 2 Abfragen gegliedert: Zuerst wird ein POST-Request an \texttt{/Users/login} gesendet und sollte dieser erfolgreich sein, wird unmittelbar ein zweiter Aufruf an \texttt{/Users/\{id\}/roles} durchgeführt. Die Rollenzuweisung ist für die Navigation auf der Seite essenziell -- nur Nutzer mit der Rolle \textit{Admin} sehen den Menüpunkt \texttt{Adminpanel}.
+Der Login-Prozess ist bewusst in zwei Abfragen gegliedert: Zuerst wird ein POST-Request an \texttt{/Users/login} gesendet. Bei Erfolg antwortet das Backend mit einem \texttt{HttpOnly}-Session-Cookie und den Benutzerdaten. Unmittelbar danach erfolgt ein zweiter Aufruf an \texttt{/Users/\{id\}/roles}, da die Rollenzuweisung (\textit{Admin}, \textit{User}) bestimmt, welche Menüpunkte in der Navigation sichtbar sind.
 
-Das Benutzerobjekt (Daten + Rolle) wird im \texttt{localStorage} abgelegt, um den Anmeldestatus über Browser-Refreshes hinweg zu erhalten und zu vermeiden, dass nach dem Neuladen ein weiterer Login notwendig ist. Diese Persitenzmaßnahme dient ausschließlich der UI-Zustandsverwaltung; die tatsächliche Sitzungsauthentifizierung erfolgt serverseitig über ein HttpOnly-Cookie.
+Das kombinierte Benutzerobjekt (Daten + Rolle) wird im \texttt{localStorage} hinterlegt, um den Anmeldestatus über Browser-Refreshes hinweg zu erhalten. Diese Persistenzmaßnahme dient ausschließlich der UI-Zustandsverwaltung -- der tatsächliche Sicherheitsanker ist der \texttt{HttpOnly}-Cookie. Da der \texttt{localStorage} vom Nutzer manipulierbar ist, wird er explizit nicht als Sicherheitsmechanismus genutzt: Bei jeder Initialisierung der App erfolgt ein Abgleich mit \texttt{/Users/me} gegen den serverseitigen Cookie.
 
 \subsection{E-Mail-Bestätigung}
 
 Nach der Registrierung erhält der Nutzer eine Bestätigungs-E-Mail. Der enthaltene Link führt zur Komponente \texttt{VerifyEmail.jsx}, welche den Token aus der URL extrahiert und an den Backend-Endpunkt zur Verifikation übermittelt. Da das Backend den Link selbst generiert, enthält das Frontend lediglich die Anzeigelogik für die Erfolgs- bzw. Fehlermeldung -- eine klare Umsetzung des Single-Responsibility-Prinzips.
-\newpage
+

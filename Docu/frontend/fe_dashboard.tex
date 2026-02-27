@@ -2,6 +2,7 @@
 \section{Das Dashboard}
 
 Die Startseite der Anwendung, realisiert in der Komponente \texttt{MainDashboard.jsx}, stellt nach erfolgreicher Authentifizierung die primäre Ansicht für den Benutzer dar. Sie verfolgt das Ziel auf einen Blick die relevantesten Informationen und die häufigsten Aktionen darzustellen. Das Dashboard bündelt Schnellaktionen, kürzlich hinzugefügte Dateien sowie aussagekräftige Statistiken.
+\newline
 
 \begin{figure}[h]
     \centering
@@ -9,11 +10,11 @@ Die Startseite der Anwendung, realisiert in der Komponente \texttt{MainDashboard
     \caption{Dashboard von EduShelf im Dark-Mode}
     \label{fig:dashboard}
 \end{figure}
-\newpage
+
 \subsection{Architektur und Datenladen}
 
 Ein zentraler Vorteil der beim Dashboard verwendeten Architektur ist das parallele Laden aller benötigten Daten. Anstatt Dokumente, Quizzes und Lernkarten sequenziell abzurufen -- was die Ladezeit mit jeder weiteren Anfrage erhöhen würde -- wird \texttt{Promise.all()} eingesetzt. Diese Methode startet alle asynchronen Anfragen gleichzeitig und wartet, bis die Letzte von ihnen abgeschlossen ist.
-\newline
+\newpage
 
 \begin{lstlisting}[language=JavaScript, caption={Paralleles Datenladen mit Promise.all im Dashboard}]
 const fetchData = async () => {
@@ -36,7 +37,7 @@ const fetchData = async () => {
 \end{lstlisting}
 
 Das Ergebnis ist eine messbar kürzere Wartezeit im Vergleich zu sequenziellen Aufrufen, da die Gesamtdauer der Zeit der langsamsten Einzelanfrage entspricht, nicht der Summe aller Anfragen.
-\newpage
+
 
 \subsection{Schnellaktionen und Statistik-Widget}
 
@@ -49,4 +50,4 @@ Gegliedert ist das Dashboard in drei Bereiche:
 \end{enumerate}
 
 Dieses Konzept minimiert die Anzahl der notwendigen Navigationsschritte für häufig ausgeführte Aktionen und entspricht der Zielsetzung einer effizienten Lernoberfläche.
-\newpage
+

@@ -8,8 +8,9 @@ Das \texttt{api}-Objekt fungiert als Wrapper um die native \texttt{fetch}-API. E
 \begin{enumerate}
     \item \textbf{Basis-URL}: Alle Anfragen sind relativ zu einer zentral konfigurierten Basis-URL
     \item \textbf{Credentials}: Durch \texttt{credentials: 'include'} sendet der Browser automatisch Cookies (für die HttpOnly Session-Cookies) mit jeder Anfrage mit.
-    \item \textbf{Content-Type Handling}: JSON-Payloads werden automatisch serialisiert und der korrekte Header gesetzt
-    \item \textbf{Zentrale Fehlerbehandlung}: Antworten mit einem HTTP-Statuscode außerhalb des 200er-Bereichs lösen automatisch eine Exception aus. Dies vereinfacht die Fehlerbehandlung in den Komponenten, da \texttt{try/catch}-Blöcke verwendet werden können
+    \item \textbf{Content-Type Handling}: JSON-Payloads werden automatisch serialisiert und der korrekte Header gesetzt.
+    \item \textbf{Zentrale Fehlerbehandlung}: Antworten mit einem HTTP-Statuscode außerhalb des 200er-Bereichs lösen automatisch eine Exception aus. Dies vereinfacht die Fehlerbehandlung in den Komponenten, da \texttt{try/catch}-Blöcke verwendet werden können.
+    \item \textbf{Spezifische Methoden}: Methoden wie \texttt{createChatSession} oder \texttt{uploadDocument} bilden die Logik ab. Letzteres nutzt \texttt{FormData}, um Datei-Uploads (multipart/form-data) zu ermöglichen.
 \end{enumerate}
 
 \begin{lstlisting}[language=JavaScript, caption={GET-Methode im API-Service}]
@@ -25,5 +26,3 @@ get: async (endpoint, options = {}) => {
   return await response.json();
 },
 \end{lstlisting}
-
-Zusätzlich stellt der Service spezifische Methoden bereit, die die Logik abbilden, beispielsweise \texttt{createChatSession}, \texttt{updateQuiz} oder \texttt{uploadDocument}. Letzteres nutzt \texttt{FormData}, um Datei-Uploads (multipart/form-data) zu ermöglichen.

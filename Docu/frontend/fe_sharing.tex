@@ -5,11 +5,11 @@ Eine weitere wesentliche Funktion von EduShelf ist die Möglichkeit, Dokumente m
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.92\textwidth]{img/files-dark-mode}
-    \caption{Dateiansicht von EduShelf im Dark-Mode}
-    \label{fig:files}
+    \includegraphics[width=0.6\textwidth]{img/share-file-dark-mode}
+    \caption{Share-File-Dialog von EduShelf im Dark-Mode}
+    \label{fig:share}
 \end{figure}
-\newpage
+
 
 \subsection{Share-Dialog (ShareFileModal.jsx)}
 
@@ -36,7 +36,7 @@ const ShareFileModal = ({ isOpen, onClose, onShare, fileName }) => {
 \end{lstlisting}
 
 Während des Sendevorgangs wird der Submit-Button deaktiviert (\texttt{disabled={isLoading}}) und der Text wechselt von \textit{Share File} zu \textit{Sharing...}. Dieses Muster verhindert mehrere Einreichungen und gibt dem Nutzer visuelles Feedback über den schon laufenden Prozess.
-\newpage
+
 
 \subsection{Zustandsverwaltung für Shared Files}
 
@@ -59,4 +59,4 @@ const handleRejectShare = async (docId) => {
 \subsection{Bewertung des Ansatzes}
 
 Die Entscheidung, den Accept/Reject-Status serverseitig zu speichern, stellt sicher, dass der Share-Status geräteübergreifend verfügbar ist. Akzeptiert ein Nutzer eine Freigabe auf einem Gerät, ist diese Entscheidung auch auf allen anderen Geräten, die mit diesem Account eingeloogt sind, sofort sichtbar. Dadurch entfallen die früheren Einschränkungen einer rein clientseitigen Lösung und die User Expierience erhöht sich deutlich. Die API-Aufrufe erfolgen asynchron, sodass die Benutzeroberfläche mit den aktuellen Daten vom Server aktualisiert wird.
-\newpage
+
