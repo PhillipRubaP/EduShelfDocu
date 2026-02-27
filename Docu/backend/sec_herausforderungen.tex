@@ -4,7 +4,7 @@ Während der Backend-Entwicklung mussten mehrere technische Hürden überwunden 
 
 
 \subsection{Blockierende Operationen bei großen Dateien}
-\textbf{Lösung:} Einführung einer \texttt{BackgroundJobQueue}. Der Upload-Endpoint nimmt die Datei entgegen, speichert sie in MinIO und reiht nur eine "Job-ID" in die Queue ein, bevor er sofort \texttt{202 Accepted} zurückgibt. Ein Hintergrunddienst ("Worker") arbeitet diese Queue asynchron ab.
+\textbf{Lösung:} Einführung einer \texttt{BackgroundJobQueue}. Der Upload-Endpoint nimmt die Datei entgegen, speichert sie in MinIO und reiht nur eine ''Job-ID`` in die Queue ein, bevor er sofort \texttt{202 Accepted} zurückgibt. Ein Hintergrunddienst ("Worker") arbeitet diese Queue asynchron ab.
 
 \begin{figure}[H]
     \centering
