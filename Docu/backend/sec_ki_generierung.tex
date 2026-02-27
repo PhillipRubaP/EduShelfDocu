@@ -1,16 +1,16 @@
 \section{KI-gest\"utzte Lerninhaltsgenerierung}
 \label{sec:aigeneration}
 
-Neben der RAG-basierten Chat-Funktionalit\"at bietet EduShelf zwei weitere KI-Features: die automatische Generierung von \textbf{Lernkarten (Flashcards)} und \textbf{Multiple-Choice-Quizzes}. Beide Features nutzen denselben Ollama-LLM-Stack, folgen aber einem eigenst\"andigen, direkteren Prompt-Workflow, da hier keine Vektorsuche ben\"otigt wird -- der Nutzer liefert den Kontext direkt \"uber Dokumenten-IDs oder RAG-abgerufene Chunks.
+Neben der RAG-basierten Chat-Funktionalit\"at bietet EduShelf zwei weitere KI-Features: die automatische Generierung von \textbf{Lernkarten (Flashcards)} und \textbf{Multiple-Choice-Quizzes}. Beide Features nutzen denselben Ollama-LLM-Stack, folgen aber einem eigenst\"andigen Workflow, da hier keine Vektorsuche ben\"otigt wird da der Nutzer direkt den Kontext  \"uber Dokumenten-IDs oder RAG-abgerufene Chunks liefert.
 
 \subsection{Generierungspipeline (5 Schritte)}
 
 Beide Services (\texttt{FlashcardService}, \texttt{QuizService}) folgen derselben f\"unfstufigen Pipeline:
 
 \begin{enumerate}
-    \item \textbf{Kontextbeschaffung:} Der Service akzeptiert drei Eingabequellen: einen direkten \texttt{Context}-String (aus der RAG-Pipeline), eine einzelne \texttt{DocumentId} oder eine Liste von \texttt{DocumentIds}. Im letzteren Fall werden die Textinhalte aller Dokumente via \texttt{GetDocumentContentAsync} abgerufen und mit einem Trennzeichen (\texttt{\textbackslash n\textbackslash n\_\_NEXT\_DOCUMENT\_\_\textbackslash n\textbackslash n}) zusammengef\"ugt.
+    \item \textbf{Kontextbeschaffung:} Der Service akzeptiert drei Eingabequellen: einen direkten \texttt{Context}-String (aus der RAG-Pipeline), eine einzelne \texttt{DocumentId} oder eine Liste von \texttt{DocumentIds}. Im letzteren Fall werden die Textinhalte aller Dokumente via \texttt{GetDocumentContentAsync} abgerufen und mit einem Trennzeichen zusammengef\"ugt.
     \item \textbf{Kontext-Truncation:} Um das Kontextfenster des LLMs nicht zu sprengen, wird der Dokumenteninhalt auf maximal 12.000 Zeichen (Flashcards) bzw. 15.000 Zeichen (Quizze) begrenzt.
-    \item \textbf{Prompt-Vorbereitung:} Der System-Prompt wird aus \texttt{appsettings.json} geladen (\texttt{AIService:Prompts:Flashcard} bzw. \texttt{:Quiz}). Die Variable \texttt{\{Count\}} wird durch die gew\"unschte Anzahl ersetzt.
+    \item \textbf{Prompt-Vorbereitung:} Der System-Prompt wird aus \texttt{appsettings.json} geladen. Die Variable \texttt{\{Count\}} wird durch die gew\"unschte Anzahl ersetzt.
     \item \textbf{LLM-Inferenz:} Das Modell wird mit dem vorbereiteten \texttt{ChatHistory}-Objekt aufgerufen.
     \item \textbf{JSON-Parsing und Persistenz:} Die Antwort wird geparst und in der Datenbank gespeichert.
 \end{enumerate}
@@ -38,8 +38,9 @@ var flashcards = JsonSerializer.Deserialize<List<GeneratedFlashcardJson>>(
     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 \end{lstlisting}
 
-Nach dem Parsing werden die generierten Karten automatisch mit einem Tag versehen, der den Dokumenttitel tr\"agt, und als \texttt{Flashcard}-Entit\"aten in der Datenbank persistiert.
+Nach dem Parsing werden die generierten Karten automatisch mit einem Tag versehen, der den Dokumenttitel tr\"agt, und als \texttt{Flashcard}-Entit\"aten in der Datenbank gespeichert.
 
+\newpage
 \subsection{Quiz-Generierung (\texttt{QuizService})}
 
 Die Quiz-Generierung ist komplexit\"ur, da das LLM ein verschachteltes JSON-Objekt mit \texttt{Title}, \texttt{Questions} und pro Frage mehrere \texttt{Answers} (jeweils mit \texttt{IsCorrect}-Flag) produzieren muss. Da LLMs trotz strikter Anweisung gelegentlich vom erwarteten Schema abweichen (z.B. alternative Feldnamen wie \texttt{options} statt \texttt{Answers}), implementiert der \texttt{QuizService} eine \textbf{zweistufige Parsing-Strategie}:

@@ -33,17 +33,17 @@ Der zentrale technische Ansatz von EduShelf ist \textit{Retrieval-Augmented Gene
     \item Hochgeladene Dokumente werden in kleine Textabschnitte (\textit{Chunks}) zerlegt und als Vektoren in einer Datenbank gespeichert.
     \item Bei einer Nutzeranfrage werden die semantisch passendsten Chunks per Vektorsuche abgerufen.
     \item Diese Chunks werden als Kontext zusammen mit der Frage an das LLM übergeben.
-    \item Das LLM generiert eine präzise, auf das Dokument bezogene Antwort.
+    \item Das LLM generiert eine passende, auf das Dokument bezogene Antwort.
 \end{enumerate}
 
 Dieses Verfahren reduziert Halluzinationen und ermöglicht es, ein lokal betriebenes Modell (ohne Internetzugang) mit dokumentenspezifischem Wissen zu versorgen.
 
 \section{Aufgabenstellung}
 
-Im Rahmen dieser Diplomarbeit an der HTL Hollabrunn wurde die Plattform \textbf{EduShelf} vollständig konzipiert, implementiert und dokumentiert. Das System besteht aus drei Hauptkomponenten, die von den beiden Diplomanden arbeitsteilig entwickelt wurden:
+Im Rahmen dieser Diplomarbeit an der HTL Hollabrunn wurde die Plattform \textbf{EduShelf} vollständig konzipiert, implementiert und dokumentiert. Das System besteht aus drei Hauptkomponenten, die in jeweils 2 Arbeitsbereiche aufgeteilt wurden:
 
 \begin{itemize}
-    \item \textbf{Web-Frontend} (Elias Welt): Eine React-basierte Single-Page-Application (SPA) mit vollständiger Benutzeroberfläche für Dokumentverwaltung, Chat, Lernkarten und Quizze.
+    \item \textbf{Web-Frontend} (Elias Welt): Eine React-basierte Single-Page-Application mit vollständiger Benutzeroberfläche für Dokumentverwaltung, Chat, Lernkarten und Quizze.
     \item \textbf{Backend-API} (Phillip Rubak): Eine ASP.NET Core 8 Web API, die als zentrale Schnittstelle zwischen Frontend, Datenbank, KI-Modell und Dateispeicher fungiert.
 \end{itemize}
 
@@ -54,7 +54,7 @@ Das System soll folgende Kernfunktionen bereitstellen:
 \begin{enumerate}
     \item \textbf{Benutzerverwaltung:} Registrierung mit E-Mail-Verifizierung, Login, rollenbasierte Zugriffskontrolle (Student / Admin).
     \item \textbf{Dokumentenverwaltung:} Upload, Ansicht, Herunterladen und Löschen von Dokumenten verschiedener Formate (PDF, DOCX, TXT). Dokumente können mit anderen Nutzern geteilt werden.
-    \item \textbf{KI-Chatbot (RAG):} Nutzer können in natürlicher Sprache Fragen zu ihren Dokumenten stellen. Das System erkennt die Nutzerintention automatisch und ruft relevante Dokumentenabschnitte ab.
+    \item \textbf{KI-Chatbot (RAG):} Nutzer können Fragen zu ihren Dokumenten stellen. Das System erkennt die Nutzerintention automatisch und ruft relevante Dokumentenabschnitte ab.
     \item \textbf{Lernkarten-Generierung:} Aus Dokumenteninhalten werden automatisch Flashcards (Frage-Antwort-Paare) generiert, die in einem interaktiven Review-Modus geübt werden können.
     \item \textbf{Quiz-Generierung:} Das System erstellt automatisch Multiple-Choice-Quizze aus hochgeladenen Dokumenten, inklusive Auswertung und Ergebnisanzeige.
     \item \textbf{Tag-System:} Dokumente und Lernkarten können mit Tags versehen und gefiltert werden.
@@ -78,4 +78,4 @@ Die vorliegende Diplomarbeit ist in zwei Hauptteile gegliedert:
     \item \textbf{Backend-Dokumentation} beschreibt die Systemarchitektur, das Datenmodell, die REST-API, die RAG-Pipeline, die KI-Dienste, die Infrastruktur sowie die Qualitätssicherung durch automatisierte Tests (Phillip Rubak).
 \end{itemize}
 
-Beide Kapitel folgen einer technikorientierten Struktur und belegen ihre Aussagen durch Codeauszüge, Diagramme und konkrete Implementierungsdetails.
+Beide Kapitel sind Strukturiert aufgebaut und belegen Aussagen durch Codeauszüge, Diagramme und Implementierungsdetails.
