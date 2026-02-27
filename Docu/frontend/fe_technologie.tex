@@ -1,16 +1,17 @@
 % Autor: Elias Welt
 \section{Technologie-Stack}
-Die Auswahl der Technologien erfolgte unter den Gesichtspunkten der Modernität, Verbreitung (Community-Support) und Wartbarkeit.
+Die Auswahl der Technologien erfolgte unter den Kriterien der Modernität, Verbreitung (Community-Support) und Wartbarkeit.
 
 \subsection{React (v19)}
-React ist eine von Facebook (Meta) entwickelte JavaScript-Bibliothek zur Erstellung von Benutzeroberflächen. Im Kern basiert React auf Komponenten, die wiederverwendbare Bausteine der UI darstellen.
-Ein Schlüsselelement von React ist das "`Virtual DOM"'. Anstatt bei jeder Änderung direkt das langsame, reale DOM des Browsers zu manipulieren, erstellt React eine virtuelle Kopie im Speicher. Bei Zustandsänderungen vergleicht React den neuen virtuellen Baum mit dem alten (Diffing-Algorithmus) und berechnet die effizienteste Methode, um das reale DOM zu aktualisieren.
+React ist eine von Meta entwickelte JavaScript-Library zur Entwicklung von UIs. Im Kern basiert React auf Komponenten, die wiederverwendbare Bausteine darstellen.
+Ein Schlüsselelement von React ist das "`Virtual DOM"'. Anstatt bei jeder Änderung direkt das langsame DOM des Browsers zu manipulieren, erstellt React eine virtuelle Kopie im Speicher. Bei Zustandsänderungen vergleicht React den neuen virtuellen Baum mit dem alten (Diffing-Algorithmus) und berechnet die effizienteste Methode, um das reale DOM zu aktualisieren.
 
 In EduShelf wird ausschließlich die "`Functional Component"' Syntax in Verbindung mit "`Hooks"' verwendet. Hooks wie \texttt{useState} oder \texttt{useEffect} ermöglichen es, Zustand und Seiteneffekte in funktionalen Komponenten zu nutzen, ohne Klassen schreiben zu müssen. Dies führt zu kompakterem und verständlicherem Code.
 
 \subsection{Vite}
 Vite (französisch für "'schnell"') ist das Build-Tool der Wahl für "'EduShelf'". Es löst ältere Tools wie Webpack ab, indem es während der Entwicklung native ES-Module im Browser nutzt. Das bedeutet, dass der Browser die Importe selbst auflöst, anstatt dass der gesamte Code vor jedem Start gebündelt werden muss. Dies führt zu extrem schnellen Server-Startzeiten, selbst bei wachsender Projektgröße.
-Für die Produktion nutzt Vite im Hintergrund \texttt{Rollup}, um hochoptimierte, minifizierte Bundles zu erstellen.
+Für die Bereitstellung der Anwendung nutzt Vite im Hintergrund \texttt{Rollup}, um hochoptimierte, minifizierte Bundles zu erstellen.
 
 \subsection{React Router (v7)}
-Da eine SPA (= Single Page Application) physisch nur aus einer Seite besteht, muss die Navigation simuliert werden. \texttt{React Router} überwacht die URL im Browser und rendert basierend auf definierten Regeln die entsprechenden Komponenten. Dies ermöglicht Deep-Linking (Lesezeichen auf Unterseiten) und die Verwendung der Browser-Historie (Zurück-Button), obwohl die Seite nie neu geladen wird.
+Da eine SPA (= Single Page Application) physisch nur aus einer Seite besteht, muss die Navigation simuliert werden. \texttt{React Router} überwacht die URL und rendert basierend auf definierten Regeln die entsprechenden Komponenten. Dies ermöglicht Deep-Linking (Lesezeichen auf Unterseiten) und die Verwendung der Browser-Historie (Zurück-Button), obwohl die Seite nie neu geladen wird.
+\newpage
