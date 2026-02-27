@@ -2,7 +2,7 @@
 Analog zum Frontend erfolgt der Einstieg in die Anwendung über eine definierte Startup-Logik, die in der \texttt{Program.cs} und den Konfigurationsdateien verankert ist.
 
 \subsection{Programm-Initialisierung (Program.cs)}
-Die \texttt{Program.cs} ist der "Entry Point" der ASP.NET Core Anwendung. Hier wird der "Generic Host" gebaut, der Dependency Injection Container befüllt und die HTTP-Request-Pipeline (Middleware) konfiguriert.
+Die \texttt{Program.cs} ist der Entry Point der ASP.NET Core Anwendung. Hier wird der "Generic Host" gebaut, der Dependency Injection Container befüllt und die HTTP-Request-Pipeline (Middleware) konfiguriert.
 \begin{lstlisting}[language={[Sharp]C}, caption={Auszug aus der Middleware-Konfiguration}]
 	var builder = WebApplication.CreateBuilder(args);
 	

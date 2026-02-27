@@ -81,7 +81,7 @@ Der Nutzer klickt den Link im Frontend, das ihn an \texttt{POST /api/users/confi
 
 \begin{enumerate}
     \item Nutzer mit dieser E-Mail existiert.
-    \item E-Mail ist noch nicht bestätigt (Idempotenz -- doppelte Klicks sind harmlos).
+    \item E-Mail ist noch nicht bestätigt.
     \item Der übermittelte Token stimmt exakt mit dem gespeicherten überein.
     \item Der Token ist nicht abgelaufen (\texttt{ExpiresAt > DateTime.UtcNow}).
 \end{enumerate}
@@ -89,7 +89,7 @@ Der Nutzer klickt den Link im Frontend, das ihn an \texttt{POST /api/users/confi
 Bei Erfolg werden \texttt{IsEmailConfirmed = true} gesetzt und Token sowie Ablaufzeit aus der Datenbank gelöscht.
 
 \subsection{Datenvalidierung (FluentValidation)}
-Eingehende Daten werden rigoros validiert. Die Bibliothek \textit{FluentValidation} erlaubt die Definition von komplexen Regeln in dedizierten Validator-Klassen.
+Eingehende Daten werden strikt validiert. Die Bibliothek \textit{FluentValidation} erlaubt die Definition von komplexen Regeln in dedizierten Validator-Klassen.
 
 Beispiel \texttt{UserRegisterValidator}:
 \begin{itemize}

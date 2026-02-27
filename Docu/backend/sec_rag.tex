@@ -1,11 +1,11 @@
 \section{RAG (Retrieval-Augmented Generation) Workflow}
 \label{sec:rag}
 
-Das Herzst\"uck von EduShelf ist die RAG-Pipeline: Anstatt das LLM allein auf sein allgemeines Wissen zu st\"utzen, wird jede Benutzeranfrage zun\"achst dazu genutzt, relevante Textabschnitte aus den hochgeladenen Dokumenten abzurufen. Diese Abschnitte werden dann als \textit{Kontext} in den Prompt eingef\"ugt, bevor das LLM zur Antwort aufgefordert wird. Dies reduziert Halluzinationen und erm\"oglicht dokumentenspezifische, pr\"azise Antworten.
+Das Herzst\"uck von EduShelf ist die RAG-Pipeline: Anstatt das LLM allein auf sein allgemeines Wissen zu st\"utzen, wird jede Benutzeranfrage zun\"achst dazu genutzt, relevante Textabschnitte aus den hochgeladenen Dokumenten abzurufen. Diese Abschnitte werden dann als \textit{Kontext} in den Prompt eingef\"ugt, bevor das LLM zur Antwort aufgefordert wird. Dies reduziert Halluzinationen und erm\"oglicht präzise sowie dokumentspezifische Antworten.
 
 \newpage
 \subsection{System\"ubersicht und Datenfluss}
-Das folgende Diagramm visualisiert den vollst\"andigen Anfrage-Antwort-Zyklus im RAG-System und zeigt, wie die verschiedenen Services zusammenwirken.
+Das folgende Diagramm visualisiert den vollst\"andigen Anfrage-Antwort-Zyklus im RAG-System und zeigt, wie die verschiedenen Services zusammenarbeiten.
 
 \begin{figure}[h]
     \centering
@@ -18,7 +18,7 @@ Der Datenfluss bei einer Benutzeranfrage l\"asst sich in f\"unf klar abgegrenzte
 \begin{enumerate}
     \item \textbf{Anfrage \& Intent-Erkennung:} Der \texttt{ChatController} empf\"angt die Nachricht des Nutzers und leitet sie an den \texttt{ChatService} weiter. Dieser \"ubergibt sie zuerst an den \texttt{IntentDetectionService}.
     \item \textbf{Vektorielle Suche (Retrieval):} Basierend auf dem erkannten Intent ruft der \texttt{RetrievalService} die semantisch relevantesten \texttt{DocumentChunks} aus der PostgreSQL/pgvector-Datenbank ab.
-    \item \textbf{Kontext-Aufbereitung:} Der \texttt{PromptGenerationService} kombiniert die Konversationshistorie, die abgerufenen Chunks und die aktuelle Frage zu einem strukturierten Prompt.
+    \item \textbf{Kontext-Aufbereitung:} Der \texttt{PromptGenerationService} kombiniert den Konversationsverlauf, die abgerufenen Chunks und die aktuelle Frage zu einem Prompt.
     \item \textbf{LLM-Inferenz:} \"Uber das Microsoft Semantic Kernel SDK wird der Prompt an das lokal laufende Ollama-LLM gesendet.
     \item \textbf{Antwort \& Persistenz:} Die generierte Antwort wird in der Datenbank als \texttt{ChatMessage} gespeichert und an den Client zur\"uckgegeben.
 \end{enumerate}
@@ -44,11 +44,11 @@ var intent = JsonSerializer.Deserialize<Intent>(cleanedJson,
 
 Das \texttt{Intent}-Objekt enth\"alt zwei Felder:
 \begin{itemize}
-    \item \texttt{Type}: Klassifiziert die Anfrage als \texttt{"question"}, \texttt{"summarize"}, \texttt{"flashcards"} oder \texttt{"quiz"}.
+    \item \texttt{Type}: Klassifiziert die Anfrage als \texttt{"question"}, \texttt{''summarize"}, \texttt{"flashcards"} oder \texttt{"quiz"}.
     \item \texttt{DocumentName}: Falls der Nutzer explizit ein Dokument nennt (z.B. \glqq{}Erkl\"are mir Kapitel 3 aus Physik.pdf\grqq{}), wird der Dateiname hier extrahiert.
 \end{itemize}
 
-Dieser vorgelagerte Schritt erm\"oglicht eine fundamentale Weichenstellung im weiteren Ablauf: Statt immer dieselbe RAG-Pipeline auszuf\"uhren, wird die Antwort-Strategie dynamisch angepasst.
+Dieser Schritt ist entscheidend für den weiteren Prozess: Anstatt starr immer dieselbe RAG-Pipeline zu durchlaufen, wird die Antwort-Strategie dynamisch an den jeweiligen Kontext angepasst.
 
 \subsection{Schritt 2: Semantische Suche (\texttt{RetrievalService})}
 \label{subsec:retrieval}
@@ -91,7 +91,7 @@ Der Wert $k$ (Anzahl der zur\"uckgegebenen Chunks) ist dynamisch: Bei kurzen Anf
 Der \texttt{PromptGenerationService} baut eine vollst\"andige \texttt{ChatHistory} auf, die drei Elemente enth\"alt:
 \begin{itemize}
     \item Eine \textbf{System-Instruktion}, die das Verhalten des LLMs grundlegend steuert.
-    \item Die \textbf{bisherige Konversationshistorie} der aktuellen Chat-Sitzung (f\"ur kontextsensitive Folgefragen).
+    \item Den \textbf{bisherigen Konversationsverlaif} der aktuellen Chat-Sitzung (f\"ur kontextsensitive Folgefragen).
     \item Die \textbf{aktuelle Benutzeranfrage}, angereichert mit dem abgerufenen Dokumentenkontext.
 \end{itemize}
 
@@ -108,7 +108,7 @@ finalUserMessage.AppendLine($"[User Question]: {userInput}");
 chatHistory.AddUserMessage(finalUserMessage.ToString());
 \end{lstlisting}
 
-Ein zentrales Element ist die \textbf{Token-Limitierung} durch den \texttt{ITokenService}. Um das Kontextfenster des LLMs (konfigurierbar, Standard: 4096 Token) nicht zu \"uberschreiten, werden die Chunks vor der \"Ubergabe tokenisiert und pr\"azise abgeschnitten (\textit{Smart Truncation}). Dies verhindert API-Fehler und stellt sicher, dass die semantisch n\"achsten Chunks priorisiert werden.
+Ein zentrales Element ist die \textbf{Token-Limitierung} durch den \texttt{ITokenService}. Um das Kontextfenster des LLMs (Standardmäßig: 4096 Tokens) nicht zu \"uberschreiten, werden die Chunks vor der \"Ubergabe tokenisiert und pr\"azise abgeschnitten (\textit{Smart Truncation}). Dies verhindert API-Fehler und stellt sicher, dass die semantisch n\"achsten Chunks priorisiert werden.
 
 \begin{figure}[H]
     \centering
@@ -145,13 +145,13 @@ else { // "question" oder "summarize"
 }
 \end{lstlisting}
 
-Dieses Design erm\"oglicht es, \"uber eine einzige Chat-Schnittstelle drei fundamentale Lernfunktionen anzubieten: konversationelles Frage-Antwort, automatische Flashcard-Generierung und automatische Quiz-Erstellung -- alles gesteuert durch die Intention hinter der nat\"urlichsprachlichen Eingabe des Nutzers.
+Dieses Design erm\"oglicht es, \"uber eine einzige Chat-Schnittstelle drei fundamentale Lernfunktionen anzubieten: konversationelles Frage-Antwort, automatische Flashcard-Generierung und automatische Quiz-Erstellung, alles gesteuert durch die Intention hinter der sprachlichen Eingabe des Nutzers.
 
 \subsection{Zusammenfassung: Retrieval-Augmented Generation}
 Die Implementierung des RAG-Systems stellt sicher, dass das LLM stets auf den spezifischen Kontext der hochgeladenen Dokumente des Nutzers antwortet. Die wichtigsten Designprinzipien sind:
 \begin{itemize}
-    \item \textbf{Datenprivacy:} Durch lokale Ollama-Inferenz verlassen keine Dokumenteninhalte den Server.
+    \item \textbf{Datenprivacy:} Durch den lokalen Ollama-Server verlassen keine Dokumenteninhalte den Server.
     \item \textbf{Pr\"azision:} Durch semantische Vektorsuche und optionales Name-Matching werden nur die relevantesten Chunks an das LLM \"ubergeben.
     \item \textbf{Robustheit:} Token-basierte Kontextlimitierung verhindert LLM-Abst\"urze durch \"uberlange Prompts.
-    \item \textbf{Erweiterbarkeit:} Das Intent-Branching erlaubt es, neue KI-gest\"utzte Features durch Hinzuf\"ugen weiterer Intent-Typen zu integrieren, ohne die Kernpipeline zu \"andern.
+    \item \textbf{Erweiterbarkeit:} Das Intent-Branching erlaubt es, neue KI-gest\"utzte Features durch Hinzuf\"ugen weiterer Intent-Typen zu integrieren, ohne die Pipeline zu \"andern.
 \end{itemize}
