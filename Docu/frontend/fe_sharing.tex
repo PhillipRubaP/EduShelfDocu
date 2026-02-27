@@ -1,18 +1,19 @@
 % Autor: Elias Welt
 \section{Datei-Sharing zwischen Nutzern}
 
-Eine wesentliche kollaborative Funktion von EduShelf ist die Möglichkeit, Dokumente mit anderen Nutzern zu teilen. Der gesamte Sharing-Workflow wird durch die Komponente \texttt{ShareFileModal.jsx} in Verbindung mit der Dateiansicht \texttt{Files.jsx} realisiert.
+Eine weitere wesentliche Funktion von EduShelf ist die Möglichkeit, Dokumente mit anderen Nutzern zu teilen. Der komplette Sharing-Prozess wird durch die Komponente \texttt{ShareFileModal.jsx} in Verbindung mit der Dateiansicht \texttt{Files.jsx} realisiert.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.92\textwidth]{img/files-dark-mode}
-    \caption{Dateiansicht von EduShelf (Dark-Mode)}
+    \caption{Dateiansicht von EduShelf im Dark-Mode}
     \label{fig:files}
 \end{figure}
+\newpage
 
 \subsection{Share-Dialog (ShareFileModal.jsx)}
 
-Der Share-Dialog ist als kontrolliertes Formular implementiert. Der Nutzer gibt die E-Mail-Adresse oder den Benutzernamen der Zielperson ein. Da beide Eingabeformate akzeptiert werden, entfällt die Notwendigkeit, die genaue Identifikation des Empfängers zu kennen -- das Backend löst die Zuordnung auf.
+Der Share-Dialog ist als Pop-Up-Modal implementiert. Der Nutzer gibt die E-Mail-Adresse oder den Benutzernamen der Zielperson ein. Da beide Eingabeformate akzeptiert werden, entfällt die Notwendigkeit, die genaue Identifikation des Empfängers zu kennen -- das Backend löst die Zuordnung auf.
 
 \begin{lstlisting}[language=JavaScript, caption={Formularlogik im ShareFileModal}]
 const ShareFileModal = ({ isOpen, onClose, onShare, fileName }) => {
@@ -34,38 +35,28 @@ const ShareFileModal = ({ isOpen, onClose, onShare, fileName }) => {
 };
 \end{lstlisting}
 
-Während des Sendevorgangs wird der Submit-Button deaktiviert (\texttt{disabled={isLoading}}) und der Beschriftungstext wechselt von \textit{Share File} zu \textit{Sharing...}. Dieses Muster verhindert Mehrfach-Submissions und gibt dem Nutzer klares visuelles Feedback über den laufenden Prozess.
+Während des Sendevorgangs wird der Submit-Button deaktiviert (\texttt{disabled={isLoading}}) und der Text wechselt von \textit{Share File} zu \textit{Sharing...}. Dieses Muster verhindert mehrere Einreichungen und gibt dem Nutzer visuelles Feedback über den schon laufenden Prozess.
+\newpage
 
 \subsection{Zustandsverwaltung für Shared Files}
 
-Empfangene Freigaben erscheinen im Dateibereich des Empfängers mit einem visuellen Kennzeichen (\texttt{isShared: true}). Der Nutzer hat die Möglichkeit, eine Freigabe zu akzeptieren oder abzulehnen. Diese Entscheidung wird clientseitig im \texttt{localStorage} persistiert, da sie ausschließlich die Sichtbarkeit in der UI steuert:
+Empfangene Freigaben werden im Dateibereich des Empfängers mit einem visuellen Attribut (\texttt{isShared: true}) angezeigt, um klarzumachen, dass es kein eigenes File ist. Der Nutzer hat die Möglichkeit, eine Freigabe zu akzeptieren oder abzulehnen. Diese Entscheidung wird anschließend serverseitig gespeichert, sodass der Status geräteübergreifend abrufbar bleibt:
 
-\begin{lstlisting}[language=JavaScript, caption={Persistierung der Share-Entscheidungen im localStorage}]
+\begin{lstlisting}[language=JavaScript, caption={Serverseitige Speicherung der Shares via API}]
 // Akzeptieren einer Freigabe
-const handleAcceptShare = (docId) => {
-    const accepted = JSON.parse(
-        localStorage.getItem('edushelf_accepted_shares') || '[]'
-    );
-    localStorage.setItem(
-        'edushelf_accepted_shares',
-        JSON.stringify([...accepted, docId])
-    );
+const handleAcceptShare = async (docId) => {
+    await api.patch(`/files/shared/${docId}/accept`);
     fetchFiles(); // Listenaktualisierung ausloesen
 };
 
 // Ablehnen einer Freigabe
-const handleRejectShare = (docId) => {
-    const rejected = JSON.parse(
-        localStorage.getItem('edushelf_rejected_shares') || '[]'
-    );
-    localStorage.setItem(
-        'edushelf_rejected_shares',
-        JSON.stringify([...rejected, docId])
-    );
+const handleRejectShare = async (docId) => {
+    await api.patch(`/files/shared/${docId}/reject`);
     fetchFiles();
 };
 \end{lstlisting}
 
 \subsection{Bewertung des Ansatzes}
 
-Die Entscheidung, den Accept/Reject-Status clientseitig zu speichern, hat sowohl Vor- als auch Nachteile. Der wesentliche Vorteil ist die sofortige Reaktivität ohne serverseitigen Roundtrip. Der Nachteil besteht in der fehlenden Geräteübergreifenden Synchronisation: Akzeptiert ein Nutzer eine Datei auf einem Gerät, ist sie auf einem anderen Gerät weiterhin als ausstehend markiert. Für eine zukünftige Version wäre eine serverseitige Persistierung des Share-Status daher erstrebenswert.
+Die Entscheidung, den Accept/Reject-Status serverseitig zu speichern, stellt sicher, dass der Share-Status geräteübergreifend verfügbar ist. Akzeptiert ein Nutzer eine Freigabe auf einem Gerät, ist diese Entscheidung auch auf allen anderen Geräten, die mit diesem Account eingeloogt sind, sofort sichtbar. Dadurch entfallen die früheren Einschränkungen einer rein clientseitigen Lösung und die User Expierience erhöht sich deutlich. Die API-Aufrufe erfolgen asynchron, sodass die Benutzeroberfläche mit den aktuellen Daten vom Server aktualisiert wird.
+\newpage
