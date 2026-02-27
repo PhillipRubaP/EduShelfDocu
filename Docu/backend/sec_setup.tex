@@ -32,50 +32,9 @@ Die \texttt{Program.cs} ist der Entry Point der ASP.NET Core Anwendung. Hier wir
 \end{lstlisting}
 
 \subsection{Konfiguration (appsettings.json)}
-Die Anwendungskonfiguration folgt dem \textit{12-Factor App}-Prinzip: Alle umgebungsabhängigen Parameter werden aus der Datei \texttt{appsettings.json} geladen und können zur Laufzeit durch Umgebungsvariablen überschrieben werden (z.B. in Docker Compose). Das folgende Listing zeigt die vollständige Konfigurationsstruktur (sensible Werte wie Passwörter sind aus Sicherheitsgründen ausgeblendet):
+Die Anwendungskonfiguration folgt dem \textit{12-Factor App}-Prinzip: Alle umgebungsabhängigen Parameter werden aus der Datei \texttt{appsettings.json} geladen und können zur Laufzeit durch Umgebungsvariablen überschrieben werden (z.B. in Docker Compose).
 
-
-\begin{lstlisting}[language={}   , caption={Konfigurationsstruktur der appsettings.json}]
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=<db-host>;Port=5433;Database=EduShelfDb;..."
-  },
-  "AIService": {
-    "Provider": "Ollama",
-    "Endpoint": "http://<ollama-host>:11434",
-    "ChatModel": "qwen3:14b",
-    "EmbeddingModel": "nomic-embed-text",
-    "VisionModel": "moondream:1.8b",
-    "ContextLengthLimit": 4096,
-    "Prompts": {
-      "System": "...",     // Steuert das Grundverhalten des LLMs
-      "Intent": "...",    // Anleitung zur JSON-Intent-Erkennung
-      "Flashcard": "...", // Anleitung zur Flashcard-Generierung
-      "Quiz": "..."       // Anleitung zur Quiz-Generierung
-    }
-  },
-  "Minio": {
-    "Endpoint": "<minio-host>:9000",
-    "AccessKey": "<key>",
-    "SecretKey": "<secret>",
-    "BucketName": "edushelf-documents",
-    "Secure": false
-  },
-  "EmailSettings": {
-    "SmtpHost": "<smtp-server>",
-    "SmtpPort": 587,
-    "SmtpUser": "<user>",
-    "SmtpPass": "<password>",
-    "FromEmail": "<sender>"
-  },
-  "Seeding": {
-    "AdminPassword": "<admin-pw>",
-    "StudentPassword": "<student-pw>"
-  }
-}
-\end{lstlisting}
-
-Die wichtigsten Konfigurationsblöcke im Überblick:
+Die wichtigsten Konfigurationen im Überblick:
 \begin{itemize}
     \item \textbf{\texttt{ConnectionStrings}}: Verbindungsstring zur PostgreSQL-Datenbank (Host, Port, Datenbankname, Zugangsdaten).
     \item \textbf{\texttt{AIService}}: Zentrale KI-Konfiguration. \texttt{ChatModel} gibt das Sprachmodell an (z.B. \texttt{qwen3:14b}), \texttt{EmbeddingModel} das Modell für die Vektorerzeugung (\texttt{nomic-embed-text}) und \texttt{VisionModel} das Modell für die Bildanalyse. \texttt{ContextLengthLimit} (Standard: 4096 Token) begrenzt die Kontextfenstergröße. Die \texttt{Prompts}-Untersektion enthält die vollständigen System-Prompts für alle KI-gesteuerten Features als konfigurierbare Strings -- so können diese ohne Codeänderung angepasst werden.
