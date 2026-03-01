@@ -12,13 +12,13 @@ Das Backend von EduShelf stellt ein robustes, modernes und erweiterungsfähiges 
 \end{itemize}
 
 \subsection{Lernerkenntnisse und Herausforderungen}
-Die größte technische Herausforderung war die \textbf{Unvorhersehbarkeit von LLM-Ausgaben}: Trotz präziser System-Prompts und expliziter JSON-Formatvorgaben weichen Sprachmodelle gelegentlich vom erwarteten Schema ab. Die Lösung lag nicht im Erzwingen einer bestimmten Ausgabe, sondern in der Implementierung mehrerer Fallback-Strategien im Parsingabschnitt liegt.
+Die größte technische Herausforderung war die \textbf{Unvorhersehbarkeit von LLM-Ausgaben}: Trotz präziser System-Prompts und expliziter JSON-Formatvorgaben weichen Sprachmodelle gelegentlich vom erwarteten Schema ab. Die Lösung lag nicht im Erzwingen einer bestimmten Ausgabe, sondern in der Implementierung mehrerer Fallback-Strategien im Parsingabschnitt.
 
-Ein weiteres Lernfeld war die \textbf{Performance-Optimierung der Ingestion-Pipeline}: Das ursprüngliche Ansatz, Dokumente synchron im HTTP-Request-Zyklus zu verarbeiten, führte bei großen PDFs zu Timeouts. Die Einführung einer \texttt{BackgroundJobQueue} mit asynchroner Verarbeitung löste dieses Problem ohne die Architektur grundlegend zu verändern.
+Ein weiteres Lernfeld war die \textbf{Performance-Optimierung der Ingestion-Pipeline}: Der ursprüngliche Ansatz, Dokumente synchron im HTTP-Request-Zyklus zu verarbeiten, führte bei großen PDFs zu Timeouts. Die Einführung einer \texttt{BackgroundJobQueue} mit asynchroner Verarbeitung löste dieses Problem ohne die Architektur grundlegend zu verändern.
 
 \subsection{Mögliche Erweiterungen}
 \begin{itemize}
     \item \textbf{Streaming-Responses:} Die aktuelle Implementierung wartet auf die vollständige LLM-Antwort. Eine WebSocket-Anbindung würde die wahrgenommene Latenz deutlich reduzieren.
     \item \textbf{Multi-Tenant-Unterstützung:} Aktuell ist jeder User vollständig isoliert. Eine optionale Kurs- oder Gruppenebene wäre eine mögliche Erweiterung.
-    \item \textbf{Mikroservice-Migration:} Der aktuelle Ansatz war für die Initialentwicklung ideal. Bei steigender Last könnten rechenintensive Services (Indexierung, KI-Inferenz) als eigenständige Mikroservices ausgelagert werden.
+    \item \textbf{Microservice-Migration:} Der aktuelle Ansatz war für die Initialentwicklung ideal. Bei steigender Last könnten rechenintensive Services (Indexierung, KI-Inferenz) als eigenständige Mikroservices ausgelagert werden.
 \end{itemize}

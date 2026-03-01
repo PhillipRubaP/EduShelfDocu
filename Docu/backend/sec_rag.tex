@@ -1,9 +1,9 @@
+\newpage
 \section{RAG (Retrieval-Augmented Generation) Workflow}
 \label{sec:rag}
 
 Das Herzst\"uck von EduShelf ist die RAG-Pipeline: Anstatt das LLM allein auf sein allgemeines Wissen zu st\"utzen, wird jede Benutzeranfrage zun\"achst dazu genutzt, relevante Textabschnitte aus den hochgeladenen Dokumenten abzurufen. Diese Abschnitte werden dann als \textit{Kontext} in den Prompt eingef\"ugt, bevor das LLM zur Antwort aufgefordert wird. Dies reduziert Halluzinationen und erm\"oglicht präzise sowie dokumentspezifische Antworten.
 
-\newpage
 \subsection{System\"ubersicht und Datenfluss}
 Das folgende Diagramm visualisiert den vollst\"andigen Anfrage-Antwort-Zyklus im RAG-System und zeigt, wie die verschiedenen Services zusammenarbeiten.
 
@@ -44,7 +44,7 @@ var intent = JsonSerializer.Deserialize<Intent>(cleanedJson,
 
 Das \texttt{Intent}-Objekt enth\"alt zwei Felder:
 \begin{itemize}
-    \item \texttt{Type}: Klassifiziert die Anfrage als \texttt{"question"}, \texttt{''summarize"}, \texttt{"flashcards"} oder \texttt{"quiz"}.
+    \item \texttt{Type}: Klassifiziert die Anfrage als \texttt{"question"}, \texttt{''summarize"}, \texttt{"'flashcards"} oder \texttt{"quiz"}.
     \item \texttt{DocumentName}: Falls der Nutzer explizit ein Dokument nennt (z.B. \glqq{}Erkl\"are mir Kapitel 3 aus Physik.pdf\grqq{}), wird der Dateiname hier extrahiert.
 \end{itemize}
 
@@ -91,7 +91,7 @@ Der Wert $k$ (Anzahl der zur\"uckgegebenen Chunks) ist dynamisch: Bei kurzen Anf
 Der \texttt{PromptGenerationService} baut eine vollst\"andige \texttt{ChatHistory} auf, die drei Elemente enth\"alt:
 \begin{itemize}
     \item Eine \textbf{System-Instruktion}, die das Verhalten des LLMs grundlegend steuert.
-    \item Den \textbf{bisherigen Konversationsverlaif} der aktuellen Chat-Sitzung (f\"ur kontextsensitive Folgefragen).
+    \item Den \textbf{bisherigen Konversationsverlauf} der aktuellen Chat-Sitzung (f\"ur kontextsensitive Folgefragen).
     \item Die \textbf{aktuelle Benutzeranfrage}, angereichert mit dem abgerufenen Dokumentenkontext.
 \end{itemize}
 

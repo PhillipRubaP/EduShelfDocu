@@ -63,29 +63,6 @@ public async Task GenerateFlashcardsAsync_ValidContent_ShouldCreateFlashcards()
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Leerer Dokumenteninhalt wirft BadRequestException}]
-[Fact]
-public async Task GenerateFlashcardsAsync_NoContent_ShouldThrowBadRequest()
-{
-    _mockDocumentService.Setup(d => d.GetDocumentContentAsync(1, userId, Roles.Student))
-        .ReturnsAsync(""); // Leerer Inhalt
-    await Assert.ThrowsAsync<BadRequestException>(
-        () => service.GenerateFlashcardsAsync(request, userId));
-}
-\end{lstlisting}
-
-\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Ungültiges JSON vom LLM wirft KernelServiceException}]
-[Fact]
-public async Task GenerateFlashcardsAsync_InvalidJsonFromAI_ShouldThrowKernelServiceException()
-{
-    // Mock-LLM gibt Text statt JSON zurueck
-    var badResponse = new ChatMessageContent(AuthorRole.Assistant, "This is not JSON");
-    _mockChatCompletionService.Setup(...).ReturnsAsync(new List<ChatMessageContent> { badResponse });
-
-    await Assert.ThrowsAsync<KernelServiceException>(
-        () => service.GenerateFlashcardsAsync(request, userId));
-}
-\end{lstlisting}
 
 \newpage
 \subsubsection{Beispiel: AuthService}
@@ -105,22 +82,6 @@ public async Task RegisterUserAsync_ValidData_ShouldCreateUserAndSendEmail()
     _mockEmailService.Verify(
         x => x.SendEmailAsync("new@example.com", It.IsAny<string>(), It.IsAny<string>()),
         Times.Once);
-}
-\end{lstlisting}
-
-\begin{lstlisting}[language={[Sharp]C}, caption={Unit Test: Abgelaufener Token wirft BadRequestException}]
-[Fact]
-public async Task ConfirmEmailAsync_ExpiredToken_ShouldThrowBadRequest()
-{
-    var user = new User
-    {
-        EmailConfirmationToken = "expired_token",
-        EmailConfirmationTokenExpiresAt = DateTime.UtcNow.AddHours(-1) // in der Vergangenheit
-    };
-    context.Users.Add(user);
-
-    await Assert.ThrowsAsync<BadRequestException>(
-        () => service.ConfirmEmailAsync(confirmDto));
 }
 \end{lstlisting}
 
