@@ -19,7 +19,7 @@ Diese oberste Schicht nimmt HTTP-Anfragen (Requests) entgegen und gibt HTTP-Antw
 \end{itemize}
 
 \subsection{Business Logic Layer (Services)}
-Hier residiert das "Gehirn"  der Anwendung. Alle Regeln und Prozesse sind in dieser Schicht implementiert.
+Hier residiert das \glqq{}Gehirn\grqq{} der Anwendung. Alle Regeln und Prozesse sind in dieser Schicht implementiert.
 \begin{itemize}
     \item \textbf{Service-Klassen:} Jeder Bereich hat seinen eigenen Service (z.B. \texttt{AuthService}, \texttt{IndexingService}, \texttt{RAGService}).
     \item \textbf{Orchestrierung:} Services koordinieren den Datenfluss zwischen der Datenbank, externen Diensten (wie MinIO oder Ollama) und der Präsentationsschicht.

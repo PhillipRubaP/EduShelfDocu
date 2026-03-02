@@ -2,7 +2,7 @@
 Analog zum Frontend erfolgt der Einstieg in die Anwendung über eine definierte Startup-Logik, die in der \texttt{Program.cs} und den Konfigurationsdateien verankert ist.
 
 \subsection{Programm-Initialisierung (Program.cs)}
-Die \texttt{Program.cs} ist der Entry Point der ASP.NET Core Anwendung. Hier wird der "Generic Host" gebaut, der Dependency Injection Container befüllt und die HTTP-Request-Pipeline (Middleware) konfiguriert.
+Die \texttt{Program.cs} ist der Entry Point der ASP.NET Core Anwendung. Hier wird der \glqq{}Generic Host\grqq{} gebaut, der Dependency Injection Container befüllt und die HTTP-Request-Pipeline (Middleware) konfiguriert.
 Die Middleware-Pipeline wird in folgender Reihenfolge konfiguriert: HTTPS-Redirection, CORS (\texttt{AllowWebApp}), \texttt{Authentication}, \texttt{Authorization} und \texttt{Controller-Mapping}. In der Entwicklungsumgebung werden zusätzlich Swagger und Swagger UI aktiviert. Alle applikationsspezifischen Services werden über die Erweiterungsmethode \texttt{AddApplicationServices} gesammelt im DI-Container registriert.
 
 \subsection{Konfiguration (appsettings.json)}
