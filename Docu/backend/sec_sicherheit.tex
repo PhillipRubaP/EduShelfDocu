@@ -1,6 +1,5 @@
 \newpage
 \section{Sicherheitskonzepte}
-Sicherheit war ein integraler Bestandteil des Designs (,,Security by Design``).
 
 \subsection{Authentifizierung \& Autorisierung}
 Die Authentifizierung erfolgt über Cookies (\texttt{CookieAuthenticationDefaults}).
@@ -20,7 +19,6 @@ var claims = new List<Claim>
 };
 foreach (var userRole in user.UserRoles)
     claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
-
 var claimsIdentity = new ClaimsIdentity(
     claims, CookieAuthenticationDefaults.AuthenticationScheme);
 var authProperties = new AuthenticationProperties

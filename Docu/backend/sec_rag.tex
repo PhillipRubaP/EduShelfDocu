@@ -1,9 +1,9 @@
-\newpage
 \section{RAG (Retrieval-Augmented Generation) Workflow}
 \label{sec:rag}
 
 Das Herzst\"uck von EduShelf ist die RAG-Pipeline: Anstatt das LLM allein auf sein allgemeines Wissen zu st\"utzen, wird jede Benutzeranfrage zun\"achst dazu genutzt, relevante Textabschnitte aus den hochgeladenen Dokumenten abzurufen. Diese Abschnitte werden dann als \textit{Kontext} in den Prompt eingef\"ugt, bevor das LLM zur Antwort aufgefordert wird. Dies reduziert Halluzinationen und erm\"oglicht präzise sowie dokumentspezifische Antworten.
 
+\newpage
 \subsection{System\"ubersicht und Datenfluss}
 Das folgende Diagramm visualisiert den vollst\"andigen Anfrage-Antwort-Zyklus im RAG-System und zeigt, wie die verschiedenen Services zusammenarbeiten.
 
