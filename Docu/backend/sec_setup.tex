@@ -11,7 +11,7 @@ Die Anwendungskonfiguration folgt dem \textit{12-Factor App}-Prinzip \cite{twelv
 Die wichtigsten Konfigurationen im Überblick:
 \begin{itemize}
     \item \textbf{\texttt{ConnectionStrings}}: Verbindungsstring zur PostgreSQL-Datenbank (Host, Port, Datenbankname, Zugangsdaten).
-    \item \textbf{\texttt{AIService}}: Zentrale KI-Konfiguration. \texttt{ChatModel} gibt das Sprachmodell an (z.B. \texttt{qwen3:14b}), \texttt{EmbeddingModel} das Modell für die Vektorerzeugung (\texttt{nomic-embed-text}) und \texttt{VisionModel} das Modell für die Bildanalyse. \texttt{ContextLengthLimit} (Standard: 4096 Token) begrenzt die Kontextfenstergröße. Die \texttt{Prompts}-Untersektion enthält die vollständigen System-Prompts für alle KI-gesteuerten Features. Als konfigurierbare Strings.
+    \item \textbf{\texttt{AIService}}: Zentrale KI-Konfiguration. \texttt{ChatModel} gibt das Sprachmodell an (z.B. \texttt{qwen3:14b}), \texttt{EmbeddingModel} das Modell für die Vektorerzeugung (\texttt{nomic-embed-text}) und \texttt{VisionModel} das Modell für die Bildanalyse. \texttt{ContextLengthLimit} (Standard: 4096 Token) begrenzt die Kontextfenstergröße. Die \texttt{Prompts}-Untersektion enthält die vollständigen System-Prompts für alle KI-gesteuerten Features.
     \item \textbf{\texttt{Minio}}: Verbindungsdaten zum S3-kompatiblen Object Storage (Endpoint, Zugangsdaten, Bucket-Name).
     \item \textbf{\texttt{EmailSettings}}: SMTP-Konfiguration für den Versand von Registrierungs-Bestätigungsmails.
     \item \textbf{\texttt{Seeding}}: Passwörter für vordefinierten Admin- und Student-Benutzer, die beim ersten Start automatisch angelegt werden.

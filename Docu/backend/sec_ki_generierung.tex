@@ -1,7 +1,7 @@
 \section{KI-gest\"utzte Lerninhaltsgenerierung}
 \label{sec:aigeneration}
 
-Neben der RAG-basierten Chat-Funktionalit\"at bietet EduShelf zwei weitere KI-Features: die automatische Generierung von \textbf{Lernkarten (Flashcards)} und \textbf{Multiple-Choice-Quizzes}. Beide Features nutzen denselben Ollama-LLM-Stack, folgen aber einem eigenst\"andigen Workflow, hierbei wird keine Vektorsuche ben\"otigt wird da der Nutzer direkt den Kontext  \"uber Dokumenten-IDs oder RAG-abgerufene Chunks liefert.
+Neben der RAG-basierten Chat-Funktionalit\"at bietet EduShelf zwei weitere KI-Features: die automatische Generierung von \textbf{Lernkarten (Flashcards)} und \textbf{Multiple-Choice-Quizzes}. Beide Features nutzen denselben Ollama-LLM-Stack, folgen aber einem eigenst\"andigen Workflow, hierbei wird keine Vektorsuche ben\"otigt, da der Nutzer direkt den Kontext  \"uber Dokumenten-IDs oder RAG-abgerufene Chunks liefert.
 
 \subsection{Generierungspipeline (5 Schritte)}
 
@@ -64,6 +64,6 @@ if (result == null || !result.Questions.Any())
 }
 \end{lstlisting}
 
-Die manuelle Fallback-Stufe erkennt dabei sowohl Antwortoptions als einfache Strings (\texttt{["Paris", "London", ...]}) als auch als Objekte (\texttt{[\{"text": ..., "isCorrect": ...\}]}). Dies macht die Quiz-Generierung robust gegen\"uber variierenden LLM-Antwortformaten.
+Die manuelle Fallback-Stufe erkennt dabei sowohl Antwortoptionen als einfache Strings (\texttt{["Paris", "London", ...]}) als auch als Objekte (\texttt{[\{"text": ..., "isCorrect": ...\}]}). Dies macht die Quiz-Generierung robust gegen\"uber variierenden LLM-Antwortformaten.
 
 Nach erfolgreichem Parsing wird das Quiz als \texttt{Quiz}-Entit\"at mit allen \texttt{Question}-- und \texttt{Answer}-Objekten in einer einzigen EF Core-Transaktion gespeichert.
