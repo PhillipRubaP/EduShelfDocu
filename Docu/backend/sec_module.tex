@@ -5,7 +5,7 @@ Um die technische Tiefe zu verdeutlichen, wird hier praktisch die Implementierun
 Die Sicherheit der Benutzerdaten hat oberste Priorität. Der \texttt{AuthService} implementiert daher bewährte Industriestandards.
 
 \subsubsection{Passwort-Hashing (BCrypt)}
-Passwörter werden niemals im Klartext gespeichert. Stattdessen wird der \texttt{BCrypt}-Algorithmus verwendet, der durch seinen konfigurierbaren "Work Factor" (Kostenfaktor) resistent gegen Brute-Force- und Rainbow-Table-Angriffe ist.
+Passwörter werden niemals im Klartext gespeichert. Stattdessen wird der \texttt{BCrypt}-Algorithmus \cite{provos1999bcrypt} verwendet, der durch seinen konfigurierbaren "Work Factor" (Kostenfaktor) resistent gegen Brute-Force- und Rainbow-Table-Angriffe ist.
 \begin{lstlisting}[language={[Sharp]C}, caption={Verifizierung im AuthService}]
 // user.PasswordHash kommt aus der DB, passwordDto.Password vom User
 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(passwordDto.Password, user.PasswordHash);

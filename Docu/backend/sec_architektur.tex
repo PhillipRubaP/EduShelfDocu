@@ -1,5 +1,5 @@
 \section{Systemarchitektur}
-Die Architektur des Systems folgt dem bewährten Muster einer \textit{Layered Architecture} (Schichtenarchitektur), um eine saubere Trennung der Verantwortlichkeiten (\textit{Separation of Concerns}) zu erzielen. Dies erleichtert nicht nur die Testbarkeit mittels Unit- und Integrationstests, sondern ermöglicht auch zukünftige Erweiterungen ohne das Gesamtsystem neu schreiben zu müssen.
+Die Architektur des Systems folgt dem bewährten Muster einer \textit{Layered Architecture} (Schichtenarchitektur) \cite{fowler2002}, um eine saubere Trennung der Verantwortlichkeiten (\textit{Separation of Concerns}) zu erzielen. Dies erleichtert nicht nur die Testbarkeit mittels Unit- und Integrationstests, sondern ermöglicht auch zukünftige Erweiterungen ohne das Gesamtsystem neu schreiben zu müssen.
 
 Die Anwendung gliedert sich in vier Hauptschichten:
 
@@ -30,7 +30,7 @@ Hier residiert das "Gehirn"  der Anwendung. Alle Regeln und Prozesse sind in die
 \subsection{Data Access Layer (Data)}
 Diese Schicht abstrahiert den Zugriff auf die persistente Datenspeicherung.
 \begin{itemize}
-    \item \textbf{Entity Framework Core (EF Core):} Als Object-Relational Mapper (ORM) ermöglicht EF Core die Definition des Datenmodells in C\#-Klassen. SQL-Queries werden zur Laufzeit generiert, was die Entwicklung beschleunigt und vor SQL-Injection schützt.
+    \item \textbf{Entity Framework Core (EF Core):} Als Object-Relational Mapper (ORM) \cite{efcore} ermöglicht EF Core die Definition des Datenmodells in C\#-Klassen. SQL-Queries werden zur Laufzeit generiert, was die Entwicklung beschleunigt und vor SQL-Injection schützt.
     \item \textbf{Repositories:} Ebenfalls wird das \texttt{DbContext}-Pattern direkt verwendet, was bei EF Core oft äquivalent zum Repository-Pattern bzw. Unit-of-Work-Pattern ist.
 \end{itemize}
 

@@ -38,7 +38,7 @@ Das simple Splitten nach Zeichenanzahl würde Sätze zerreißen und den Kontext 
 Jeder Text-Chunk wird in einen hochdimensionalen Vektor umgewandelt und effizient gespeichert.
 \begin{itemize}
     \item \textbf{Embedding-Modell:} Nutzung von state-of-the-art Modellen wie \textit{nomic-embed-text}, die semantische Ähnlichkeiten im Vektorraum abbilden.
-    \item \textbf{HNSW Index:} In der PostgreSQL-Datenbank wird für die Spalte \texttt{Embedding} ein HNSW (Hierarchical Navigable Small World) Index angelegt.
+    \item \textbf{HNSW Index:} In der PostgreSQL-Datenbank wird für die Spalte \texttt{Embedding} ein HNSW (Hierarchical Navigable Small World) Index \cite{malkov2018hnsw} angelegt.
     \begin{verbatim}
 modelBuilder.Entity<DocumentChunk>()
     .HasIndex(dc => dc.Embedding)

@@ -1,7 +1,7 @@
 \section{RAG (Retrieval-Augmented Generation) Workflow}
 \label{sec:rag}
 
-Das Herzst\"uck von EduShelf ist die RAG-Pipeline: Anstatt das LLM allein auf sein allgemeines Wissen zu st\"utzen, wird jede Benutzeranfrage zun\"achst dazu genutzt, relevante Textabschnitte aus den hochgeladenen Dokumenten abzurufen. Diese Abschnitte werden dann als \textit{Kontext} in den Prompt eingef\"ugt, bevor das LLM zur Antwort aufgefordert wird. Dies reduziert Halluzinationen und erm\"oglicht präzise sowie dokumentspezifische Antworten.
+Das Herzst\"uck von EduShelf ist die RAG-Pipeline \cite{lewisRAG2020}: Anstatt das LLM allein auf sein allgemeines Wissen zu st\"utzen, wird jede Benutzeranfrage zun\"achst dazu genutzt, relevante Textabschnitte aus den hochgeladenen Dokumenten abzurufen. Diese Abschnitte werden dann als \textit{Kontext} in den Prompt eingef\"ugt, bevor das LLM zur Antwort aufgefordert wird. Dies reduziert Halluzinationen und erm\"oglicht präzise sowie dokumentspezifische Antworten.
 
 \newpage
 \subsection{System\"ubersicht und Datenfluss}
@@ -147,7 +147,7 @@ else { // "question" oder "summarize"
 
 Dieses Design erm\"oglicht es, \"uber eine einzige Chat-Schnittstelle drei fundamentale Lernfunktionen anzubieten: konversationelles Frage-Antwort, automatische Flashcard-Generierung und automatische Quiz-Erstellung, alles gesteuert durch die Intention hinter der sprachlichen Eingabe des Nutzers.
 
-\subsection{Zusammenfassung: Retrieval-Augmented Generation}
+\subsection{Zusammenfassung: Retrieval-Augmented Generation \cite{lewisRAG2020}}
 Die Implementierung des RAG-Systems stellt sicher, dass das LLM stets auf den spezifischen Kontext der hochgeladenen Dokumente des Nutzers antwortet. Die wichtigsten Designprinzipien sind:
 \begin{itemize}
     \item \textbf{Datenprivacy:} Durch den lokalen Ollama-Server verlassen keine Dokumenteninhalte den Server.
