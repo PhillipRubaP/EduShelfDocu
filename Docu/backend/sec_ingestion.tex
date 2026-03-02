@@ -12,7 +12,7 @@ Damit Dokumente durchsuchbar werden, müssen sie eine komplexe Verarbeitungspipe
 Der \texttt{FileParsingService} analysiert den Dateityp und wählt die passende Strategie:
 \begin{itemize}
     \item \textbf{PDF-Verarbeitung mit PdfPig:} Für PDF-Dateien wird die Bibliothek \textit{UglyToad.PdfPig} verwendet. Sie erlaubt den Zugriff auf den rohen Textstream sowie die Extraktion von Bildern.
-    \item \textbf{Hybride Bildanalyse:} Eingebettete Bilder werden isoliert und an ein lokales Vision-Model (via Ollama) gesendet. Der Prompt "Describe this image in detail" generiert eine textuelle Beschreibung, die in den Dokumentenindex einfließt. Dies ermöglicht die semantische Suche nach Bildinhalten (z.B. Diagramme, Graphen).
+    \item \textbf{Hybride Bildanalyse:} Eingebettete Bilder werden isoliert und an ein lokales Vision-Model (via Ollama) gesendet. Der Prompt \dq{}Describe this image in detail\dq{} generiert eine textuelle Beschreibung, die in den Dokumentenindex einfließt. Dies ermöglicht die semantische Suche nach Bildinhalten (z.B. Diagramme, Graphen).
     \item \textbf{DOCX:} Nutzung des Open XML SDKs zum strukturierten Auslesen des \texttt{MainDocumentPart}.
 \end{itemize}
 

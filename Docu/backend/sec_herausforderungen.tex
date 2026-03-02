@@ -2,10 +2,9 @@
 \section{Herausforderungen und Lösungen}
 Während der Backend-Entwicklung mussten mehrere technische Hürden überwunden werden.
 
-
 \subsection{Blockierende Operationen bei großen Dateien}
 \textbf{Problem:} Die Verarbeitung großer PDF-Dateien (Textextraktion, Chunking, Embedding-Generierung) innerhalb des HTTP-Request-Zyklus führte zu langen Wartezeiten und Timeouts im Frontend.
-\textbf{Lösung:} Einführung einer \texttt{BackgroundJobQueue}. Der Upload-Endpoint nimmt die Datei entgegen, speichert sie in MinIO und reiht nur eine \glqq{}Job-ID\grqq{} in die Queue ein, bevor er sofort \texttt{202 Accepted} zurückgibt. Ein Hintergrunddienst (\glqq{}Worker\grqq{}) arbeitet diese Queue asynchron ab.
+\textbf{Lösung:} Einführung einer \texttt{BackgroundJobQueue}. Der Upload-Endpoint nimmt die Datei entgegen, speichert sie in MinIO und reiht nur eine \glqq{}Job-ID\grqq{} in die Queue ein, bevor er sofort \texttt{202 Accepted} zurückgibt. Ein Hintergrunddienst (\glqq{}Worker\grqq{}) arbeitet diese Queue asynchron ab (siehe Abbildung~\ref{fig:background_job_queue}).
 
 \begin{figure}[H]
     \centering
