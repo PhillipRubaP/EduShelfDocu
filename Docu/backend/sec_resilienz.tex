@@ -1,13 +1,16 @@
-\section{Resilienz und Stabilität}
-In verteilten Systemen, insbesondere bei der Anbindung von KI-Diensten, sind temporäre Ausfälle unvermeidbar. Um die Robustheit der Anwendung zu gewährleisten, wurde die Bibliothek \texttt{Polly} \cite{polly} integriert.
+\section{Resilienz und Stabilit\"at}
+In verteilten Systemen, insbesondere bei der Anbindung von KI-Diensten, sind tempor\"are Ausf\"alle unvermeidbar. Um die Robustheit der Anwendung zu gew\"ahrleisten, wurde ein mehrstufiges Resilienz-Konzept implementiert.
 
 \subsection{Retry-Policies \& Circuit Breaker}
-In der \texttt{ServiceCollectionExtensions.cs} werden resiliente HTTP-Clients konfiguriert:
+In der \texttt{ServiceCollectionExtensions.cs} werden resiliente HTTP-Clients mithilfe der Bibliothek \texttt{Polly} \cite{polly} konfiguriert:
 \begin{enumerate}
     \item \textbf{Retry Policy:} Bei Fehlern (z.B. Netzwerk-Glitch, 503 Service Unavailable) wird der Request maximal dreimal mit steigenden Wartezeiten (exponentieller Backoff, $2^n$ Sekunden) erneut gesendet, bevor ein finaler Fehler ausgegeben wird.
-    \item \textbf{Circuit Breaker:} Wenn 5 Fehler in Folge auftreten, \glqq{}öffnet\grqq{} sich der Stromkreis für 30 Sekunden. Alle weiteren Anfragen werden sofort abgeblockt, um das überlastete Subsystem (z.B. Ollama) zu schonen.
+    \item \textbf{Circuit Breaker:} Wenn 5 Fehler in Folge auftreten, \glqq{}\"offnet\grqq{} sich der Stromkreis f\"ur 30 Sekunden. Alle weiteren Anfragen werden sofort abgeblockt, um das \"uberlastete Subsystem (z.B. Ollama) zu schonen.
 \end{enumerate}
-\begin{lstlisting}[language={[Sharp]C}, caption={Polly-Konfiguration}]
+
+Beide Policies werden auf zwei HTTP-Clients angewandt: den \texttt{ImageProcessingService}-Client (f\"ur die Vision-basierte Bildanalyse) und den Ollama-Client (f\"ur LLM-Inferenz und Embeddings). F\"ur den Ollama-Client wird ein \texttt{PolicyHttpMessageHandler} manuell konfiguriert, da das Semantic Kernel SDK eine \texttt{HttpClient}-Instanz direkt akzeptiert:
+
+\begin{lstlisting}[language={[Sharp]C}, caption={Polly-Konfiguration und HTTP-Client-Setup}]
 var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
@@ -15,4 +18,33 @@ var retryPolicy = HttpPolicyExtensions
 var circuitBreakerPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
     .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
+
+// Ollama Client: Retry + Circuit Breaker manuell gewrappt
+var ollamaHandler = new PolicyHttpMessageHandler(
+    retryPolicy.WrapAsync(circuitBreakerPolicy));
+ollamaHandler.InnerHandler = new HttpClientHandler();
+
+var ollamaClient = new HttpClient(ollamaHandler)
+{
+    BaseAddress = new Uri(configuration["AIService:Endpoint"]!),
+    Timeout = TimeSpan.FromMinutes(10)
+};
 \end{lstlisting}
+
+\subsection{Timeout-Konfiguration}
+Da KI-Operationen (insbesondere Embedding-Generierung f\"ur gro\ss{}e Dokumente und LLM-Inferenz) erheblich l\"anger dauern k\"onnen als typische HTTP-Requests, ist der Standard-Timeout von 100 Sekunden nicht ausreichend. Beide HTTP-Clients (\texttt{ImageProcessingService} und Ollama) sind daher mit einem Timeout von \textbf{10 Minuten} konfiguriert (\texttt{TimeSpan.FromMinutes(10)}). Dies stellt sicher, dass auch bei der Verarbeitung umfangreicher Dokumente oder komplexer Prompts keine vorzeitigen Abbrüche auftreten.
+
+\subsection{Graceful Degradation}
+Mehrere Services implementieren ein kontrolliertes Fehlerverhalten, bei dem das System dem Nutzer eine verst\"andliche R\"uckmeldung liefert, anstatt vollst\"andig abzust\"urzen:
+\begin{itemize}
+    \item \textbf{IntentDetectionService:} Schl\"agt das JSON-Parsing der LLM-Antwort fehl (z.B. weil das Modell kein valides JSON liefert), wird automatisch auf den Standard-Intent \texttt{question} zur\"uckgefallen, anstatt einen Fehler auszul\"osen.
+    \item \textbf{ChatService:} Wird f\"ur eine Flashcard- oder Quiz-Generierung kein ausreichender Dokumentenkontext gefunden, antwortet das System mit einer informativen Nachricht anstatt den Request abzubrechen.
+    \item \textbf{BackgroundJobService:} Die Verarbeitungsschleife nutzt eine doppelte \texttt{try-catch}-Struktur. Fehler bei der Ausf\"uhrung einzelner Jobs werden isoliert geloggt, ohne die Verarbeitungsschleife anzuhalten. Zus\"atzlich wird ein separater \texttt{catch}-Block f\"ur Dequeue-Fehler verwendet, um sicherzustellen, dass der Service auch bei Queue-Problemen stabil weiterl\"auft.
+\end{itemize}
+
+\subsection{Strukturiertes Logging}
+Alle Services verwenden den integrierten .NET \texttt{ILogger} mit differenzierten Log-Levels:
+\begin{itemize}
+    \item \textbf{\texttt{LogError}}: F\"ur interne Systemfehler wie Datenbank-, KI-Service- oder Dateiverarbeitungsfehler. Diese werden in der \texttt{ErrorHandlingMiddleware} und allen Services konsistent verwendet.
+    \item \textbf{\texttt{LogWarning}}: F\"ur erwartbare Fehlerzust\"ande wie nicht gefundene Ressourcen (404), ung\"ultige Eingaben (400) oder fehlgeschlagene Authentifizierung (401). Diese Unterscheidung erm\"oglicht es, in Monitoring-Tools (z.B. Grafana, Seq) gezielt nach kritischen Fehlern zu filtern, ohne von erwartbaren Client-Fehlern \"uberlagert zu werden.
+\end{itemize}
