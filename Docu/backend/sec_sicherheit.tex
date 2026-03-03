@@ -46,7 +46,7 @@ user.UserRoles.Add(new UserRole { Role = studentRole });
 In den Controllern wird die Autorisierung deklarativ über Attribute gesteuert:
 \begin{itemize}
     \item \texttt{[Authorize]} -- Nur eingeloggte Nutzer (jede Rolle).
-    \item \texttt{[Authorize(Roles = "Admin")]} -- Nur Administratoren (z.B. für Nutzer-Löschung oder Tag-Verwaltung).
+    \item \texttt{[Authorize(Roles = \char`\"Admin\char`\")]} -- Nur Administratoren (z.B. für Nutzer-Löschung oder Tag-Verwaltung).
 \end{itemize}
 
 \subsection{E-Mail-Verifizierung}

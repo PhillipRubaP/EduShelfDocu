@@ -10,6 +10,7 @@ In der \texttt{ServiceCollectionExtensions.cs} werden resiliente HTTP-Clients mi
 
 Beide Policies werden auf zwei HTTP-Clients angewandt: den \texttt{ImageProcessingService}-Client (f\"ur die Vision-basierte Bildanalyse) und den Ollama-Client (f\"ur LLM-Inferenz und Embeddings). F\"ur den Ollama-Client wird ein \texttt{PolicyHttpMessageHandler} manuell konfiguriert, da das Semantic Kernel SDK eine \texttt{HttpClient}-Instanz direkt akzeptiert:
 
+\newpage
 \begin{lstlisting}[language={[Sharp]C}, caption={Polly-Konfiguration und HTTP-Client-Setup}]
 var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
