@@ -1,8 +1,8 @@
-%!TeX root = main.tex
+% TODO: ändern von Zielen und so
 % Kurzfassung
 \begin{center}
 	\begin{table}[h!]
-		\begin{tabular}{|p{50mm}|p{110mm}|}
+		\begin{tabular}{|c|c|}
 			\hline
 			\thead{\includegraphics[width=33mm]{htlhl_bildung_mit_zukunft}} &
 			\thead{{\textbf{HÖHERE TECHNISCHE BUNDESLEHRANSTALT HOLLABRUNN}} \\\hline \\ \Large{\textbf{Informationstechnologie}}}\\
@@ -19,7 +19,7 @@
 		\begin{tabular}{|p{50mm}|p{110mm}|}
 			\hline
 			\thead{Name der \\ Verfasser/innen} &
-			\thead{\schuelerA, \schuelerB} \\
+			\thead{\schuelerA, \schuelerB, \\ \schuelerC, \schuelerD} \\
 			\hline
 			\thead{Jahrgang \\ Schuljahr} &
 			\thead{\aktuellesSchuljahr} \\
@@ -28,30 +28,28 @@
 			\thead{\daTitel} \\
 			\hline
 			\thead{Kooperationspartner} &
-			\thead{-------} \\
+			\thead{X-Works} \\
 			\hline
 		\end{tabular}
 	\end{table}
 	\begin{table}[h!]
-    \centering
-    \begin{tabular}{|p{50mm}|p{110mm}|}
-        \hline
-        \makecell[l]{\small Aufgabenstellung} &
-        \small{Im Rahmen dieser Diplomarbeit wird 'EduShelf' entwickelt, eine webbasierte Plattform zur Verwaltung und Interaktion mit Bildungsunterlagen. 
-        Ziel ist es, Schülern und Lehrern eine zentrale Lösung zu bieten, um Dokumente zu organisieren und KI für eine effiziente Informationsbeschaffung zu nutzen. 
-        Die Anwendung verbindet Dokumentenmanagement mit einem KI-gestützten Chat-System, das es Benutzern ermöglicht, Fragen zu ihren hochgeladenen Inhalten zu stellen (RAG - Retrieval Augmented Generation).
-        
-        Ein zentraler Aspekt ist die nahtlose Integration eines modernen Web-Frontends mit einem leistungsfähigen Backend und einem KI-Server.
-        Das Backend steuert die Datenverarbeitung und -speicherung, während der KI-Server die Intelligenz für die Chat-Funktionalität bereitstellt.
-        Diese Plattform soll den Zugriff auf und die Nutzung von Bildungsressourcen modernisieren.} \\
-        \hline
-    \end{tabular}
-\end{table}
+		\begin{tabular}{|p{50mm}|p{110mm}|}
+			\hline
+			\makecell[l{{p{50mm}}}]{\small{Aufgabenstellung}} &
+			\makecell*[{{p{110mm}}}]{\small{Im Rahmen dieser Diplomarbeit wird 'EduShelf' entwickelt, eine webbasierte Plattform zur Verwaltung von Bildungsunterlagen.
+        Sie bietet Schülern und Lehrern eine zentrale Lösung zur Organisation von Dokumenten und zur KI-gestützten Informationsbeschaffung (RAG -- Retrieval Augmented Generation).
+        Das System integriert ein modernes Web-Frontend, ein Backend zur Datenverarbeitung und -speicherung sowie einen dedizierten KI-Server für intelligente Chat-Funktionalität.}} \\
+			\hline
+		\end{tabular}
+	\end{table}
 	\begin{table}[h!]
 		\begin{tabular}{|p{50mm}|p{110mm}|}
 			\hline
 			\makecell[l{{p{50mm}}}]{\small{Realisierung}} &
-			\makecell*[{{p{110mm}}}]{\small{Das Projekt umfasst die Entwicklung einer responsiven Webanwendung und eines leistungsfähigen Backend-Systems. Das Frontend wird mit React umgesetzt und bietet eine moderne Benutzeroberfläche. Das Backend, implementiert in .NET, steuert die Datenspeicherung und -verarbeitung. Ein dedizierter KI-Server, basierend auf Python und Ollama, übernimmt die LLM-Operationen für die Chat-Funktionalität. Das System nutzt Containerisierung (Docker) für einfache Bereitstellung und Skalierbarkeit.}} \\
+			\makecell*[{{p{110mm}}}]{\small{Das Frontend wird mit React für eine responsive, benutzerfreundliche Oberfläche umgesetzt.
+        Das .NET-Backend steuert Datenspeicherung und -verarbeitung, während ein Python/Ollama-basierter KI-Server die LLM-Operationen für den Chat übernimmt.
+        Docker-Containerisierung gewährleistet einfache Bereitstellung und Skalierbarkeit.}} \\
+
 			\hline
 		\end{tabular}
 	\end{table}
@@ -59,7 +57,8 @@
 		\begin{tabular}{|p{50mm}|p{110mm}|}
 			\hline
 			\makecell[l{{p{50mm}}}]{\small{Ergebnisse}} &
-			\makecell*[{{p{110mm}}}]{\small{Das Ergebnis ist die voll funktionsfähige Plattform 'EduShelf'. Zu den Kernfunktionen gehören Benutzerauthentifizierung, Upload und Indizierung von Dokumenten sowie ein interaktiver KI-Chat. Nutzer können Accounts erstellen, ihre Dokumentenbibliothek verwalten und durch die KI-Schnittstelle sofortige Antworten aus ihren Lernunterlagen erhalten. Das System demonstriert die effektive Integration moderner Webtechnologien und künstlicher Intelligenz im Bildungsbereich.}} \\
+			\makecell*[{{p{110mm}}}]{\small{Das Ergebnis ist die voll funktionsfähige Plattform 'EduShelf' mit Benutzerauthentifizierung, Dokumenten-Upload und -Indizierung sowie einem interaktiven KI-Chat.
+        Nutzer können ihre Dokumentenbibliothek verwalten und sofortige Antworten aus ihren Lernunterlagen erhalten -- eine effektive Integration moderner Webtechnologien und KI im Bildungsbereich.}} \\
 			\hline
 		\end{tabular}
 	\end{table}
@@ -68,11 +67,11 @@
 
 	\begin{table}[h!]
 		\begin{tabular}{|p{50mm}|p{110mm}|}
-    \hline
-    \makecell[l{{p{50mm}}}]{\small{Typische Grafik, Foto etc. (mit Erläuterung)}} &
-    \makecell*[{{p{110mm}}}]{\vspace{12mm} \includegraphics[width=88mm]{img/blockschaltbild} \vspace{10mm}} \\ % No file extension here!
-    \hline
-\end{tabular}
+			\hline
+			\makecell[l{{p{50mm}}}]{\small{Typische Grafik, Foto etc.(mit Erläuterung)}} &
+			\makecell*[{{p{110mm}}}]{\vspace{4mm} \includegraphics[width=70mm]{img/blockschaltbild.png} \vspace{4mm}} \\
+			\hline
+		\end{tabular}
 	\end{table}
 	\begin{table}[h!]
 		\begin{tabular}{|p{50mm}|p{110mm}|}
@@ -89,13 +88,12 @@
 				\small{Möglichkeiten der}\\
 				\small{Einsichtnahme in die Arbeit}} &
 			\makecell*[{{p{110mm}}}]{
-				\small{HTL Hollabrunn} \\
-				\small{Anton Ehrenfriedstraße 10} \\
+				\small{HTL HollabrunnAnton} \\
+				\small{Ehrenfriedstraße 10} \\
 				\small{2020 Hollabrunn}} \\
 			\hline
 		\end{tabular}
 	\end{table}
-    \vspace{8mm}
 	\begin{table}[h!]
 		\begin{tabular}{|p{52mm}|p{52mm}|p{52mm}|}
 			\hline
