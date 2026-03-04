@@ -13,9 +13,10 @@ Die Chat-Komponente bietet eine Schnittstelle zu einem Large Language Model (LLM
 
 \subsection{Implementierungsdetails}
 
-\subsubsection{Request/Response-Pattern und Ladeindikator}
+\subsubsection{Request/Response-Pattern}
 
 Die aktuelle Implementierung wartet auf die vollständige Antwort des Servers (Request/Response Pattern). Während des Wartens wird ein \textit{Thinking Indicator} -- drei animierte Punkte -- über den \texttt{isLoading}-State eingeblendet. Der Eingabebereich wird in dieser Zeit deaktiviert, um doppelte Anfragen zu verhindern.
+\newpage
 
 \subsubsection{Markdown-Rendering}
 

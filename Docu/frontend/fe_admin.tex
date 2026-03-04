@@ -19,12 +19,13 @@ Das \texttt{AdminPanel.jsx} ist das Kontrollzentrum für Systemadministratoren u
 \end{itemize}
 
 Diese zweistufige Strategie folgt dem Prinzip \textit{Defense in Depth}: Die clientseitige Prüfung verbessert die UX (keine sichtbaren Admin-Menüpunkte für normale Nutzer), während die serverseitige Prüfung die tatsächliche Sicherheitsbarriere darstellt.
+\newpage
 
 \subsection{Kaskadierende Datenabfragen (Master-Detail)}
 
-Das Panel ermöglicht CRUD-Operationen für Benutzer. Besonders hervorzuheben ist die verschachtelte Datenansicht: Klickt ein Admin auf einen Benutzer, werden dessen Dateien asynchron nachgeladen -- ein klassisches \textit{Master-Detail}-Szenario:
+Das Panel ermöglicht CRUD-Operationen für Benutzer. Besonders hervorzuheben ist die verschachtelte Datenansicht: Klickt ein Admin auf einen Benutzer, werden dessen Dateien asynchron nachgeladen.
 
-\begin{lstlisting}[language=JavaScript, caption={Lazy Loading von Detaildaten beim Nutzerklick}]
+\begin{lstlisting}[language=JavaScript, caption={Loading von Detaildaten erst beim Nutzerklick}]
 const handleUserClick = (user) => {
     setSelectedUser(user);
     setEditUserMode(false);
@@ -46,4 +47,5 @@ const fetchUserFiles = async (userId) => {
 \end{lstlisting}
 
 Dieses Vorgehen sorgt für eine schnelle initiale Ladezeit der Benutzertabelle, da die Dateimetadaten erst bei Bedarf abgerufen werden und nicht pauschal für alle Benutzer auf einmal.
+\newpage
 

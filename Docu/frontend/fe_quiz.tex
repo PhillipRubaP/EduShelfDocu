@@ -15,7 +15,7 @@ Das Quiz-Modul bündelt alle Funktionen für interaktives Lernen durch Abfragen.
 
 Ein Quiz besteht aus einem Titel und einer Liste von Fragen. Jede Frage enthält wiederum eine Liste von Antworten, wobei eine oder mehrere als korrekt markiert sind. Diese hierarchische Struktur wird im State als verschachteltes Array-Objekt abgebildet:
 
-\begin{lstlisting}[language=JavaScript, caption={Verschachtelte Datenstruktur eines Quiz}]
+\begin{lstlisting}[language=JavaScript, caption={Datenstruktur eines Quiz}]
 const [questions, setQuestions] = useState([
   { 
     text: '', 
@@ -42,6 +42,7 @@ Der Zustand während eines laufenden Quizzes wird durch mehrere State-Variablen 
 \end{figure}
 
 Das visuelle Feedback -- Grün für richtig, Rot für falsch -- wird durch CSS-Klassen gesteuert, die dynamisch basierend auf der Korrektheit der Antwort zugewiesen werden. Nach Beantwortung einer Frage wird \texttt{selectedAnswerId} gesetzt und alle Antwort-Buttons werden deaktiviert, um eine Mehrfachauswahl zu verhindern.
+\newpage
 
 
 \subsection{Quiz-Editor (QuizModal.jsx)}
@@ -57,7 +58,7 @@ Die Erstellung und Bearbeitung von Quizzes erfolgt über \texttt{QuizModal.jsx}.
 
 \subsubsection{Dynamische Formular-Manipulation}
 
-Beim Ändern eines Antworttextes darf der State nicht direkt mutiert werden. Stattdessen muss eine Kopie der betroffenen Ebenen erstellt werden -- das Prinzip der Immutability in React:
+Beim Ändern eines Antworttextes darf der State nicht direkt angepasst werden. Stattdessen muss eine Kopie der betroffenen Ebenen erstellt werden -- das Prinzip der Immutability in React:
 
 \begin{lstlisting}[language=JavaScript, caption={Update-Logik für verschachtelte Antworten}]
 const handleAnswerChange = (questionIndex, answerIndex, event) => {
@@ -68,5 +69,5 @@ const handleAnswerChange = (questionIndex, answerIndex, event) => {
 };
 \end{lstlisting}
 
-Beim Speichern (\texttt{handleSubmit}) wird unterschieden, ob ein neues Quiz erstellt (\texttt{POST}) oder ein bestehendes bearbeitet (\texttt{PUT}) wird. Nach erfolgreicher API-Antwort ruft das Modal den übergebenen Callback \texttt{onQuizSaved()} auf, damit die Elternkomponente ihre Liste ohne erneuten Fetch aktualisiert.
+Beim Speichern (\texttt{handleSubmit}) wird unterschieden, ob ein neues Quiz erstellt (\texttt{POST}) oder ein bestehendes bearbeitet (\texttt{PUT}) wird. Nach erfolgreicher API-Antwort ruft das Modal den übergebenen Callback \texttt{onQuizSaved()} auf, damit die Parentkomponente ihre Liste ohne erneuten Fetch aktualisiert.
 

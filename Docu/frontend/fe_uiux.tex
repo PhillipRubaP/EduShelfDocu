@@ -1,11 +1,11 @@
 % Autor: Elias Welt
 \section{Benutzeroberfläche und Design (UI/UX)}
 \subsection{Styling-Strategie}
-Das Projekt verwendet natives CSS mit CSS-Variablen (Custom Properties) für das Theming. Dies bietet maximale Flexibilität ohne den Overhead großer Frameworks.
+Das Projekt verwendet natives CSS mit CSS-Variablen (Custom Properties) für das Theming. Dies bietet maximale Flexibilität ohne den Overhead großer Frameworks. Perfekt für unser eigen gewähltes Farbschema
 Globale Styles sind in \texttt{index.css} definiert, während komponentenspezifische Styles (z. B. \texttt{Chat.css}) lokal importiert werden.
 
 \subsection{Dark Mode Implementierung}
-Der Dunkelmodus ist nicht nur eine kosmetische Spielerei, sondern eine zentrale Anforderung. Er wurde über CSS-Variablen realisiert, die je nach Attribut am HTML-Tag ihre Werte ändern.
+-heutzutage ist der Dark Mode ist nicht nur eine kosmetische Spielerei, sondern eine zentrale Anforderung der Nutzerinnen und Nutzer. Deswegen wurde dieser natürlich auch beu EduShelf umgesetzt. Er wurde über CSS-Variablen realisiert, die je nach Attribut am HTML-Tag ihre Werte ändern.
 
 \begin{lstlisting}[language=CSS, caption={Theme-Switching mittels CSS-Variablen}]
 :root {
@@ -26,4 +26,4 @@ body {
 }
 \end{lstlisting}
 
-Ein \texttt{useEffect}-Hook in der \texttt{App.jsx} prüft beim Start den \texttt{localStorage}, ob der Nutzer eine Präferenz gespeichert hat, und setzt das Attribut entsprechend. Dies verhindert den "Flash of Incorrect Theme" (FOUC).
+Ein \texttt{useEffect}-Hook in \texttt{App.jsx} prüft beim Start den \texttt{localStorage}, ob der Nutzer eine Präferenz gespeichert hat, und setzt das Attribut entsprechend. Dies verhindert den "Flash of Inaccurate Color Theme".

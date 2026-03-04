@@ -23,11 +23,10 @@ const ShareFileModal = ({ isOpen, onClose, onShare, fileName }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!emailOrUsername.trim()) return;
-
         setIsLoading(true);
         try {
-            await onShare(emailOrUsername); // Callback an Files.jsx
-            setEmailOrUsername('');         // Eingabe nach Erfolg zuruecksetzen
+            await onShare(emailOrUsername);
+            setEmailOrUsername('');
         } finally {
             setIsLoading(false);
         }
@@ -58,5 +57,5 @@ const handleRejectShare = async (docId) => {
 
 \subsection{Bewertung des Ansatzes}
 
-Die Entscheidung, den Accept/Reject-Status serverseitig zu speichern, stellt sicher, dass der Share-Status geräteübergreifend verfügbar ist. Akzeptiert ein Nutzer eine Freigabe auf einem Gerät, ist diese Entscheidung auch auf allen anderen Geräten, die mit diesem Account eingeloogt sind, sofort sichtbar. Dadurch entfallen die früheren Einschränkungen einer rein clientseitigen Lösung und die User Expierience erhöht sich deutlich. Die API-Aufrufe erfolgen asynchron, sodass die Benutzeroberfläche mit den aktuellen Daten vom Server aktualisiert wird.
+Die Entscheidung, den Accept/Reject-Status serverseitig zu speichern, stellt sicher, dass der Share-Status geräteübergreifend verfügbar ist. Akzeptiert ein Nutzer eine Freigabe auf einem Gerät, ist diese Entscheidung auch auf allen anderen Geräten, die mit diesem Account eingeloggt sind, sofort sichtbar. Dadurch entfallen die früheren Einschränkungen einer rein clientseitigen Lösung und die User Expierience erhöht sich deutlich. Die API-Aufrufe erfolgen asynchron, sodass die Benutzeroberfläche mit den aktuellen Daten vom Server aktualisiert wird.
 

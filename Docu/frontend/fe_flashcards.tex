@@ -17,7 +17,7 @@ Der realistische Dreh-Effekt wird ausschließlich über CSS 3D-Transformationen 
 
 \begin{lstlisting}[language=CSS, caption={CSS für den 3D-Flip-Effekt}]
 .flashcard-scene {
-  perspective: 1000px; /* Gibt dem 3D-Raum Tiefe */
+  perspective: 1000px;
 }
 .flashcard-container {
   transition: transform 0.6s;
@@ -32,7 +32,7 @@ Vor- und Rückseite der Karte sind übereinander gestapelt. Die Rückseite ist i
 
 \subsection{State-Verwaltung mit einem Set}
 
-Anstatt für jede Karte einen Boolean im Datenobjekt zu speichern, wird ein \texttt{Set} verwendet, das die IDs der umgedrehten Karten hält. Diese Trennung von UI-Zustand und Geschäftsdaten ist ein wichtiges Designprinzip:
+Anstatt für jede Karte einen Boolean im Datenobjekt zu speichern, wird ein \texttt{Set} verwendet, das die IDs der umgedrehten Karten hält. Diese Trennung von UI-Zustand und Daten ist ein wichtiges Designprinzip:
 
 \begin{lstlisting}[language=JavaScript, caption={Nutzung eines Sets für UI-Zustand}]
 const [flippedCards, setFlippedCards] = useState(new Set());
@@ -41,9 +41,9 @@ const flipCard = (id) => {
     setFlippedCards(prevFlippedCards => {
         const newFlippedCards = new Set(prevFlippedCards);
         if (newFlippedCards.has(id)) {
-            newFlippedCards.delete(id); // Karte zurueckdrehen
+            newFlippedCards.delete(id);
         } else {
-            newFlippedCards.add(id);   // Karte aufdecken
+            newFlippedCards.add(id);
         }
         return newFlippedCards;
     });
@@ -51,4 +51,5 @@ const flipCard = (id) => {
 \end{lstlisting}
 
 Beim Rendern wird \texttt{flippedCards.has(card.id)} geprüft, um die CSS-Klasse \texttt{.flipped} bedingt hinzuzufügen. Diese Methode erlaubt es, beliebig viele Karten gleichzeitig umgedreht zu halten, ohne das Datenmodell zu verändern.
+\newpage
 
