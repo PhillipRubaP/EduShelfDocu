@@ -3,9 +3,9 @@
 Für den späteren Einsatz wird die Frontend-Anwendung containerisiert. Dies gewährleistet eine konsistente Laufzeitumgebung unabhängig vom Host-System.
 
 \subsection{Docker-Containerisierung}
-Es wird ein "`Multi-Stage Build"' Prozess verwendet, um das finale Image so klein wie möglich zu halten.
+Es wird ein "`Multi-Stage Build"' Prozess verwendet~\cite{docker}, um das finale Image so klein wie möglich zu halten.
 \begin{enumerate}
-    \item \textbf{Build-Stage}: Ein Node.js Image wird verwendet, um die Abhängigkeiten zu installieren und den Build-Prozess (\texttt{npm run build}) auszuführen. Das Ergebnis ist ein Ordner \texttt{dist}, der nur die statischen Dateien (HTML, CSS, JS) enthält.
+    \item \textbf{Build-Stage}: Ein Node.js Image wird verwendet, um die Abhängigkeiten zu installieren und den Build-Prozess (\texttt{npm run build})~\cite{ViteDocs} ausführen. Das Ergebnis ist ein Ordner \texttt{dist}, der nur die statischen Dateien (HTML, CSS, JS) enthält.
     \item \textbf{Production-Stage}: Ein leichtgewichtiger Nginx-Webserver wird als Basis genommen. Die Dateien aus der Build-Stage werden in das Verzeichnis \texttt{/usr/share/nginx/html} kopiert.
 \end{enumerate}
 

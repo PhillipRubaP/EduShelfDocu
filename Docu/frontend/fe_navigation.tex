@@ -13,7 +13,7 @@ Die Navigation erfolgtg durch die Komponente \texttt{MainLayout.jsx}. Sie stellt
 
 \subsection{Outlet-Pattern und verschachtelte Routen}
 
-Das Layout nutzt das \texttt{<Outlet />}-Konzept von React Router. Dieses Schema erlaubt es, die Navigationsleiste und den Inhaltsbereich strikt voneinander zu trennen: Das Layout wird einmal gerendert und bleibt dann, während React Router die jeweils aktive Child-Komponente an der \texttt{<Outlet />}-Stelle einfügt. Dadurch wird unnötiges Re-Rendern vermieden und die Performance optimiert.
+Das Layout nutzt das \texttt{<Outlet />}-Konzept von React Router~\cite{ReactRouterDocs}. Dieses Schema erlaubt es, die Navigationsleiste und den Inhaltsbereich strikt voneinander zu trennen: Das Layout wird einmal gerendert und bleibt dann, während React Router die jeweils aktive Child-Komponente an der \texttt{<Outlet />}-Stelle einfügt. Dadurch wird unnötiges Re-Rendern vermieden und die Performance optimiert.
 
 \begin{lstlisting}[language=JavaScript, caption={Outlet-Pattern in MainLayout.jsx}]
 const MainLayout = ({ handleLogout, user }) => {

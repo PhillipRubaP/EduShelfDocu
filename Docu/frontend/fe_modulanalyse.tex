@@ -19,7 +19,7 @@ const [questions, setQuestions] = useState([
 
 \subsubsection{Dynamische Formular-Manipulation}
 Beim Ändern eines Antworttextes darf der State nicht direkt angepasst werden. Stattdessen muss eine Deep Copy der betroffenen Ebenen erstellt werden.
-\texttt{handleAnswerChange} demonstriert dabei das Prinzip Immutability von React:
+\texttt{handleAnswerChange} demonstriert dabei das Prinzip Immutability~\cite{ReactImmutability} von React:
 
 \begin{lstlisting}[language=JavaScript, caption={Update-Logik für verschachtelte Antworten}]
 const handleAnswerChange = (questionIndex, answerIndex, event) => {

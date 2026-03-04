@@ -13,7 +13,7 @@ Die Startseite der Anwendung, realisiert in der Komponente \texttt{MainDashboard
 
 \subsection{Architektur und Datenladen}
 
-Ein zentraler Vorteil der beim Dashboard verwendeten Architektur ist das parallele Laden aller benötigten Daten. Anstatt Dokumente, Quizzes und Lernkarten sequenziell abzurufen -- was die Ladezeit mit jeder weiteren Anfrage erhöhen würde -- wird \texttt{Promise.all()} eingesetzt. Diese Methode startet alle asynchronen Anfragen gleichzeitig und wartet, bis die Letzte von ihnen abgeschlossen ist.
+Ein zentraler Vorteil der beim Dashboard verwendeten Architektur ist das parallele Laden aller benötigten Daten. Anstatt Dokumente, Quizzes und Lernkarten sequenziell abzurufen -- was die Ladezeit mit jeder weiteren Anfrage erhöhen würde -- wird \texttt{Promise.all()}~\cite{MDNPromiseAll} eingesetzt. Diese Methode startet alle asynchronen Anfragen gleichzeitig und wartet, bis die Letzte von ihnen abgeschlossen ist.
 \newpage
 
 \begin{lstlisting}[language=JavaScript, caption={Paralleles Datenladen mit Promise.all im Dashboard}]

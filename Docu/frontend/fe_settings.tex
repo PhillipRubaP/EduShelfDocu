@@ -6,7 +6,7 @@ Die Einstellungskomponente \texttt{Settings.jsx} ermöglicht dem Nutzer die indi
 
 \subsection{Präferenz-Initialisierung beim Laden}
 
-Beim Starten der Komponente werden alle Benutzereinstellungen aus dem \texttt{localStorage} geladen und als initialer State gesetzt. Dieses Vorgehen stellt sicher, dass die Einstellungen über Seitenreloads und Browsersitzungen hinweg erhalten bleiben:
+Beim Starten der Komponente werden alle Benutzereinstellungen aus dem \texttt{localStorage}~\cite{MDNLocalStorage} geladen und als initialer State gesetzt. Dieses Vorgehen stellt sicher, dass die Einstellungen über Seitenreloads und Browsersitzungen hinweg erhalten bleiben:
 
 \begin{lstlisting}[language=JavaScript, caption={Laden gespeicherter Präferenzen}]
 useEffect(() => {

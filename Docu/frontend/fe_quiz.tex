@@ -58,7 +58,7 @@ Die Erstellung und Bearbeitung von Quizzes erfolgt über \texttt{QuizModal.jsx}.
 
 \subsubsection{Dynamische Formular-Manipulation}
 
-Beim Ändern eines Antworttextes darf der State nicht direkt angepasst werden. Stattdessen muss eine Kopie der betroffenen Ebenen erstellt werden -- das Prinzip der Immutability in React:
+Beim Ändern eines Antworttextes darf der State nicht direkt angepasst werden. Stattdessen muss eine Kopie der betroffenen Ebenen erstellt werden -- das Prinzip der Immutability~\cite{ReactImmutability} in React:
 
 \begin{lstlisting}[language=JavaScript, caption={Update-Logik für verschachtelte Antworten}]
 const handleAnswerChange = (questionIndex, answerIndex, event) => {

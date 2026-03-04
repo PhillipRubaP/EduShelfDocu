@@ -1,6 +1,6 @@
 % Autor: Elias Welt
 \section{Projektsetup und Konfiguration}
-Das Projekt wurde mit dem Befehl \texttt{npm create vite@latest} initialisiert. Die Konfiguration befindet sich in der Datei \texttt{vite.config.js}.
+Das Projekt wurde mit dem Befehl \texttt{npm create vite@latest} initialisiert~\cite{ViteDocs}. Die Konfiguration befindet sich in der Datei \texttt{vite.config.js}.
 
 \begin{lstlisting}[language=JavaScript, caption={Auszug aus der Vite-Konfiguration}]
 import { defineConfig } from 'vite'
@@ -22,7 +22,7 @@ export default defineConfig({
 })
 \end{lstlisting}
 
-Ein kritischer Aspekt dieser Konfiguration ist der \textbf{Proxy}: Um während der Entwicklung Cross-Origin Resource Sharing (CORS) Probleme zu vermeiden, leitet der Vite-Entwicklungsserver alle Anfragen, die mit \texttt{/api} beginnen, an das Backend (Port 5015) weiter. Die Option \texttt{changeOrigin: true} manipuliert dabei den Host-Header der Anfrage so, als käme sie direkt vom Backend-Server selbst.
+Ein kritischer Aspekt dieser Konfiguration ist der \textbf{Proxy}: Um während der Entwicklung Cross-Origin Resource Sharing (CORS)~\cite{MDNCORS} Probleme zu vermeiden, leitet der Vite-Entwicklungsserver alle Anfragen, die mit \texttt{/api} beginnen, an das Backend (Port 5015) weiter. Die Option \texttt{changeOrigin: true} manipuliert dabei den Host-Header der Anfrage so, als käme sie direkt vom Backend-Server selbst.
 
 Die Projektstruktur im Ordner \texttt{src} folgt einer funktionalen Aufteilung:
 \begin{itemize}
