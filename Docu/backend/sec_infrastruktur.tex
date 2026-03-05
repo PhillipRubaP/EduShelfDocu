@@ -33,7 +33,7 @@ reservations:
     \end{verbatim}
     Dies ermöglicht die Nutzung von CUDA-Kernen, was die Antwortzeit drastisch reduziert.
     \item \textbf{Persistenz:} Das Volume \texttt{ollama\_data} speichert die heruntergeladenen Modelle (z.B. Llama 3) im \texttt{/root/.ollama} Verzeichnis, um erneute Downloads bei Container-Updates zu vermeiden.
-    \item \textbf{Keep-Alive:} Die Umgebungsvariable \texttt{OLLAMA\_KEEP\_ALIVE} verhindert, dass das Modell nach kurzer Inaktivität aus dem VRAM entladen wird, was die Latenz bei aufeinanderfolgenden Anfragen minimiert.
+    \item \textbf{Keep-Alive:} Die Umgebungsvariable \texttt{OLLAMA\_KEEP\_ALIVE} verhindert, dass das Modell nach kurzer Inaktivität aus dem VRAM (Video Random Access Memory) entladen wird, was die Latenz bei aufeinanderfolgenden Anfragen minimiert.
 \end{itemize}
 
 \subsubsection{Object Storage (MinIO)}
