@@ -1,5 +1,6 @@
 \documentclass[12pt, a4paper, twoside]{report}
 \input{praeambel.tex}		% NICHT löschen
+\input{abkuerzungen.tex}
 \input{definitions.tex}	% Enthält alle Definiotinen wie Schüler und Betreuer
 \usepackage{xcolor}
 \usepackage{tikz}
@@ -116,7 +117,7 @@ belowskip=1.5\baselineskip}
 
 	\tableofcontents			% Erstellen des Inhaltsverzeichnisses
 	\newpage
-	\input{abkuerzungen.tex}
+	\printnoidxglossaries[type=\acronymtype, title=Abkürzungsverzeichnis]
 	\newpage
 	\input{einfuehrung.tex}
         \newpage
