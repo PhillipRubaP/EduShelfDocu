@@ -98,14 +98,14 @@
 	\fancyhf{}
 	\fancyhead[EL,OR]{\rightmark}
 	\fancyfoot[OL,ER]{HTBL Hollabrunn}
-	\fancyfoot[C]{\schuelerAlle}
+	\fancyfoot[C]{\aktuellerSchueler}
 	\fancyfoot[EL,OR]{\thepage}
 	\renewcommand{\headrulewidth}{0.3pt}
 	\renewcommand{\footrulewidth}{0.3pt}
 }
 
 \fancypagestyle{plain}[alle]{
-	\fancyfoot[C]{}
+	% Footer bleibt erhalten, da er nun \aktuellerSchueler auflöst
 }
 
 \fancypagestyle{nurSeitenzahl}{

@@ -34,19 +34,19 @@
 \newcommand{\nurPhillip}{Phillip Rubak}
 
 
-
+\newcommand{\aktuellerSchueler}{\schuelerAlle}
 
 \newcommand{\eliasSeite}{
-  \fancyfoot[C]{\nurElias}
+  \renewcommand{\aktuellerSchueler}{\nurElias}
 }
 
 \newcommand{\phillipSeite}{
-  \fancyfoot[C]{\nurPhillip}
+  \renewcommand{\aktuellerSchueler}{\nurPhillip}
 }
 
 
 
 % Befehl zum Zurückschalten auf alle Autoren
 \newcommand{\gemeinsamSeite}{
-  \fancyfoot{\schuelerAlle}
+  \renewcommand{\aktuellerSchueler}{\schuelerAlle}
 }
