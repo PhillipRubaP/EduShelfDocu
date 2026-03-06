@@ -1,5 +1,7 @@
 project/
 **/main.pdf
+**/abstract_standalone.pdf
+**/zusammenfassung_standalone.pdf
 main.pdf
 ## General
 .DS_Store
