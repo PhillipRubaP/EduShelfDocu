@@ -4,9 +4,11 @@ Während der Entwicklung traten verschiedene technische Herausforderungen auf, d
 
 \subsection{Synchronisation des UI-Status}
 \textbf{Problem}: Wenn ein Nutzer ein Quiz bearbeitet, muss die Liste der Quizzes im Hintergrund aktuell bleiben.
+\newline
 \textbf{Lösung}: Callback-Funktionen (z.B. \texttt{onQuizSaved}) werden an die Modal-Komponenten übergeben. Nach erfolgreicher API-Antwort ruft das Modal diese Funktion auf, und die Elternkomponente aktualisiert ihren lokalen State, ohne einen erneuten Fetch auszuführen. Optimistic UI Updates wurden in Betracht gezogen, aber zugunsten der Datenkonsistenz verworfen.
 
 \subsection{Performance bei großen Dateilisten}
 \textbf{Problem}: Das Rendern von hunderten Dateien führte zu Verzögerungen.
+\newline
 \textbf{Lösung}: Durch die Pagination lässt sich dies optimieren.
 \newpage

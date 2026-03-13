@@ -5,7 +5,7 @@ Das Projekt verwendet natives CSS mit CSS-Variablen (Custom Properties)~\cite{MD
 Globale Styles sind in \texttt{index.css} definiert, während komponentenspezifische Styles (z. B. \texttt{Chat.css}) lokal importiert werden.
 
 \subsection{Dark Mode Implementierung}
--heutzutage ist der Dark Mode ist nicht nur eine kosmetische Spielerei, sondern eine zentrale Anforderung der Nutzerinnen und Nutzer. Deswegen wurde dieser natürlich auch beu EduShelf umgesetzt. Er wurde über CSS-Variablen realisiert, die je nach Attribut am HTML-Tag ihre Werte ändern.
+Heutzutage ist der Dark Mode nicht nur eine kosmetische Spielerei, sondern eine zentrale Anforderung der Nutzerinnen und Nutzer. Deswegen wurde dieser natürlich auch bei EduShelf umgesetzt. Er wurde über CSS-Variablen realisiert, die je nach Attribut am HTML-Tag ihre Werte ändern.
 
 \begin{lstlisting}[language=CSS, caption={Theme-Switching mittels CSS-Variablen}]
 :root {
@@ -26,4 +26,4 @@ body {
 }
 \end{lstlisting}
 
-Ein \texttt{useEffect}-Hook in \texttt{App.jsx} prüft beim Start den \texttt{localStorage}~\cite{MDNLocalStorage}, ob der Nutzer eine Präferenz gespeichert hat, und setzt das Attribut entsprechend. Dies verhindert den "Flash of Inaccurate Color Theme".
+Ein \texttt{useEffect}-Hook in \texttt{App.jsx} prüft beim Start den \texttt{localStorage}~\cite{MDNLocalStorage}, ob der Nutzer eine Präferenz gespeichert hat, und setzt das Attribut entsprechend. Dies verhindert den "`Flash of Inaccurate Color Theme"'.

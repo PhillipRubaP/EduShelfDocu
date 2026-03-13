@@ -7,5 +7,32 @@ Das aktuelle Frontend bietet eine solide Basis, kann jedoch in Zukunft erweitert
     \item \textbf{Internationalisierung (i18n)}: Nutzung von Bibliotheken wie \texttt{react-i18next}, um die Oberfläche in mehreren Sprachen anzubieten.
 \end{itemize}
 
+Die folgende Tabelle gibt eine Einschätzung des Implementierungsaufwands für die genannten Erweiterungen:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|p{7cm}|}
+\hline
+\textbf{Erweiterung} & \textbf{Aufwand} & \textbf{Begründung} \\
+\hline
+Automatisierte Tests & Mittel & Vitest lässt sich ohne Konfigurationsaufwand in Vite integrieren. Der Hauptaufwand liegt im Schreiben aussagekräftiger Testfälle für bestehende Komponenten und Hooks. \\
+\hline
+PWA & Mittel & Vite bietet mit dem \texttt{vite-plugin-pwa} eine fertige Lösung. Service Worker und Manifest lassen sich damit in einigen Stunden einrichten. \\
+\hline
+Internationalisierung (i18n) & Hoch & Alle bestehenden Texte müssen in Übersetzungsdateien ausgelagert und im Code durch \texttt{t()}-Aufrufe ersetzt werden. Der initiale Migrationsaufwand ist bei diesem gewachsenen Projekt erheblich. \\
+\hline
+\end{tabular}
+\vspace{4pt}
+\caption{Geschätzter Implementierungsaufwand der geplanten Erweiterungen}
+\label{tab:erweiterungsaufwand}
+\end{table}
+\newpage
+
 \section{Fazit}
-Die Frontend-Implementierung von EduShelf demonstriert die Leistungsfähigkeit moderner Webtechnologien. Durch den Einsatz von React und einer komponentenbasierte Architektur entstand eine wartbare, skalierbare und benutzerfreundliche Anwendung. Die Integration komplexer Features wie Real-Time-Editoren, KI-Chat und interaktive Lernmodule in einer Single Page Application zeigt, dass Webanwendungen nativen Programmen in nichts nachstehen müssen.
+Die Frontend-Implementierung von EduShelf zeigt, wie moderne Webtechnologien eine komplexe Lernplattform realisierbar machen. Die Entscheidung für React als komponentenbasierte UI-Bibliothek erwies sich als richtig: Die klare Trennung von Zustand und Darstellung, kombiniert mit einer durchdachten Schichtarchitektur aus Hooks, Services und Contexts, führte zu einer Codebasis, die trotz wachsendem Funktionsumfang wartbar und erweiterbar geblieben ist.
+\newline
+
+Besonders hervorzuheben ist die erfolgreiche Integration heterogener Features -- von kollaborativen Echtzeit-Editoren über einen KI-gestützten Chat bis hin zu interaktiven Lernmodulen wie Quizze und Karteikarten -- in einer einheitlichen Single Page Application. Dies belegt, dass komponentenbasierte Webentwicklung in puncto Funktionalität und Benutzererfahrung nativen Applikationen ebenbürtig ist.
+\newline
+
+Das Projekt hat gezeigt, dass durchdachte Architekturentscheidungen zu Beginn langfristig Aufwand sparen. Gleichzeitig verdeutlicht der Ausblick, dass mit überschaubarem Mehraufwand -- insbesondere durch eine PWA-Integration -- die Reichweite und Nutzbarkeit der Anwendung deutlich gesteigert werden könnte. Zusammenfassend stellt EduShelf eine zukunftsfähige Lösung dar, die durch eine hohe Benutzerzentrierung überzeugt und dank ihrer modular erweiterbaren Architektur ein langfristiges Entwicklungspotenzial aufweist.

@@ -1,7 +1,7 @@
 % Autor: Elias Welt
 \section{Datei-Sharing zwischen Nutzern}
 
-Eine weitere wesentliche Funktion von EduShelf ist die Möglichkeit, Dokumente mit anderen Nutzern zu teilen. Der komplette Sharing-Prozess wird durch die Komponente \texttt{ShareFileModal.jsx} in Verbindung mit der Dateiansicht \texttt{Files.jsx} realisiert.
+Eine weitere wesentliche Funktion von EduShelf ist die Möglichkeit, Dokumente mit anderen Nutzern zu teilen. Der komplette Sharing-Prozess wird durch die Komponente \texttt{ShareFileModal.jsx} in Verbindung mit der Dateiansicht \texttt{Files.jsx} realisiert. Die Applikation sieht keine Massenfreigaben vor, weil der Usecase das nicht verlangt.
 
 \begin{figure}[h]
     \centering
@@ -13,7 +13,7 @@ Eine weitere wesentliche Funktion von EduShelf ist die Möglichkeit, Dokumente m
 
 \subsection{Share-Dialog (ShareFileModal.jsx)}
 
-Der Share-Dialog ist als Pop-Up-Modal implementiert. Der Nutzer gibt die E-Mail-Adresse oder den Benutzernamen der Zielperson ein. Da beide Eingabeformate akzeptiert werden, entfällt die Notwendigkeit, die genaue Identifikation des Empfängers zu kennen -- das Backend löst die Zuordnung auf.
+Der Share-Dialog ist als Pop-Up-Modal implementiert. Der Nutzer gibt die E-Mail-Adresse oder den Benutzernamen der Zielperson ein. Beide Eingabeformate werden zur Identifikation akzeptiert.
 
 \begin{lstlisting}[language=JavaScript, caption={Formularlogik im ShareFileModal}]
 const ShareFileModal = ({ isOpen, onClose, onShare, fileName }) => {

@@ -1,7 +1,7 @@
 % Autor: Elias Welt
 \section{Datei\-verwaltung (Files.jsx)}
 
-Die Dateiverwaltung ist ein zentrales Element von EduShelf und wird durch \texttt{Files.jsx} realisiert. Sie bietet eine vollständige Übersicht aller hochgeladenen Dokumente und bündelt alle dateibasierten Aktionen -- Upload, Suche, Filter, Vorschau, Teilen, Download und Löschen -- in einer einzigen Ansicht.
+Die Dateiverwaltung ist ein zentrales Element von EduShelf und wird durch \texttt{Files.jsx} realisiert. Sie bietet eine vollständige Übersicht aller hochgeladenen Dokumente und bündelt alle dateibasierten Aktionen -- Upload, Suche, Filter, Vorschau, Teilen, Download und Löschen -- in einer einzigen Ansicht. Die Struktur ist nicht klassisch mit Ordnern sondern mit Tags gelöst, nach denen man Filtern kann.
 
 \begin{figure}[h]
     \centering
@@ -13,13 +13,15 @@ Die Dateiverwaltung ist ein zentrales Element von EduShelf und wird durch \textt
 
 \subsection{Datenladen und Echtzeit-Suche}
 
-Beim Laden der Komponente ruft ein \texttt{useEffect}-Hook die vollständige Dateiliste vom Server ab und speichert sie lokal im State. Die Suchfunktion operiert ausschließlich auf dieser lokalen Kopie -- es wird kein neuer API-Aufruf bei jeder Eingabe ausgelöst.
+Beim Laden der Komponente ruft ein \texttt{useEffect}-Hook die vollständige Dateiliste vom Server ab und speichert sie lokal im State. Die Suchfunktion operiert ausschließlich auf dieser lokalen Kopie -- es wird kein neuer API-Aufruf bei jeder Eingabe ausgelöst. Die Dateisuche erfolgt auf Basis einer schlagwortbasierten Teilstring-Abfrage des Namens.
 
 \begin{lstlisting}[language=JavaScript, caption={Clientseitige Echtzeit-Suche in der Dateiliste}]
 const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
 );
 \end{lstlisting}
+
+\subsection{Filtern}
 
 Auch das Filtern erfolgt in Echtzeit über \texttt{Array.filter()}. Dieses Vorgehen ist sowohl performant als auch benutzerfreundlich: Da alle Daten bereits geladen sind, erfolgt das Filtern ohne wahrnehmbare Verzögerung, unabhängig von der Netzwerkqualität.
 
@@ -45,6 +47,6 @@ Das Menü bietet folgende Optionen:
 
 \subsection{Upload-Prozess}
 
-Der Dateiupload wird über ein Modal (\texttt{UploadDialog.jsx}) realisiert. Der Nutzer wählt eine Datei aus, die zusammen mit der User-ID als \texttt{multipart/form-data}~\cite{MDNFormData} an den Server gesendet wird. Nach erfolgreichem Upload wird \texttt{fetchFiles()} erneut aufgerufen, um die Ansicht ohne manuellen Seitenreload zu aktualisieren. Außerdem gibt es die Möglichkeit Tags hinzuzufügen, nach denen die Dateien später gefiltert werden können
+Der Dateiupload wird über ein Modal (\texttt{UploadDialog.jsx}) realisiert. Der Nutzer wählt eine Datei aus, die zusammen mit der User-ID als \texttt{multipart/form-data}~\cite{MDNFormData} an den Server gesendet wird. Nach erfolgreichem Upload wird \texttt{fetchFiles()} erneut aufgerufen, um die Ansicht ohne manuellen Seitenreload zu aktualisieren. Außerdem gibt es die Möglichkeit Tags hinzuzufügen, nach denen die Dateien später gefiltert werden können.
 \newpage
 
