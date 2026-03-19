@@ -123,8 +123,10 @@ belowskip=1.5\baselineskip}
 	\tableofcontents			% Erstellen des Inhaltsverzeichnisses
 	\newpage
 	\endgroup
+	\newcounter{savepage}
+	\setcounter{savepage}{\value{page}}
 	\pagenumbering{arabic}
-	\setcounter{page}{1}
+	\setcounter{page}{\value{savepage}}
 	\input{abkuerzungen.tex}
 	\newpage
 	\input{einfuehrung.tex}
