@@ -1,6 +1,8 @@
 \section{Datenmodelle und Datenbankdesign}
 Das Datenmodell wurde entworfen, um sowohl relationale Benutzerdaten als auch unstrukturierte Dokumenteninhalte effizient zu verwalten. EF Core Migrationen stellen sicher, dass das Datenbankschema synchron zum Code bleibt.
 
+Mithilfe der EF Core Migrationen wird eine Art Versionskontrolle für die Datenbankstruktur implementiert. Sie ermöglichen es, Anpassungen an den C\#-Entitäten – wie etwa das Hinzufügen neuer Tabellen oder das Ändern von Datentypen – automatisiert in SQL-Skripte zu übersetzen. Auf diese Weise kann das Datenbankschema inkrementell und sicher aktualisiert werden, ohne dass dabei bereits vorhandene Daten verloren gehen. Letztlich garantiert dieser Ansatz konsistente Weiterentwicklungen und reibungslose Deployments.
+
 \subsection{Kernelemente}
 \begin{itemize}
     \item \textbf{User:} Die zentrale Identitätseinheit. Enthält \texttt{Username}, \texttt{Email}, \texttt{PasswordHash} (gespeichert als BCrypt-Hash), sowie Felder für die E-Mail-Verifizierung (\texttt{IsEmailConfirmed}, \texttt{EmailConfirmationToken}).
@@ -23,7 +25,7 @@ Das Datenmodell wurde entworfen, um sowohl relationale Benutzerdaten als auch un
 Das folgende Diagramm visualisiert die Beziehungen zwischen den Entitäten. Zentral ist der \texttt{User}, der Dokumente besitzt und Lerninhalte (Flashcards, Quizzes) erstellt.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/database_erd.png}
-    \caption{Entity Relationship Diagram des EduShelf Backends}
+    \includegraphics[width=\textwidth]{img/database_erd_no_at.png}
+    \caption{Entity Relationship Diagram(ohne Attribute) des EduShelf Backends}
     \label{fig:erd}
 \end{figure}

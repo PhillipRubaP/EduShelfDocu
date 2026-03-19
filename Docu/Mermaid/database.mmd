@@ -1,0 +1,56 @@
+erDiagram
+    USER ||--o{ DOCUMENT : owns
+    USER ||--o{ CHAT_SESSION : has
+    USER ||--o{ QUIZ : creates
+    USER ||--o{ ROLE : assigned
+    USER ||--o{ FLASHCARD : creates
+    USER ||--o{ DOCUMENT_SHARE : "shared with"
+
+    DOCUMENT ||--o{ DOCUMENT_CHUNK : contains
+    DOCUMENT ||--o{ DOCUMENT_TAG : "classified by"
+    DOCUMENT ||--o{ DOCUMENT_SHARE : "shared in"
+    DOCUMENT ||--o{ TAG : "tagged with"
+
+    CHAT_SESSION ||--o{ CHAT_MESSAGE : contains
+
+    QUIZ ||--o{ QUESTION : contains
+    QUESTION ||--o{ ANSWER : has
+
+    USER {
+    }
+
+    DOCUMENT {
+    }
+
+    DOCUMENT_CHUNK {
+    }
+
+    DOCUMENT_SHARE {
+    }
+
+    DOCUMENT_TAG {
+    }
+
+    CHAT_SESSION {
+    }
+
+    CHAT_MESSAGE {
+    }
+
+    QUIZ {
+    }
+
+    QUESTION {
+    }
+
+    ANSWER {
+    }
+
+    ROLE {
+    }
+
+    FLASHCARD {
+    }
+
+    TAG {
+    }
