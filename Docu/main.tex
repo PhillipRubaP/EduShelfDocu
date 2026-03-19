@@ -96,7 +96,11 @@ belowskip=1.5\baselineskip}
 %                                         an ihre Teil-Dokumente anpassen                                                    %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-	\pagenumbering{gobble}
+	\makeatletter
+	\let\origpsplain\ps@plain
+	\let\ps@plain\ps@empty
+	\makeatother
+	\pagestyle{empty}
 	
 	\input{listings_setup.tex}  			% Einbinden von Quellcode, muss für andere Sprachen als bash, muss angepasst werden
 	\input{titelseite.tex}
@@ -115,18 +119,12 @@ belowskip=1.5\baselineskip}
 	\newpage\null\thispagestyle{empty}\newpage
 %	\includepdf[pages=-]{ABA_Erklaerung.pdf} 	% Anpassen
 
-	\begingroup
-	\pagestyle{empty}
-	\makeatletter
-	\let\ps@plain\ps@empty
-	\makeatother
 	\tableofcontents			% Erstellen des Inhaltsverzeichnisses
 	\newpage
-	\endgroup
-	\newcounter{savepage}
-	\setcounter{savepage}{\value{page}}
-	\pagenumbering{arabic}
-	\setcounter{page}{\value{savepage}}
+	\makeatletter
+	\let\ps@plain\origpsplain
+	\makeatother
+	\pagestyle{alle}
 	\input{abkuerzungen.tex}
 	\newpage
 	\input{einfuehrung.tex}
